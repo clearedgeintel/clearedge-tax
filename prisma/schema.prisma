@@ -1,0 +1,485 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  CLIENT
+  PREPARER
+  MANAGER
+  ADMIN
+}
+
+enum EntityType {
+  INDIVIDUAL_1040
+  S_CORP_1120S
+  PARTNERSHIP_1065
+  SOLE_PROP_SCHEDULE_C
+  NONPROFIT_990N
+  NONPROFIT_990EZ
+  NONPROFIT_990
+  NONPROFIT_990PF
+  NONPROFIT_990T
+}
+
+enum FilingStatus {
+  SINGLE
+  MFJ
+  MFS
+  HOH
+  QSS
+}
+
+enum TinType {
+  SSN
+  EIN
+}
+
+enum RelationshipType {
+  SPOUSE
+  DEPENDENT
+  HOUSEHOLD_MEMBER
+  PARENT_ENTITY
+  SHAREHOLDER
+  PARTNER
+  OFFICER
+  BOARD_MEMBER
+}
+
+enum ReturnStatus {
+  INTAKE
+  INTAKE_BLOCKED
+  PREPARATION
+  PREPARATION_BLOCKED
+  REVIEW
+  REVISION
+  APPROVED
+  EXPORTED
+}
+
+enum DocumentStatus {
+  REQUESTED
+  UPLOADED
+  ACCEPTED
+  REJECTED
+}
+
+enum DocumentCategory {
+  W2
+  W2_G
+  F1099_INT
+  F1099_DIV
+  F1099_NEC
+  F1099_MISC
+  F1099_B
+  F1099_R
+  F1099_SSA
+  F1099_G
+  F1095_A
+  K1_1065
+  K1_1120S
+  K1_1041
+  BANK_STATEMENT
+  MORTGAGE_STATEMENT
+  PROPERTY_TAX
+  CHARITABLE_RECEIPT
+  PRIOR_RETURN
+  DEPRECIATION_SCHEDULE
+  FINANCIAL_STATEMENT
+  OTHER
+}
+
+enum DeadlineType {
+  FILING
+  EXTENSION_FILING
+  ESTIMATED_Q1
+  ESTIMATED_Q2
+  ESTIMATED_Q3
+  ESTIMATED_Q4
+}
+
+enum ReviewActionType {
+  SUBMITTED_FOR_REVIEW
+  APPROVED
+  REJECTED
+  REVISION_COMPLETE
+  EXPORTED
+}
+
+enum CommunicationChannel {
+  EMAIL
+  SMS
+  IN_APP
+}
+
+enum CommunicationDirection {
+  OUTBOUND
+  INBOUND
+}
+
+enum CommunicationStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  FAILED
+  BOUNCED
+}
+
+// ─── Models ─────────────────────────────────────────────────────────────────
+
+model Firm {
+  id        String   @id @default(cuid())
+  name      String
+  ein       String?
+  address   Json?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users   User[]
+  clients Client[]
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  name          String
+  role          UserRole  @default(CLIENT)
+  firmId        String?
+  isActive      Boolean   @default(true)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  firm             Firm?          @relation(fields: [firmId], references: [id])
+  accounts         Account[]
+  sessions         Session[]
+  clientProfile    Client?
+  assignedReturns  TaxReturn[]    @relation("AssignedPreparer")
+  reviewingReturns TaxReturn[]    @relation("AssignedReviewer")
+  reviewActions    ReviewAction[]
+  auditEvents      AuditEvent[]
+
+  @@index([firmId])
+  @@index([role])
+}
+
+// NextAuth required tables
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Client {
+  id          String   @id @default(cuid())
+  firmId      String
+  userId      String?  @unique
+  displayName String
+  email       String?
+  phone       String?
+  notes       String?  @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  firm       Firm       @relation(fields: [firmId], references: [id])
+  user       User?      @relation(fields: [userId], references: [id])
+  entities   Entity[]
+  documents  Document[]
+
+  @@index([firmId])
+}
+
+model Entity {
+  id               String       @id @default(cuid())
+  clientId         String
+  entityType       EntityType
+  legalName        String
+  tin              String?
+  tinType          TinType?
+  filingStatus     FilingStatus?
+  dateOfBirth      DateTime?
+  dateOfFormation  DateTime?
+  stateOfFormation String?
+  address          Json?
+  isActive         Boolean      @default(true)
+  metadata         Json?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  client            Client                @relation(fields: [clientId], references: [id])
+  taxReturns        TaxReturn[]
+  relationshipsFrom EntityRelationship[]  @relation("FromEntity")
+  relationshipsTo   EntityRelationship[]  @relation("ToEntity")
+  k1sIssued         K1Link[]              @relation("IssuingEntity")
+
+  @@index([clientId])
+  @@index([entityType])
+  @@index([clientId, entityType])
+}
+
+model EntityRelationship {
+  id               String           @id @default(cuid())
+  fromEntityId     String
+  toEntityId       String
+  relationshipType RelationshipType
+  ownershipPct     Decimal?         @db.Decimal(5, 2)
+  metadata         Json?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  fromEntity Entity @relation("FromEntity", fields: [fromEntityId], references: [id])
+  toEntity   Entity @relation("ToEntity", fields: [toEntityId], references: [id])
+
+  @@unique([fromEntityId, toEntityId, relationshipType])
+  @@index([fromEntityId])
+  @@index([toEntityId])
+  @@index([relationshipType])
+}
+
+model TaxReturn {
+  id                  String       @id @default(cuid())
+  entityId            String
+  taxYear             Int
+  status              ReturnStatus @default(INTAKE)
+  statusNote          String?      @db.Text
+  blockedReason       String?
+  isBlocked           Boolean      @default(false)
+  preparerId          String?
+  reviewerId          String?
+  filingJurisdictions String[]
+  extensionFiled      Boolean      @default(false)
+  extensionDate       DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  submittedAt         DateTime?
+  approvedAt          DateTime?
+  exportedAt          DateTime?
+
+  entity               Entity              @relation(fields: [entityId], references: [id])
+  preparer             User?               @relation("AssignedPreparer", fields: [preparerId], references: [id])
+  reviewer             User?               @relation("AssignedReviewer", fields: [reviewerId], references: [id])
+  interviewResponses   InterviewResponse[]
+  triggeredForms       TriggeredForm[]
+  deadlines            Deadline[]
+  documents            Document[]
+  reviewActions        ReviewAction[]
+  auditEvents          AuditEvent[]
+  k1sIssuedByReturn    K1Link[]            @relation("SourceReturn")
+  k1sReceivedByReturn  K1Link[]            @relation("TargetReturn")
+
+  @@unique([entityId, taxYear])
+  @@index([entityId])
+  @@index([status])
+  @@index([preparerId])
+  @@index([reviewerId])
+  @@index([taxYear])
+  @@index([status, preparerId])
+}
+
+model K1Link {
+  id                String   @id @default(cuid())
+  sourceReturnId    String
+  targetReturnId    String
+  issuingEntityId   String
+  recipientEntityId String
+  ownershipPct      Decimal? @db.Decimal(5, 2)
+  k1Data            Json?
+  isResolved        Boolean  @default(false)
+  resolvedAt        DateTime?
+  createdAt         DateTime @default(now())
+
+  sourceReturn  TaxReturn @relation("SourceReturn", fields: [sourceReturnId], references: [id])
+  targetReturn  TaxReturn @relation("TargetReturn", fields: [targetReturnId], references: [id])
+  issuingEntity Entity    @relation("IssuingEntity", fields: [issuingEntityId], references: [id])
+
+  @@unique([sourceReturnId, targetReturnId])
+  @@index([sourceReturnId])
+  @@index([targetReturnId])
+  @@index([isResolved])
+}
+
+model InterviewResponse {
+  id            String   @id @default(cuid())
+  returnId      String
+  questionId    String
+  sectionId     String
+  instanceIndex Int      @default(0)
+  value         Json
+  answeredBy    String?
+  answeredAt    DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  taxReturn TaxReturn @relation(fields: [returnId], references: [id])
+
+  @@unique([returnId, questionId, instanceIndex])
+  @@index([returnId])
+  @@index([returnId, sectionId])
+  @@index([questionId])
+}
+
+model TriggeredForm {
+  id                    String   @id @default(cuid())
+  returnId              String
+  formId                String
+  formName              String
+  action                String
+  triggeredByQuestionId String
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  taxReturn TaxReturn @relation(fields: [returnId], references: [id])
+
+  @@unique([returnId, formId, triggeredByQuestionId])
+  @@index([returnId])
+  @@index([returnId, isActive])
+}
+
+model Document {
+  id          String           @id @default(cuid())
+  returnId    String?
+  clientId    String
+  category    DocumentCategory
+  label       String
+  status      DocumentStatus   @default(REQUESTED)
+  storageKey  String?
+  mimeType    String?
+  fileSize    Int?
+  uploadedBy  String?
+  uploadedAt  DateTime?
+  requestedAt DateTime         @default(now())
+  requestNote String?          @db.Text
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  taxReturn TaxReturn? @relation(fields: [returnId], references: [id])
+  client    Client     @relation(fields: [clientId], references: [id])
+
+  @@index([returnId])
+  @@index([clientId])
+  @@index([status])
+  @@index([returnId, status])
+}
+
+model Deadline {
+  id               String       @id @default(cuid())
+  returnId         String
+  deadlineType     DeadlineType
+  jurisdiction     String
+  dueDate          DateTime
+  originalDueDate  DateTime
+  isExtended       Boolean      @default(false)
+  extensionDueDate DateTime?
+  warningDays      Int          @default(30)
+  isPastDue        Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  taxReturn TaxReturn @relation(fields: [returnId], references: [id])
+
+  @@unique([returnId, deadlineType, jurisdiction])
+  @@index([returnId])
+  @@index([dueDate])
+  @@index([isPastDue])
+  @@index([dueDate, isPastDue])
+}
+
+model ReviewAction {
+  id        String           @id @default(cuid())
+  returnId  String
+  userId    String
+  action    ReviewActionType
+  notes     String?          @db.Text
+  createdAt DateTime         @default(now())
+
+  taxReturn TaxReturn @relation(fields: [returnId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@index([returnId])
+  @@index([userId])
+  @@index([returnId, createdAt])
+}
+
+model AuditEvent {
+  id            String   @id @default(cuid())
+  returnId      String?
+  userId        String?
+  eventType     String
+  eventCategory String
+  description   String
+  metadata      Json?
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  taxReturn TaxReturn? @relation(fields: [returnId], references: [id])
+  user      User?      @relation(fields: [userId], references: [id])
+
+  @@index([returnId])
+  @@index([userId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@index([returnId, createdAt])
+  @@index([userId, createdAt])
+}
+
+model Communication {
+  id          String                 @id @default(cuid())
+  clientId    String
+  returnId    String?
+  channel     CommunicationChannel
+  templateId  String?
+  subject     String?
+  body        String                 @db.Text
+  direction   CommunicationDirection
+  status      CommunicationStatus    @default(QUEUED)
+  sentAt      DateTime?
+  deliveredAt DateTime?
+  openedAt    DateTime?
+  metadata    Json?
+  createdAt   DateTime               @default(now())
+
+  @@index([clientId])
+  @@index([returnId])
+  @@index([status])
+}

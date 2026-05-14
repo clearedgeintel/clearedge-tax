@@ -1,0 +1,332 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clearedge.tax/schemas/question-file.json",
+  "title": "ClearEdge Tax Intake Question File",
+  "description": "Schema for intake question matrix files. Each file contains sections of questions for one or more entity types.",
+  "type": "object",
+  "required": ["metadata", "sections"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["fileId", "entityTypes", "version", "taxYear"],
+      "properties": {
+        "fileId": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Unique identifier for this question file, matches the filename without extension"
+        },
+        "entityTypes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/entityType" },
+          "minItems": 1,
+          "description": "Entity types this file applies to"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version of this question file"
+        },
+        "taxYear": {
+          "type": "integer",
+          "minimum": 2024,
+          "description": "Tax year these questions apply to"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sections": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/section" },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": false,
+
+  "$defs": {
+    "entityType": {
+      "type": "string",
+      "enum": [
+        "individual-1040",
+        "s-corp-1120s",
+        "partnership-1065",
+        "sole-prop-schedule-c",
+        "nonprofit-990n",
+        "nonprofit-990ez",
+        "nonprofit-990",
+        "nonprofit-990pf",
+        "nonprofit-990t"
+      ]
+    },
+
+    "filingStatus": {
+      "type": "string",
+      "enum": ["single", "mfj", "mfs", "hoh", "qss"]
+    },
+
+    "inputType": {
+      "type": "string",
+      "enum": [
+        "yes_no",
+        "multiple_choice",
+        "multi_select",
+        "text",
+        "number",
+        "currency",
+        "date",
+        "ein",
+        "ssn",
+        "phone",
+        "email",
+        "address",
+        "percentage",
+        "file_upload",
+        "state_select",
+        "state_multi_select",
+        "section_include"
+      ]
+    },
+
+    "operator": {
+      "type": "string",
+      "enum": ["eq", "neq", "gt", "gte", "lt", "lte", "in", "not_in", "contains", "exists", "not_exists"]
+    },
+
+    "section": {
+      "type": "object",
+      "required": ["sectionId", "title", "sortOrder", "questions"],
+      "properties": {
+        "sectionId": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Unique section identifier within this file"
+        },
+        "title": {
+          "type": "string",
+          "description": "Display title for this section"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief explanation of what this section covers"
+        },
+        "sortOrder": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Controls display order; lower numbers appear first"
+        },
+        "appliesToEntityTypes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/entityType" },
+          "description": "If set, limits this section to specific entity types within a multi-entity file"
+        },
+        "appliesToFilingStatuses": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/filingStatus" },
+          "description": "1040 only. If set, limits this section to specific filing statuses"
+        },
+        "repeatable": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the entire section can be duplicated (e.g., multiple rental properties)"
+        },
+        "conditions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/condition" },
+          "description": "All conditions must be met for section to appear (AND logic)"
+        },
+        "questions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/question" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "question": {
+      "type": "object",
+      "required": ["questionId", "text", "inputType", "sortOrder"],
+      "properties": {
+        "questionId": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]+-[A-Z0-9]+-[0-9]+$",
+          "description": "Format: ENTITY-SECTION-NUMBER (e.g., 1040-INC-015)"
+        },
+        "text": {
+          "type": "string",
+          "description": "The question as displayed to the user"
+        },
+        "helpText": {
+          "type": "string",
+          "description": "Explanatory tooltip or guidance text"
+        },
+        "inputType": {
+          "$ref": "#/$defs/inputType"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["value", "label"],
+            "properties": {
+              "value": { "type": "string" },
+              "label": { "type": "string" }
+            },
+            "additionalProperties": false
+          },
+          "description": "Required when inputType is multiple_choice or multi_select"
+        },
+        "validation": {
+          "type": "object",
+          "properties": {
+            "required": { "type": "boolean", "default": true },
+            "min": { "type": "number" },
+            "max": { "type": "number" },
+            "pattern": { "type": "string" },
+            "minDate": { "type": "string", "format": "date" },
+            "maxDate": { "type": "string", "format": "date" }
+          },
+          "additionalProperties": false
+        },
+        "defaultValue": {
+          "description": "Default answer value; type depends on inputType"
+        },
+        "sortOrder": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "appliesToEntityTypes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/entityType" }
+        },
+        "appliesToFilingStatuses": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/filingStatus" },
+          "description": "1040 only. If omitted, applies to all filing statuses"
+        },
+        "conditions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/condition" },
+          "description": "All conditions must be met for question to appear (AND logic)"
+        },
+        "conditionGroups": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/conditionGroup" },
+          "description": "For complex branching: groups are ORed together, conditions within a group are ANDed"
+        },
+        "formTriggers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/formTrigger" }
+        },
+        "includeSection": {
+          "$ref": "#/$defs/sectionReference",
+          "description": "When inputType is section_include, references a section from another file"
+        },
+        "repeatable": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, this question can have multiple instances (e.g., multiple W-2s)"
+        },
+        "staffOnly": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, only visible in staff data-entry view"
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Freeform tags for search, filtering, annual review tracking"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "condition": {
+      "type": "object",
+      "required": ["questionId", "operator", "value"],
+      "properties": {
+        "questionId": {
+          "type": "string",
+          "description": "The questionId this condition depends on. Can reference questions in other files."
+        },
+        "operator": {
+          "$ref": "#/$defs/operator"
+        },
+        "value": {
+          "description": "The value to compare against. Type depends on the referenced question's inputType."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "conditionGroup": {
+      "type": "object",
+      "required": ["operator", "conditions"],
+      "properties": {
+        "operator": {
+          "type": "string",
+          "enum": ["AND", "OR"]
+        },
+        "conditions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/condition" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "formTrigger": {
+      "type": "object",
+      "required": ["formId", "triggerWhen"],
+      "properties": {
+        "formId": {
+          "type": "string",
+          "description": "IRS form or schedule identifier (e.g., 'schedule-a', 'form-8829')"
+        },
+        "formName": {
+          "type": "string",
+          "description": "Human-readable form name"
+        },
+        "triggerWhen": {
+          "type": "object",
+          "required": ["operator", "value"],
+          "properties": {
+            "operator": {
+              "$ref": "#/$defs/operator"
+            },
+            "value": {
+              "description": "The answer value that triggers this form"
+            }
+          },
+          "additionalProperties": false
+        },
+        "action": {
+          "type": "string",
+          "enum": ["include", "exclude", "require"],
+          "default": "include",
+          "description": "include = add if triggered, exclude = remove if triggered, require = mandatory if triggered"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "sectionReference": {
+      "type": "object",
+      "required": ["fileId", "sectionId"],
+      "properties": {
+        "fileId": {
+          "type": "string",
+          "description": "The fileId of the target question file"
+        },
+        "sectionId": {
+          "type": "string",
+          "description": "The sectionId within the target file"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

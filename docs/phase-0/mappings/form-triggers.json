@@ -1,0 +1,478 @@
+{
+  "description": "Master mapping of all form/schedule triggers across the intake question matrix. Extracted from individual question files for cross-reference and validation.",
+  "version": "1.0.0",
+  "taxYear": 2025,
+  "forms": [
+    {
+      "formId": "schedule-a",
+      "formName": "Itemized Deductions",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-DED-002",
+          "file": "individual-1040",
+          "condition": "Taxpayer chooses itemized deductions over standard",
+          "triggerWhen": { "operator": "eq", "value": "itemized" },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "schedule-b",
+      "formName": "Interest and Ordinary Dividends",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-INTDIV-003",
+          "file": "individual-1040",
+          "condition": "Total taxable interest exceeds $1,500",
+          "triggerWhen": { "operator": "gt", "value": 1500 },
+          "action": "include"
+        },
+        {
+          "questionId": "1040-INTDIV-007",
+          "file": "individual-1040",
+          "condition": "Total ordinary dividends exceed $1,500",
+          "triggerWhen": { "operator": "gt", "value": 1500 },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "schedule-c",
+      "formName": "Profit or Loss From Business (Sole Proprietorship)",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-SE-001",
+          "file": "individual-1040",
+          "condition": "Taxpayer operated a sole proprietorship or single-member LLC",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "schedule-d",
+      "formName": "Capital Gains and Losses",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-CAP-001",
+          "file": "individual-1040",
+          "condition": "Taxpayer sold stocks, bonds, real estate, or other capital assets",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        },
+        {
+          "questionId": "1040-CAP-006",
+          "file": "individual-1040",
+          "condition": "Taxpayer sold or exchanged primary home",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "schedule-e",
+      "formName": "Supplemental Income and Loss (Rental/Royalty — Part I)",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-RENT-001",
+          "file": "individual-1040",
+          "condition": "Taxpayer received rental or royalty income",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "schedule-e-part-ii",
+      "formName": "Supplemental Income and Loss (Pass-Through — Part II)",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-K1-001",
+          "file": "individual-1040",
+          "condition": "Taxpayer received K-1 from S-Corp, partnership, trust, or estate",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "schedule-se",
+      "formName": "Self-Employment Tax",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-SE-001",
+          "file": "individual-1040",
+          "condition": "Taxpayer has self-employment income from sole proprietorship",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "schedule-eic",
+      "formName": "Earned Income Credit",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-CR-003",
+          "file": "individual-1040",
+          "condition": "Taxpayer may qualify for the Earned Income Credit",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "schedule-8812",
+      "formName": "Credits for Qualifying Children and Other Dependents",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-DEP-011",
+          "file": "individual-1040",
+          "condition": "Dependent is eligible for child tax credit (under 17 at end of year)",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        },
+        {
+          "questionId": "1040-CR-001",
+          "file": "individual-1040",
+          "condition": "Taxpayer has qualifying children or dependents for CTC/ODC",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-8949",
+      "formName": "Sales and Other Dispositions of Capital Assets",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-CAP-001",
+          "file": "individual-1040",
+          "condition": "Taxpayer sold capital assets",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        },
+        {
+          "questionId": "1040-CAP-010",
+          "file": "individual-1040",
+          "condition": "Taxpayer sold or exchanged cryptocurrency",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-8582",
+      "formName": "Passive Activity Loss Limitations",
+      "triggeredBy": [
+        {
+          "questionId": "SCHC-BIZ-013",
+          "file": "sole-prop-schedule-c",
+          "condition": "Taxpayer did NOT materially participate in business",
+          "triggerWhen": { "operator": "eq", "value": false },
+          "action": "include"
+        },
+        {
+          "questionId": "1040-RENT-015",
+          "file": "individual-1040",
+          "condition": "Rental property shows a loss (passive activity)",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        },
+        {
+          "questionId": "1065-ARP-001",
+          "file": "partnership-1065",
+          "condition": "Partnership has passive activity losses to report",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-8829",
+      "formName": "Expenses for Business Use of Your Home",
+      "parentForm": "schedule-c",
+      "triggeredBy": [
+        {
+          "questionId": "SCHC-HOME-001",
+          "file": "sole-prop-schedule-c",
+          "condition": "Taxpayer used part of home regularly and exclusively for business",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-4562",
+      "formName": "Depreciation and Amortization",
+      "triggeredBy": [
+        {
+          "questionId": "SCHC-DEP-001",
+          "file": "sole-prop-schedule-c",
+          "condition": "Sole prop purchased business assets during the year",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        },
+        {
+          "questionId": "1120S-DEP-001",
+          "file": "s-corp-1120s",
+          "condition": "S-Corp purchased business assets during the year",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        },
+        {
+          "questionId": "1120S-DEP-006",
+          "file": "s-corp-1120s",
+          "condition": "S-Corp elects Section 179 expensing",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        },
+        {
+          "questionId": "1065-DEP-001",
+          "file": "partnership-1065",
+          "condition": "Partnership purchased business assets during the year",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        },
+        {
+          "questionId": "1065-DEP-006",
+          "file": "partnership-1065",
+          "condition": "Partnership elects Section 179 expensing",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-4797",
+      "formName": "Sales of Business Property",
+      "triggeredBy": [
+        {
+          "questionId": "SCHC-DEP-009",
+          "file": "sole-prop-schedule-c",
+          "condition": "Sole prop disposed of business assets during the year",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        },
+        {
+          "questionId": "1120S-DEP-009",
+          "file": "s-corp-1120s",
+          "condition": "S-Corp disposed of business assets during the year",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        },
+        {
+          "questionId": "1065-DEP-009",
+          "file": "partnership-1065",
+          "condition": "Partnership disposed of business assets during the year",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-8889",
+      "formName": "Health Savings Accounts",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-ADJ-006",
+          "file": "individual-1040",
+          "condition": "Taxpayer contributed to or received distributions from an HSA",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-8962",
+      "formName": "Premium Tax Credit",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-HC-001",
+          "file": "individual-1040",
+          "condition": "Taxpayer or family member enrolled in ACA marketplace insurance",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-8863",
+      "formName": "Education Credits",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-CR-005",
+          "file": "individual-1040",
+          "condition": "Taxpayer or dependent had qualified education expenses",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-2441",
+      "formName": "Child and Dependent Care Expenses",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-CR-009",
+          "file": "individual-1040",
+          "condition": "Taxpayer paid for child or dependent care to enable work",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-8839",
+      "formName": "Qualified Adoption Expenses",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-CR-012",
+          "file": "individual-1040",
+          "condition": "Taxpayer had qualified adoption expenses",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-5695",
+      "formName": "Residential Energy Credits",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-CR-013",
+          "file": "individual-1040",
+          "condition": "Taxpayer made energy-efficient improvements or installed renewable energy",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-2555",
+      "formName": "Foreign Earned Income",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-FOR-001",
+          "file": "individual-1040",
+          "condition": "Taxpayer earned income in a foreign country",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-1116",
+      "formName": "Foreign Tax Credit",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-FOR-005",
+          "file": "individual-1040",
+          "condition": "Taxpayer paid income taxes to a foreign government",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-8938",
+      "formName": "Statement of Specified Foreign Financial Assets (FATCA)",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-FOR-009",
+          "file": "individual-1040",
+          "condition": "Total value of foreign financial assets exceeds reporting threshold ($50K single / $200K MFJ at year-end)",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "require"
+        }
+      ]
+    },
+    {
+      "formId": "form-8283",
+      "formName": "Noncash Charitable Contributions",
+      "parentForm": "schedule-a",
+      "triggeredBy": [
+        {
+          "questionId": "1040-ITEM-011",
+          "file": "individual-1040",
+          "condition": "Noncash charitable contributions exceed $500",
+          "triggerWhen": { "operator": "gt", "value": 500 },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-4684",
+      "formName": "Casualties and Thefts",
+      "parentForm": "schedule-a",
+      "triggeredBy": [
+        {
+          "questionId": "1040-ITEM-013",
+          "file": "individual-1040",
+          "condition": "Taxpayer had casualty or theft losses from a federally declared disaster",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "form-3903",
+      "formName": "Moving Expenses (Military Only)",
+      "parentForm": "1040",
+      "triggeredBy": [
+        {
+          "questionId": "1040-ADJ-012",
+          "file": "individual-1040",
+          "condition": "Active duty military member moved due to permanent change of station",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    },
+    {
+      "formId": "990-PF",
+      "formName": "Return of Private Foundation",
+      "triggeredBy": [
+        {
+          "questionId": "990-VAR-001",
+          "file": "nonprofit-990",
+          "condition": "Organization is a private foundation under Section 509(a)",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "require"
+        }
+      ]
+    },
+    {
+      "formId": "990-T",
+      "formName": "Exempt Organization Business Income Tax Return",
+      "triggeredBy": [
+        {
+          "questionId": "990-VAR-008",
+          "file": "nonprofit-990",
+          "condition": "Organization had unrelated business taxable income of $1,000 or more",
+          "triggerWhen": { "operator": "eq", "value": true },
+          "action": "include"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1508 @@
+{
+  "metadata": {
+    "fileId": "s-corp-1120s",
+    "entityTypes": ["s-corp-1120s"],
+    "version": "1.0.0",
+    "taxYear": 2025,
+    "description": "Form 1120-S (U.S. Income Tax Return for an S Corporation) intake questions. Covers entity info, officers, shareholders, income, deductions, balance sheet, reconciliation, distributions, and K-1 allocations."
+  },
+  "sections": [
+    {
+      "sectionId": "entity-info",
+      "title": "Entity Information",
+      "description": "Basic S Corporation identification and formation details",
+      "sortOrder": 0,
+      "questions": [
+        {
+          "questionId": "1120S-ENT-001",
+          "text": "Legal name of the S Corporation",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ENT-002",
+          "text": "Employer Identification Number (EIN)",
+          "inputType": "ein",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ENT-003",
+          "text": "Date of incorporation",
+          "inputType": "date",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ENT-004",
+          "text": "State of incorporation",
+          "inputType": "state_select",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ENT-005",
+          "text": "Principal business address",
+          "inputType": "address",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ENT-006",
+          "text": "Principal business activity description",
+          "helpText": "Describe the primary business activity (e.g., 'Software Development', 'Real Estate Management')",
+          "inputType": "text",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ENT-007",
+          "text": "Business activity code (NAICS)",
+          "helpText": "6-digit code from the Principal Business Activity Codes list",
+          "inputType": "text",
+          "sortOrder": 7,
+          "validation": { "required": true, "pattern": "^[0-9]{6}$" }
+        },
+        {
+          "questionId": "1120S-ENT-008",
+          "text": "Date S election became effective",
+          "helpText": "The date the IRS approved the S election (Form 2553)",
+          "inputType": "date",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ENT-009",
+          "text": "Does the corporation use a fiscal year end other than December 31?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ENT-010",
+          "text": "Fiscal year end date",
+          "inputType": "date",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1120S-ENT-009", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ENT-011",
+          "text": "Business phone number",
+          "inputType": "phone",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ENT-012",
+          "text": "Total number of shareholders at end of tax year",
+          "inputType": "number",
+          "sortOrder": 12,
+          "validation": { "required": true, "min": 1, "max": 100 }
+        },
+        {
+          "questionId": "1120S-ENT-013",
+          "text": "Did the corporation's S election status change or terminate during the tax year?",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "officer-info",
+      "title": "Officer Information",
+      "description": "Details for each corporate officer. Complete for all officers who served during the tax year.",
+      "sortOrder": 1,
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "1120S-OFF-001",
+          "text": "Officer's full name",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-OFF-002",
+          "text": "Officer's title",
+          "helpText": "e.g., President, Vice President, Secretary, Treasurer, CEO, CFO",
+          "inputType": "text",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-OFF-003",
+          "text": "Officer's Social Security Number",
+          "inputType": "ssn",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-OFF-004",
+          "text": "Officer's compensation for the tax year",
+          "helpText": "Total W-2 wages paid to this officer during the tax year",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-OFF-005",
+          "text": "Ownership percentage",
+          "inputType": "percentage",
+          "sortOrder": 5,
+          "validation": { "required": true, "min": 0, "max": 100 }
+        },
+        {
+          "questionId": "1120S-OFF-006",
+          "text": "Percentage of time devoted to business",
+          "helpText": "Estimated percentage of working time devoted to the corporation",
+          "inputType": "percentage",
+          "sortOrder": 6,
+          "validation": { "required": true, "min": 0, "max": 100 }
+        },
+        {
+          "questionId": "1120S-OFF-007",
+          "text": "Officer's residential address",
+          "inputType": "address",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-OFF-008",
+          "text": "Is this officer also a shareholder?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-OFF-009",
+          "text": "Did this officer receive any fringe benefits (health insurance, vehicle use, etc.)?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-OFF-010",
+          "text": "Total value of fringe benefits provided",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1120S-OFF-009", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "shareholder-info",
+      "title": "Shareholder Information",
+      "description": "Details for each shareholder of the S Corporation. Complete for all shareholders who held stock at any time during the tax year.",
+      "sortOrder": 2,
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "1120S-SH-001",
+          "text": "Shareholder's full name (or entity name)",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-SH-002",
+          "text": "Is this shareholder an individual or an entity?",
+          "inputType": "multiple_choice",
+          "sortOrder": 2,
+          "options": [
+            { "value": "individual", "label": "Individual" },
+            { "value": "entity", "label": "Entity (trust, estate, etc.)" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-SH-003",
+          "text": "Shareholder's Social Security Number",
+          "inputType": "ssn",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1120S-SH-002", "operator": "eq", "value": "individual" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-SH-004",
+          "text": "Shareholder's EIN",
+          "inputType": "ein",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1120S-SH-002", "operator": "eq", "value": "entity" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-SH-005",
+          "text": "Shareholder's address",
+          "inputType": "address",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-SH-006",
+          "text": "Ownership percentage",
+          "inputType": "percentage",
+          "sortOrder": 6,
+          "validation": { "required": true, "min": 0, "max": 100 }
+        },
+        {
+          "questionId": "1120S-SH-007",
+          "text": "Type of stock held",
+          "inputType": "multiple_choice",
+          "sortOrder": 7,
+          "options": [
+            { "value": "common", "label": "Common stock" },
+            { "value": "preferred", "label": "Preferred stock" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-SH-008",
+          "text": "Number of shares held at beginning of year",
+          "inputType": "number",
+          "sortOrder": 8,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-SH-009",
+          "text": "Number of shares held at end of year",
+          "inputType": "number",
+          "sortOrder": 9,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-SH-010",
+          "text": "Did any shares change hands during the year (purchases, sales, transfers)?",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-SH-011",
+          "text": "Does the shareholder have any loans to the corporation?",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-SH-012",
+          "text": "Balance of loans from shareholder to corporation",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1120S-SH-011", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-SH-013",
+          "text": "Does the corporation have any loans to the shareholder?",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-SH-014",
+          "text": "Balance of loans from corporation to shareholder",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "conditions": [
+            { "questionId": "1120S-SH-013", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "accounting-method",
+      "title": "Accounting Method & Tax Year",
+      "description": "Accounting method and tax year information for the S Corporation",
+      "sortOrder": 3,
+      "questions": [
+        {
+          "questionId": "1120S-ACCT-001",
+          "text": "What accounting method does the corporation use?",
+          "inputType": "multiple_choice",
+          "sortOrder": 1,
+          "options": [
+            { "value": "cash", "label": "Cash" },
+            { "value": "accrual", "label": "Accrual" },
+            { "value": "other", "label": "Other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ACCT-002",
+          "text": "Describe the accounting method",
+          "inputType": "text",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1120S-ACCT-001", "operator": "eq", "value": "other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ACCT-003",
+          "text": "Does the corporation use a calendar year (January 1 - December 31)?",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ACCT-004",
+          "text": "Fiscal year beginning date",
+          "inputType": "date",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1120S-ACCT-003", "operator": "eq", "value": false }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ACCT-005",
+          "text": "Fiscal year ending date",
+          "inputType": "date",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1120S-ACCT-003", "operator": "eq", "value": false }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ACCT-006",
+          "text": "Did the corporation change its accounting method during the tax year?",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ACCT-007",
+          "text": "Was Form 3115 (Application for Change in Accounting Method) filed?",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1120S-ACCT-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ACCT-008",
+          "text": "Section 481(a) adjustment amount, if any",
+          "helpText": "The adjustment required when changing accounting methods",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1120S-ACCT-006", "operator": "eq", "value": true }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "gross-receipts",
+      "title": "Gross Receipts / Income",
+      "description": "Total income items reported on Form 1120-S page 1",
+      "sortOrder": 4,
+      "questions": [
+        {
+          "questionId": "1120S-GR-001",
+          "text": "Gross receipts or sales",
+          "helpText": "Total revenue from the sale of goods or services before any deductions",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-GR-002",
+          "text": "Did the corporation have any returns and allowances?",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-GR-003",
+          "text": "Total returns and allowances",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1120S-GR-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-GR-004",
+          "text": "Does the corporation sell products or have inventory?",
+          "helpText": "If yes, Cost of Goods Sold section will need to be completed",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-GR-005",
+          "text": "Did the corporation have net gain or loss from Form 4797 (sale of business property)?",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-GR-006",
+          "text": "Net gain (or loss) from Form 4797",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1120S-GR-005", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-GR-007",
+          "text": "Did the corporation have any other income (interest, rents, royalties, etc.)?",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-GR-008",
+          "text": "Total other income",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1120S-GR-007", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-GR-009",
+          "text": "Description of other income",
+          "inputType": "text",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1120S-GR-007", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-GR-010",
+          "text": "Did the corporation receive any 1099 forms?",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-GR-011",
+          "text": "Please upload all 1099 forms received",
+          "inputType": "file_upload",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1120S-GR-010", "operator": "eq", "value": true }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "cogs",
+      "title": "Cost of Goods Sold",
+      "description": "For S Corporations that sell products or maintain inventory (Schedule A of Form 1120-S)",
+      "sortOrder": 5,
+      "conditions": [
+        { "questionId": "1120S-GR-004", "operator": "eq", "value": true }
+      ],
+      "questions": [
+        {
+          "questionId": "1120S-COGS-001",
+          "text": "What inventory valuation method does the corporation use?",
+          "inputType": "multiple_choice",
+          "sortOrder": 1,
+          "options": [
+            { "value": "cost", "label": "Cost" },
+            { "value": "lower_of_cost_or_market", "label": "Lower of cost or market" },
+            { "value": "other", "label": "Other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-COGS-002",
+          "text": "Describe the inventory valuation method",
+          "inputType": "text",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1120S-COGS-001", "operator": "eq", "value": "other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-COGS-003",
+          "text": "Was there any change in determining quantities, costs, or valuations between opening and closing inventory?",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-COGS-004",
+          "text": "Inventory at beginning of year",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-COGS-005",
+          "text": "Purchases",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-COGS-006",
+          "text": "Cost of labor",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-COGS-007",
+          "text": "Additional Section 263A costs",
+          "helpText": "Uniform capitalization (UNICAP) costs required to be included in inventory under Section 263A",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-COGS-008",
+          "text": "Other costs",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-COGS-009",
+          "text": "Description of other costs",
+          "inputType": "text",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1120S-COGS-008", "operator": "gt", "value": 0 }
+          ]
+        },
+        {
+          "questionId": "1120S-COGS-010",
+          "text": "Inventory at end of year",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-COGS-011",
+          "text": "Does the corporation use the LIFO inventory method?",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "deductions",
+      "title": "Deductions",
+      "description": "Deductible business expenses reported on Form 1120-S page 1 (Lines 7-19)",
+      "sortOrder": 6,
+      "questions": [
+        {
+          "questionId": "1120S-DED-001",
+          "text": "Total officer compensation",
+          "helpText": "Combined W-2 compensation for all corporate officers",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-DED-002",
+          "text": "Salaries and wages (non-officer employees)",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DED-003",
+          "text": "Repairs and maintenance",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DED-004",
+          "text": "Bad debts",
+          "helpText": "Debts owed to the corporation that became worthless during the year",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DED-005",
+          "text": "Rents paid",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DED-006",
+          "text": "Taxes and licenses",
+          "helpText": "State and local taxes, payroll taxes, business licenses, and permits (not federal income tax)",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DED-007",
+          "text": "Interest expense",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DED-008",
+          "text": "Depreciation (from Form 4562, if required)",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "min": 0 },
+          "formTriggers": [
+            {
+              "formId": "form-4562",
+              "formName": "Depreciation and Amortization",
+              "triggerWhen": { "operator": "gt", "value": 0 },
+              "action": "include"
+            }
+          ]
+        },
+        {
+          "questionId": "1120S-DED-009",
+          "text": "Depletion (other than oil and gas)",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DED-010",
+          "text": "Advertising expenses",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DED-011",
+          "text": "Pension, profit-sharing, and other qualified retirement plan contributions",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DED-012",
+          "text": "Employee benefit programs (health insurance, life insurance, dependent care, etc.)",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DED-013",
+          "text": "Did the corporation have any other deductions not listed above?",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DED-014",
+          "text": "Description of other deductions",
+          "inputType": "text",
+          "sortOrder": 14,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1120S-DED-013", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DED-015",
+          "text": "Amount of other deduction",
+          "inputType": "currency",
+          "sortOrder": 15,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1120S-DED-013", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "depreciation",
+      "title": "Depreciation & Asset Dispositions",
+      "description": "Form 4562 depreciation and amortization, plus asset sales (Form 4797)",
+      "sortOrder": 7,
+      "questions": [
+        {
+          "questionId": "1120S-DEP-001",
+          "text": "Did the corporation purchase any new business assets during the tax year?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true },
+          "formTriggers": [
+            {
+              "formId": "form-4562",
+              "formName": "Depreciation and Amortization",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ]
+        },
+        {
+          "questionId": "1120S-DEP-002",
+          "text": "Description of new asset",
+          "inputType": "text",
+          "sortOrder": 2,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1120S-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DEP-003",
+          "text": "Date new asset was placed in service",
+          "inputType": "date",
+          "sortOrder": 3,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1120S-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DEP-004",
+          "text": "Cost or other basis of new asset",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1120S-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-DEP-005",
+          "text": "Business use percentage of new asset",
+          "inputType": "percentage",
+          "sortOrder": 5,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1120S-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0, "max": 100 },
+          "defaultValue": 100
+        },
+        {
+          "questionId": "1120S-DEP-006",
+          "text": "Does the corporation wish to elect Section 179 expensing for any assets?",
+          "helpText": "Section 179 allows immediate expensing of qualifying property up to the annual limit",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1120S-DEP-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1120S-DEP-007",
+          "text": "Total Section 179 election amount",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1120S-DEP-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-DEP-008",
+          "text": "Does the corporation have existing assets from prior years still being depreciated?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DEP-009",
+          "text": "Please upload the depreciation schedule from the prior year return",
+          "inputType": "file_upload",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1120S-DEP-008", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1120S-DEP-010",
+          "text": "Did the corporation dispose of (sell, trade, abandon, or involuntarily convert) any business assets during the year?",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "validation": { "required": true },
+          "formTriggers": [
+            {
+              "formId": "form-4797",
+              "formName": "Sales of Business Property",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ]
+        },
+        {
+          "questionId": "1120S-DEP-011",
+          "text": "Description of disposed asset",
+          "inputType": "text",
+          "sortOrder": 11,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1120S-DEP-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DEP-012",
+          "text": "Date the asset was disposed of",
+          "inputType": "date",
+          "sortOrder": 12,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1120S-DEP-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DEP-013",
+          "text": "Sales price or amount realized on disposition",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1120S-DEP-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "balance-sheet",
+      "title": "Balance Sheet (Schedule L)",
+      "description": "Beginning and end of year balance sheet. Required if total receipts and total assets are both $250,000 or more.",
+      "sortOrder": 8,
+      "questions": [
+        {
+          "questionId": "1120S-BS-001",
+          "text": "Cash and cash equivalents — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-002",
+          "text": "Cash and cash equivalents — end of year",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-003",
+          "text": "Accounts receivable (net) — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-004",
+          "text": "Accounts receivable (net) — end of year",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-005",
+          "text": "Inventories — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-006",
+          "text": "Inventories — end of year",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-007",
+          "text": "Other current assets — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-008",
+          "text": "Other current assets — end of year",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-009",
+          "text": "Loans to shareholders — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-010",
+          "text": "Loans to shareholders — end of year",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-011",
+          "text": "Other assets (net of depreciation) — beginning of year",
+          "helpText": "Includes fixed assets, intangibles, and other long-term assets net of accumulated depreciation",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-012",
+          "text": "Other assets (net of depreciation) — end of year",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-013",
+          "text": "Accounts payable — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-014",
+          "text": "Accounts payable — end of year",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-015",
+          "text": "Other current liabilities — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 15,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-016",
+          "text": "Other current liabilities — end of year",
+          "inputType": "currency",
+          "sortOrder": 16,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-017",
+          "text": "Loans from shareholders — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 17,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-018",
+          "text": "Loans from shareholders — end of year",
+          "inputType": "currency",
+          "sortOrder": 18,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-019",
+          "text": "Other liabilities — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 19,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-020",
+          "text": "Other liabilities — end of year",
+          "inputType": "currency",
+          "sortOrder": 20,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-021",
+          "text": "Capital stock — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 21,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-022",
+          "text": "Capital stock — end of year",
+          "inputType": "currency",
+          "sortOrder": 22,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-023",
+          "text": "Additional paid-in capital — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 23,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-024",
+          "text": "Additional paid-in capital — end of year",
+          "inputType": "currency",
+          "sortOrder": 24,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-BS-025",
+          "text": "Retained earnings — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 25,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-BS-026",
+          "text": "Retained earnings — end of year",
+          "inputType": "currency",
+          "sortOrder": 26,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-BS-027",
+          "text": "Please upload the year-end balance sheet or trial balance from your accounting system",
+          "inputType": "file_upload",
+          "sortOrder": 27
+        }
+      ]
+    },
+    {
+      "sectionId": "reconciliation",
+      "title": "Book-to-Tax Reconciliation (Schedule M-1)",
+      "description": "Reconciliation of income per books with income per return. Required when total assets are $250,000 or more.",
+      "sortOrder": 9,
+      "conditions": [
+        { "questionId": "1120S-BS-012", "operator": "gte", "value": 250000 }
+      ],
+      "questions": [
+        {
+          "questionId": "1120S-REC-001",
+          "text": "Net income (loss) per books",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-REC-002",
+          "text": "Income included on Schedule K not recorded on books this year",
+          "helpText": "e.g., tax-exempt interest recorded on the return but not in book income",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-REC-003",
+          "text": "Expenses recorded on books this year not included on Schedule K",
+          "helpText": "e.g., book depreciation exceeding tax depreciation, non-deductible expenses",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-REC-004",
+          "text": "Description of book expenses not deducted on return",
+          "inputType": "text",
+          "sortOrder": 4
+        },
+        {
+          "questionId": "1120S-REC-005",
+          "text": "Income recorded on books this year not included on Schedule K",
+          "helpText": "e.g., tax-exempt interest, life insurance proceeds",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-REC-006",
+          "text": "Deductions included on Schedule K not charged against books this year",
+          "helpText": "e.g., tax depreciation exceeding book depreciation",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-REC-007",
+          "text": "Description of deductions on return not on books",
+          "inputType": "text",
+          "sortOrder": 7
+        },
+        {
+          "questionId": "1120S-REC-008",
+          "text": "Were there any meals or entertainment expenses subject to limitation?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-REC-009",
+          "text": "Total meals and entertainment per books",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1120S-REC-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-REC-010",
+          "text": "Non-deductible portion of meals and entertainment",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1120S-REC-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "distributions",
+      "title": "Distributions & AAA (Schedule M-2)",
+      "description": "Analysis of Accumulated Adjustments Account (AAA), Other Adjustments Account (OAA), and Shareholders' Undistributed Taxable Income Previously Taxed (PTI)",
+      "sortOrder": 10,
+      "questions": [
+        {
+          "questionId": "1120S-DIST-001",
+          "text": "Accumulated Adjustments Account (AAA) — balance at beginning of year",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DIST-002",
+          "text": "Ordinary income added to AAA",
+          "helpText": "Net ordinary income from page 1 of Form 1120-S",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DIST-003",
+          "text": "Other additions to AAA",
+          "helpText": "Other income and gain items from Schedule K (excluding tax-exempt income)",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DIST-004",
+          "text": "Loss and deduction items reducing AAA",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DIST-005",
+          "text": "Distributions from AAA",
+          "helpText": "Cash and property distributions made to shareholders from AAA",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-DIST-006",
+          "text": "Other reductions to AAA",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DIST-007",
+          "text": "Other Adjustments Account (OAA) — balance at beginning of year",
+          "helpText": "Tax-exempt income and related expenses tracked separately",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DIST-008",
+          "text": "Additions to OAA (tax-exempt income)",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DIST-009",
+          "text": "Reductions to OAA (non-deductible expenses related to tax-exempt income)",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DIST-010",
+          "text": "Distributions from OAA",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-DIST-011",
+          "text": "Shareholders' undistributed taxable income previously taxed (PTI) — beginning balance",
+          "helpText": "Only applies to S Corps with accumulated E&P from C Corp years",
+          "inputType": "currency",
+          "sortOrder": 11
+        },
+        {
+          "questionId": "1120S-DIST-012",
+          "text": "Were any property distributions (non-cash) made to shareholders?",
+          "inputType": "yes_no",
+          "sortOrder": 12,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-DIST-013",
+          "text": "Fair market value of property distributed",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "conditions": [
+            { "questionId": "1120S-DIST-012", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-DIST-014",
+          "text": "Does the corporation have accumulated earnings and profits (E&P) from prior C Corporation years?",
+          "inputType": "yes_no",
+          "sortOrder": 14,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "k1-allocation",
+      "title": "Schedule K-1 Allocation",
+      "description": "How income, loss, deductions, and credits are allocated among shareholders, including Section 199A QBI information",
+      "sortOrder": 11,
+      "questions": [
+        {
+          "questionId": "1120S-K1-001",
+          "text": "How are income, loss, deductions, and credits allocated among shareholders?",
+          "inputType": "multiple_choice",
+          "sortOrder": 1,
+          "options": [
+            { "value": "pro_rata", "label": "Pro-rata based on stock ownership percentage" },
+            { "value": "per_share_per_day", "label": "Per-share, per-day allocation (stock changed mid-year)" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-K1-002",
+          "text": "Were there any changes in share ownership during the year?",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-K1-003",
+          "text": "Did the corporation and all affected shareholders elect to use the specific accounting method (closing of the books) for mid-year changes?",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1120S-K1-002", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1120S-K1-004",
+          "text": "Does the corporation have qualified business income (QBI) under Section 199A?",
+          "helpText": "QBI is generally net income from a qualified trade or business. Certain service businesses (SSTBs) may be limited.",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-K1-005",
+          "text": "Is this business a specified service trade or business (SSTB)?",
+          "helpText": "SSTBs include health, law, accounting, actuarial, performing arts, consulting, athletics, financial services, brokerage, and businesses where the principal asset is the reputation or skill of employees",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1120S-K1-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-K1-006",
+          "text": "Total W-2 wages paid by the qualified business",
+          "helpText": "Used for the W-2 wage limitation on the Section 199A deduction",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1120S-K1-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-K1-007",
+          "text": "Unadjusted basis immediately after acquisition (UBIA) of qualified property",
+          "helpText": "The original cost basis of tangible depreciable property used in the business, still within the applicable recovery period",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1120S-K1-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-K1-008",
+          "text": "Does the corporation have any separately stated items that must be reported on K-1 (e.g., charitable contributions, Section 1231 gains, foreign transactions)?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-K1-009",
+          "text": "Total charitable contributions made by the corporation",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1120S-K1-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1120S-K1-010",
+          "text": "Did the corporation have any tax-exempt income?",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-K1-011",
+          "text": "Total tax-exempt income",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1120S-K1-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-K1-012",
+          "text": "Non-deductible expenses (other than distributions)",
+          "helpText": "e.g., 50% of meals, penalties, fines, political contributions, life insurance premiums on officers",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "state-filing",
+      "title": "State Filing Requirements",
+      "description": "State income tax and franchise tax filing obligations for the S Corporation",
+      "sortOrder": 12,
+      "questions": [
+        {
+          "questionId": "1120S-ST-001",
+          "text": "Include shared state-nexus questions",
+          "inputType": "section_include",
+          "sortOrder": 1,
+          "tags": ["shared.json", "state-nexus"]
+        },
+        {
+          "questionId": "1120S-ST-002",
+          "text": "Does the corporation file composite returns on behalf of non-resident shareholders in any state?",
+          "helpText": "Some states require or allow S Corps to file a composite return and pay tax on behalf of non-resident shareholders",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ST-003",
+          "text": "Select states where composite returns are filed",
+          "inputType": "state_multi_select",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1120S-ST-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ST-004",
+          "text": "Is the corporation subject to any state-level entity tax or franchise tax?",
+          "helpText": "Some states impose an entity-level tax on S Corporations (e.g., California franchise tax, New York fixed dollar minimum)",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ST-005",
+          "text": "Select states where entity-level or franchise tax applies",
+          "inputType": "state_multi_select",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1120S-ST-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ST-006",
+          "text": "Did the corporation elect to pay a pass-through entity tax (PTET) in any state?",
+          "helpText": "Many states now allow S Corps to elect to pay an entity-level tax that provides a SALT cap workaround for shareholders",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ST-007",
+          "text": "Select states where PTET election was made",
+          "inputType": "state_multi_select",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1120S-ST-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ST-008",
+          "text": "Total PTET payments made during the tax year",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1120S-ST-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1120S-ST-009",
+          "text": "Were state estimated tax payments made during the year?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1120S-ST-010",
+          "text": "Please upload documentation of state estimated tax payments",
+          "inputType": "file_upload",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1120S-ST-009", "operator": "eq", "value": true }
+          ]
+        }
+      ]
+    }
+  ]
+}

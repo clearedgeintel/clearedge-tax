@@ -1,0 +1,1641 @@
+{
+  "metadata": {
+    "fileId": "partnership-1065",
+    "entityTypes": ["partnership-1065"],
+    "version": "1.0.0",
+    "taxYear": 2025,
+    "description": "Form 1065 (U.S. Return of Partnership Income) intake questions. Covers entity info, partners, guaranteed payments, income, deductions, balance sheet, capital accounts, reconciliation, K-1 allocations, and at-risk/passive activity rules."
+  },
+  "sections": [
+    {
+      "sectionId": "entity-info",
+      "title": "Partnership Information",
+      "description": "Basic partnership identification and formation details",
+      "sortOrder": 0,
+      "questions": [
+        {
+          "questionId": "1065-ENT-001",
+          "text": "Legal name of the partnership",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ENT-002",
+          "text": "Employer Identification Number (EIN)",
+          "inputType": "ein",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ENT-003",
+          "text": "Date the partnership was formed",
+          "inputType": "date",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ENT-004",
+          "text": "State of formation",
+          "inputType": "state_select",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ENT-005",
+          "text": "Principal business address",
+          "inputType": "address",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ENT-006",
+          "text": "Principal business activity description",
+          "helpText": "Describe the primary business activity (e.g., 'Real Estate Investment', 'Medical Practice', 'Consulting')",
+          "inputType": "text",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ENT-007",
+          "text": "Business activity code (NAICS)",
+          "helpText": "6-digit code from the Principal Business Activity Codes list",
+          "inputType": "text",
+          "sortOrder": 7,
+          "validation": { "required": true, "pattern": "^[0-9]{6}$" }
+        },
+        {
+          "questionId": "1065-ENT-008",
+          "text": "Type of partnership",
+          "inputType": "multiple_choice",
+          "sortOrder": 8,
+          "options": [
+            { "value": "general", "label": "General partnership" },
+            { "value": "limited", "label": "Limited partnership (LP)" },
+            { "value": "llc", "label": "Limited liability company (LLC)" },
+            { "value": "llp", "label": "Limited liability partnership (LLP)" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ENT-009",
+          "text": "Does the partnership use a fiscal year end other than December 31?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ENT-010",
+          "text": "Fiscal year end date",
+          "inputType": "date",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1065-ENT-009", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ENT-011",
+          "text": "Business phone number",
+          "inputType": "phone",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ENT-012",
+          "text": "Total number of partners at end of tax year",
+          "inputType": "number",
+          "sortOrder": 12,
+          "validation": { "required": true, "min": 2 }
+        },
+        {
+          "questionId": "1065-ENT-013",
+          "text": "Is this partnership a partner in another partnership?",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "partner-info",
+      "title": "Partner Information",
+      "description": "Details for each partner. Complete for all partners who held an interest at any time during the tax year.",
+      "sortOrder": 1,
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "1065-PTR-001",
+          "text": "Partner's full name (or entity name)",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-PTR-002",
+          "text": "Is this partner an individual or an entity?",
+          "inputType": "multiple_choice",
+          "sortOrder": 2,
+          "options": [
+            { "value": "individual", "label": "Individual" },
+            { "value": "entity", "label": "Entity (partnership, corporation, trust, etc.)" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-PTR-003",
+          "text": "Partner's Social Security Number",
+          "inputType": "ssn",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1065-PTR-002", "operator": "eq", "value": "individual" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-PTR-004",
+          "text": "Partner's EIN",
+          "inputType": "ein",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1065-PTR-002", "operator": "eq", "value": "entity" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-PTR-005",
+          "text": "Partner's address",
+          "inputType": "address",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-PTR-006",
+          "text": "Partner type",
+          "inputType": "multiple_choice",
+          "sortOrder": 6,
+          "options": [
+            { "value": "general", "label": "General partner" },
+            { "value": "limited", "label": "Limited partner" },
+            { "value": "llc_member_manager", "label": "LLC member-manager" },
+            { "value": "llc_member", "label": "LLC member (non-managing)" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-PTR-007",
+          "text": "Ownership percentage",
+          "inputType": "percentage",
+          "sortOrder": 7,
+          "validation": { "required": true, "min": 0, "max": 100 }
+        },
+        {
+          "questionId": "1065-PTR-008",
+          "text": "Profit sharing percentage",
+          "inputType": "percentage",
+          "sortOrder": 8,
+          "validation": { "required": true, "min": 0, "max": 100 }
+        },
+        {
+          "questionId": "1065-PTR-009",
+          "text": "Loss sharing percentage",
+          "inputType": "percentage",
+          "sortOrder": 9,
+          "validation": { "required": true, "min": 0, "max": 100 }
+        },
+        {
+          "questionId": "1065-PTR-010",
+          "text": "Capital sharing percentage",
+          "inputType": "percentage",
+          "sortOrder": 10,
+          "validation": { "required": true, "min": 0, "max": 100 }
+        },
+        {
+          "questionId": "1065-PTR-011",
+          "text": "Beginning capital account balance",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-PTR-012",
+          "text": "Ending capital account balance",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-PTR-013",
+          "text": "Is this partner a foreign partner?",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-PTR-014",
+          "text": "Did this partner's ownership interest change during the year?",
+          "inputType": "yes_no",
+          "sortOrder": 14,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-PTR-015",
+          "text": "Does this partner have any loans to or from the partnership?",
+          "inputType": "yes_no",
+          "sortOrder": 15,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "accounting-method",
+      "title": "Accounting Method & Tax Year",
+      "description": "Accounting method and tax year information for the partnership",
+      "sortOrder": 2,
+      "questions": [
+        {
+          "questionId": "1065-ACCT-001",
+          "text": "What accounting method does the partnership use?",
+          "inputType": "multiple_choice",
+          "sortOrder": 1,
+          "options": [
+            { "value": "cash", "label": "Cash" },
+            { "value": "accrual", "label": "Accrual" },
+            { "value": "other", "label": "Other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ACCT-002",
+          "text": "Describe the accounting method",
+          "inputType": "text",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1065-ACCT-001", "operator": "eq", "value": "other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ACCT-003",
+          "text": "Does the partnership use a calendar year (January 1 - December 31)?",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ACCT-004",
+          "text": "Fiscal year beginning date",
+          "inputType": "date",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1065-ACCT-003", "operator": "eq", "value": false }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ACCT-005",
+          "text": "Fiscal year ending date",
+          "inputType": "date",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1065-ACCT-003", "operator": "eq", "value": false }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ACCT-006",
+          "text": "Did the partnership change its accounting method during the tax year?",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ACCT-007",
+          "text": "Was Form 3115 (Application for Change in Accounting Method) filed?",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1065-ACCT-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ACCT-008",
+          "text": "Section 481(a) adjustment amount, if any",
+          "helpText": "The adjustment required when changing accounting methods",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1065-ACCT-006", "operator": "eq", "value": true }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "gross-receipts",
+      "title": "Gross Receipts / Income",
+      "description": "Total income items reported on Form 1065 page 1",
+      "sortOrder": 3,
+      "questions": [
+        {
+          "questionId": "1065-GR-001",
+          "text": "Gross receipts or sales",
+          "helpText": "Total revenue from the sale of goods or services before any deductions",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-GR-002",
+          "text": "Did the partnership have any returns and allowances?",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-GR-003",
+          "text": "Total returns and allowances",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1065-GR-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-GR-004",
+          "text": "Does the partnership sell products or have inventory?",
+          "helpText": "If yes, Cost of Goods Sold section will need to be completed",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-GR-005",
+          "text": "Ordinary income (loss) from other partnerships, estates, and trusts",
+          "inputType": "currency",
+          "sortOrder": 5
+        },
+        {
+          "questionId": "1065-GR-006",
+          "text": "Net farm profit (loss) — Form 4835 or Schedule F",
+          "inputType": "currency",
+          "sortOrder": 6
+        },
+        {
+          "questionId": "1065-GR-007",
+          "text": "Net gain (loss) from Form 4797 (sale of business property)",
+          "inputType": "currency",
+          "sortOrder": 7
+        },
+        {
+          "questionId": "1065-GR-008",
+          "text": "Did the partnership have any other income (interest, rents, royalties, etc.)?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-GR-009",
+          "text": "Total other income",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1065-GR-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-GR-010",
+          "text": "Description of other income",
+          "inputType": "text",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1065-GR-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-GR-011",
+          "text": "Did the partnership receive any 1099 forms?",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-GR-012",
+          "text": "Please upload all 1099 forms received",
+          "inputType": "file_upload",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1065-GR-011", "operator": "eq", "value": true }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "cogs",
+      "title": "Cost of Goods Sold",
+      "description": "For partnerships that sell products or maintain inventory (Schedule A of Form 1065)",
+      "sortOrder": 4,
+      "conditions": [
+        { "questionId": "1065-GR-004", "operator": "eq", "value": true }
+      ],
+      "questions": [
+        {
+          "questionId": "1065-COGS-001",
+          "text": "What inventory valuation method does the partnership use?",
+          "inputType": "multiple_choice",
+          "sortOrder": 1,
+          "options": [
+            { "value": "cost", "label": "Cost" },
+            { "value": "lower_of_cost_or_market", "label": "Lower of cost or market" },
+            { "value": "other", "label": "Other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-COGS-002",
+          "text": "Describe the inventory valuation method",
+          "inputType": "text",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1065-COGS-001", "operator": "eq", "value": "other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-COGS-003",
+          "text": "Was there any change in determining quantities, costs, or valuations between opening and closing inventory?",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-COGS-004",
+          "text": "Inventory at beginning of year",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-COGS-005",
+          "text": "Purchases less cost of items withdrawn for personal use",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-COGS-006",
+          "text": "Cost of labor",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-COGS-007",
+          "text": "Additional Section 263A costs",
+          "helpText": "Uniform capitalization (UNICAP) costs required to be included in inventory under Section 263A",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-COGS-008",
+          "text": "Other costs",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-COGS-009",
+          "text": "Description of other costs",
+          "inputType": "text",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1065-COGS-008", "operator": "gt", "value": 0 }
+          ]
+        },
+        {
+          "questionId": "1065-COGS-010",
+          "text": "Inventory at end of year",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-COGS-011",
+          "text": "Does the partnership use the LIFO inventory method?",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "deductions",
+      "title": "Deductions",
+      "description": "Deductible business expenses reported on Form 1065 page 1 (Lines 9-21)",
+      "sortOrder": 5,
+      "questions": [
+        {
+          "questionId": "1065-DED-001",
+          "text": "Salaries and wages (excluding guaranteed payments to partners)",
+          "helpText": "W-2 wages paid to non-partner employees only",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-DED-002",
+          "text": "Guaranteed payments to partners",
+          "helpText": "Total guaranteed payments for services and use of capital (detail entered in Guaranteed Payments section)",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-DED-003",
+          "text": "Repairs and maintenance",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-DED-004",
+          "text": "Bad debts",
+          "helpText": "Debts owed to the partnership that became worthless during the year",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-DED-005",
+          "text": "Rents paid",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-DED-006",
+          "text": "Taxes and licenses",
+          "helpText": "State and local taxes, payroll taxes, business licenses, and permits (not federal income tax)",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-DED-007",
+          "text": "Interest expense",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-DED-008",
+          "text": "Depreciation (from Form 4562, if required)",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "min": 0 },
+          "formTriggers": [
+            {
+              "formId": "form-4562",
+              "formName": "Depreciation and Amortization",
+              "triggerWhen": { "operator": "gt", "value": 0 },
+              "action": "include"
+            }
+          ]
+        },
+        {
+          "questionId": "1065-DED-009",
+          "text": "Depletion (other than oil and gas)",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-DED-010",
+          "text": "Retirement plans and employee benefit programs",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-DED-011",
+          "text": "Employee benefit programs (health insurance, life insurance, dependent care, etc.)",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-DED-012",
+          "text": "Did the partnership have any other deductions not listed above?",
+          "inputType": "yes_no",
+          "sortOrder": 12,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-DED-013",
+          "text": "Description of other deduction",
+          "inputType": "text",
+          "sortOrder": 13,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1065-DED-012", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-DED-014",
+          "text": "Amount of other deduction",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1065-DED-012", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "depreciation",
+      "title": "Depreciation & Asset Dispositions",
+      "description": "Form 4562 depreciation and amortization, plus asset sales (Form 4797)",
+      "sortOrder": 6,
+      "questions": [
+        {
+          "questionId": "1065-DEP-001",
+          "text": "Did the partnership purchase any new business assets during the tax year?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true },
+          "formTriggers": [
+            {
+              "formId": "form-4562",
+              "formName": "Depreciation and Amortization",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ]
+        },
+        {
+          "questionId": "1065-DEP-002",
+          "text": "Description of new asset",
+          "inputType": "text",
+          "sortOrder": 2,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1065-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-DEP-003",
+          "text": "Date new asset was placed in service",
+          "inputType": "date",
+          "sortOrder": 3,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1065-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-DEP-004",
+          "text": "Cost or other basis of new asset",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1065-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-DEP-005",
+          "text": "Business use percentage of new asset",
+          "inputType": "percentage",
+          "sortOrder": 5,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1065-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0, "max": 100 },
+          "defaultValue": 100
+        },
+        {
+          "questionId": "1065-DEP-006",
+          "text": "Does the partnership wish to elect Section 179 expensing for any assets?",
+          "helpText": "Section 179 allows immediate expensing of qualifying property up to the annual limit. The deduction passes through to partners.",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1065-DEP-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1065-DEP-007",
+          "text": "Total Section 179 election amount",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1065-DEP-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-DEP-008",
+          "text": "Does the partnership have existing assets from prior years still being depreciated?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-DEP-009",
+          "text": "Please upload the depreciation schedule from the prior year return",
+          "inputType": "file_upload",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1065-DEP-008", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1065-DEP-010",
+          "text": "Did the partnership dispose of (sell, trade, abandon, or involuntarily convert) any business assets during the year?",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "validation": { "required": true },
+          "formTriggers": [
+            {
+              "formId": "form-4797",
+              "formName": "Sales of Business Property",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ]
+        },
+        {
+          "questionId": "1065-DEP-011",
+          "text": "Description of disposed asset",
+          "inputType": "text",
+          "sortOrder": 11,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1065-DEP-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-DEP-012",
+          "text": "Date the asset was disposed of",
+          "inputType": "date",
+          "sortOrder": 12,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1065-DEP-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-DEP-013",
+          "text": "Sales price or amount realized on disposition",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "1065-DEP-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "guaranteed-payments",
+      "title": "Guaranteed Payments to Partners",
+      "description": "Payments to partners for services rendered or use of capital, determined without regard to partnership income. Repeatable per partner.",
+      "sortOrder": 7,
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "1065-GP-001",
+          "text": "Partner name receiving guaranteed payments",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-GP-002",
+          "text": "Guaranteed payments for services",
+          "helpText": "Payments to the partner for services rendered to the partnership, regardless of partnership income",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-GP-003",
+          "text": "Guaranteed payments for use of capital",
+          "helpText": "Payments to the partner for the use of capital contributed to the partnership",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-GP-004",
+          "text": "Are the guaranteed payments for services subject to self-employment tax?",
+          "helpText": "Generally, guaranteed payments to a general partner or LLC member-manager for services are subject to SE tax",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-GP-005",
+          "text": "Were health insurance premiums paid on behalf of this partner included in guaranteed payments?",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-GP-006",
+          "text": "Amount of health insurance premiums included",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1065-GP-005", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-GP-007",
+          "text": "Were retirement plan contributions made on behalf of this partner?",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-GP-008",
+          "text": "Amount of retirement plan contributions",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1065-GP-007", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "balance-sheet",
+      "title": "Balance Sheet (Schedule L)",
+      "description": "Beginning and end of year balance sheet. Required if total receipts and total assets are both $250,000 or more.",
+      "sortOrder": 8,
+      "questions": [
+        {
+          "questionId": "1065-BS-001",
+          "text": "Cash and cash equivalents — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-002",
+          "text": "Cash and cash equivalents — end of year",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-003",
+          "text": "Accounts receivable (net) — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-004",
+          "text": "Accounts receivable (net) — end of year",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-005",
+          "text": "Inventories — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-006",
+          "text": "Inventories — end of year",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-007",
+          "text": "Other current assets — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-008",
+          "text": "Other current assets — end of year",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-009",
+          "text": "Loans to partners — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-010",
+          "text": "Loans to partners — end of year",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-011",
+          "text": "Other assets (net of depreciation) — beginning of year",
+          "helpText": "Includes fixed assets, intangibles, and other long-term assets net of accumulated depreciation",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-012",
+          "text": "Other assets (net of depreciation) — end of year",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-013",
+          "text": "Accounts payable — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-014",
+          "text": "Accounts payable — end of year",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-015",
+          "text": "Other current liabilities — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 15,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-016",
+          "text": "Other current liabilities — end of year",
+          "inputType": "currency",
+          "sortOrder": 16,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-017",
+          "text": "Loans from partners — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 17,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-018",
+          "text": "Loans from partners — end of year",
+          "inputType": "currency",
+          "sortOrder": 18,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-019",
+          "text": "Other liabilities — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 19,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-020",
+          "text": "Other liabilities — end of year",
+          "inputType": "currency",
+          "sortOrder": 20,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-BS-021",
+          "text": "Partners' capital accounts — beginning of year",
+          "inputType": "currency",
+          "sortOrder": 21,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-BS-022",
+          "text": "Partners' capital accounts — end of year",
+          "inputType": "currency",
+          "sortOrder": 22,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-BS-023",
+          "text": "Please upload the year-end balance sheet or trial balance from your accounting system",
+          "inputType": "file_upload",
+          "sortOrder": 23
+        }
+      ]
+    },
+    {
+      "sectionId": "reconciliation",
+      "title": "Book-to-Tax Reconciliation (Schedule M-1 / M-2)",
+      "description": "Reconciliation of income per books with income per return, and analysis of partners' capital accounts. Required when total assets are $250,000 or more.",
+      "sortOrder": 9,
+      "conditions": [
+        { "questionId": "1065-BS-012", "operator": "gte", "value": 250000 }
+      ],
+      "questions": [
+        {
+          "questionId": "1065-REC-001",
+          "text": "Net income (loss) per books",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-REC-002",
+          "text": "Income included on Schedule K not recorded on books this year",
+          "helpText": "e.g., tax-exempt interest recorded on the return but not in book income",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-REC-003",
+          "text": "Guaranteed payments to partners (per books)",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-REC-004",
+          "text": "Expenses recorded on books this year not included on Schedule K",
+          "helpText": "e.g., book depreciation exceeding tax depreciation, non-deductible expenses",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-REC-005",
+          "text": "Description of book expenses not deducted on return",
+          "inputType": "text",
+          "sortOrder": 5
+        },
+        {
+          "questionId": "1065-REC-006",
+          "text": "Income recorded on books this year not included on Schedule K",
+          "helpText": "e.g., tax-exempt interest, life insurance proceeds",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-REC-007",
+          "text": "Deductions included on Schedule K not charged against books this year",
+          "helpText": "e.g., tax depreciation exceeding book depreciation",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-REC-008",
+          "text": "Schedule M-2: Balance at beginning of year (all partners' capital accounts)",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-REC-009",
+          "text": "Schedule M-2: Capital contributed during the year",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-REC-010",
+          "text": "Schedule M-2: Net income (loss) per return",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-REC-011",
+          "text": "Schedule M-2: Other increases (describe)",
+          "inputType": "text",
+          "sortOrder": 11
+        },
+        {
+          "questionId": "1065-REC-012",
+          "text": "Schedule M-2: Other increases amount",
+          "inputType": "currency",
+          "sortOrder": 12
+        },
+        {
+          "questionId": "1065-REC-013",
+          "text": "Schedule M-2: Distributions to partners",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-REC-014",
+          "text": "Schedule M-2: Other decreases (describe)",
+          "inputType": "text",
+          "sortOrder": 14
+        },
+        {
+          "questionId": "1065-REC-015",
+          "text": "Schedule M-2: Other decreases amount",
+          "inputType": "currency",
+          "sortOrder": 15
+        }
+      ]
+    },
+    {
+      "sectionId": "capital-accounts",
+      "title": "Partner Capital Accounts",
+      "description": "Individual partner capital account analysis. Repeatable per partner. Reported on Schedule K-1 Item L.",
+      "sortOrder": 10,
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "1065-CAP-001",
+          "text": "Partner name",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-CAP-002",
+          "text": "Beginning capital account balance",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-CAP-003",
+          "text": "Capital contributed during the year",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-CAP-004",
+          "text": "Current year increase (share of income)",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-CAP-005",
+          "text": "Current year decrease (share of loss)",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-CAP-006",
+          "text": "Withdrawals and distributions",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-CAP-007",
+          "text": "Ending capital account balance",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-CAP-008",
+          "text": "What method is used to report the capital account?",
+          "inputType": "multiple_choice",
+          "sortOrder": 8,
+          "options": [
+            { "value": "tax_basis", "label": "Tax basis" },
+            { "value": "gaap", "label": "GAAP" },
+            { "value": "section_704b", "label": "Section 704(b) book value" },
+            { "value": "other", "label": "Other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-CAP-009",
+          "text": "Describe the capital account reporting method",
+          "inputType": "text",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1065-CAP-008", "operator": "eq", "value": "other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-CAP-010",
+          "text": "Does this partner's share of liabilities include any recourse debt?",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-CAP-011",
+          "text": "Partner's share of recourse liabilities",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1065-CAP-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-CAP-012",
+          "text": "Partner's share of nonrecourse liabilities",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-CAP-013",
+          "text": "Partner's share of qualified nonrecourse financing",
+          "helpText": "Qualified nonrecourse financing from real property activities increases the partner's at-risk amount",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "validation": { "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "k1-allocation",
+      "title": "Schedule K-1 Allocation",
+      "description": "How income, loss, deductions, and credits are allocated among partners, including Section 199A QBI and self-employment earnings",
+      "sortOrder": 11,
+      "questions": [
+        {
+          "questionId": "1065-K1-001",
+          "text": "How are income, loss, deductions, and credits allocated among partners?",
+          "inputType": "multiple_choice",
+          "sortOrder": 1,
+          "options": [
+            { "value": "pro_rata", "label": "Pro-rata based on ownership/profit-sharing percentages" },
+            { "value": "special", "label": "Special allocations per the partnership agreement" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-K1-002",
+          "text": "Please upload the partnership agreement or relevant allocation provisions",
+          "inputType": "file_upload",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1065-K1-001", "operator": "eq", "value": "special" }
+          ]
+        },
+        {
+          "questionId": "1065-K1-003",
+          "text": "Do the special allocations have substantial economic effect under Section 704(b)?",
+          "helpText": "Allocations that lack substantial economic effect will be reallocated according to partners' interests in the partnership",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "staffOnly": true,
+          "conditions": [
+            { "questionId": "1065-K1-001", "operator": "eq", "value": "special" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-K1-004",
+          "text": "Does the partnership have qualified business income (QBI) under Section 199A?",
+          "helpText": "QBI is generally net income from a qualified trade or business. Certain service businesses (SSTBs) may be limited.",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-K1-005",
+          "text": "Is this business a specified service trade or business (SSTB)?",
+          "helpText": "SSTBs include health, law, accounting, actuarial, performing arts, consulting, athletics, financial services, brokerage, and businesses where the principal asset is the reputation or skill of employees",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1065-K1-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-K1-006",
+          "text": "Total W-2 wages paid by the qualified business",
+          "helpText": "Used for the W-2 wage limitation on the Section 199A deduction",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1065-K1-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-K1-007",
+          "text": "Unadjusted basis immediately after acquisition (UBIA) of qualified property",
+          "helpText": "The original cost basis of tangible depreciable property used in the business, still within the applicable recovery period",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1065-K1-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-K1-008",
+          "text": "Does the partnership have net earnings from self-employment to report to partners?",
+          "helpText": "General partners and LLC member-managers typically have SE income; limited partners generally do not (except for guaranteed payments for services)",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-K1-009",
+          "text": "Does the partnership have any separately stated items that must be reported on K-1?",
+          "helpText": "e.g., charitable contributions, Section 1231 gains, foreign transactions, rental income, portfolio income",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-K1-010",
+          "text": "Total charitable contributions made by the partnership",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1065-K1-009", "operator": "eq", "value": true }
+          ],
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "1065-K1-011",
+          "text": "Did the partnership have any tax-exempt income?",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-K1-012",
+          "text": "Total tax-exempt income",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1065-K1-011", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-K1-013",
+          "text": "Non-deductible expenses (other than distributions)",
+          "helpText": "e.g., 50% of meals, penalties, fines, political contributions",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "validation": { "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "at-risk-passive",
+      "title": "At-Risk & Passive Activity Rules",
+      "description": "At-risk limitations under Section 465, passive activity rules under Section 469, and material participation tests for partners",
+      "sortOrder": 12,
+      "questions": [
+        {
+          "questionId": "1065-ARP-001",
+          "text": "Is the partnership engaged in any activity subject to at-risk limitations under Section 465?",
+          "helpText": "Most business activities are subject to at-risk rules. A partner's loss is limited to the amount they have at risk in the activity.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ARP-002",
+          "text": "Does the partnership have any nonrecourse debt that is not qualified nonrecourse financing?",
+          "helpText": "Nonrecourse debt (other than qualified nonrecourse financing for real property) reduces a partner's at-risk amount",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1065-ARP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ARP-003",
+          "text": "Is the partnership's activity classified as a passive activity for any partners?",
+          "helpText": "A passive activity is a trade or business in which the taxpayer does not materially participate, or any rental activity",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "validation": { "required": true },
+          "formTriggers": [
+            {
+              "formId": "form-8582",
+              "formName": "Passive Activity Loss Limitations",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ]
+        },
+        {
+          "questionId": "1065-ARP-004",
+          "text": "Is any of the partnership's income from a rental activity?",
+          "helpText": "Rental activities are generally treated as passive regardless of material participation",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ARP-005",
+          "text": "If rental activity: does any partner qualify as a real estate professional?",
+          "helpText": "A real estate professional may treat rental real estate activities as non-passive if they materially participate",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1065-ARP-004", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1065-ARP-006",
+          "text": "Which material participation test do the general partners/managing members meet?",
+          "helpText": "There are seven tests for material participation. Select the most applicable.",
+          "inputType": "multiple_choice",
+          "sortOrder": 6,
+          "options": [
+            { "value": "500_hours", "label": "Participated more than 500 hours during the year" },
+            { "value": "substantially_all", "label": "Participation was substantially all of the participation in the activity" },
+            { "value": "100_hours_not_less", "label": "Participated more than 100 hours and not less than any other individual" },
+            { "value": "significant_participation", "label": "Significant participation activities totaling more than 500 hours" },
+            { "value": "5_of_10_years", "label": "Materially participated in 5 of the prior 10 years" },
+            { "value": "personal_service", "label": "Personal service activity — participated in any 3 prior years" },
+            { "value": "facts_circumstances", "label": "Regular, continuous, and substantial participation based on facts and circumstances" }
+          ],
+          "conditions": [
+            { "questionId": "1065-ARP-003", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1065-ARP-007",
+          "text": "Does the partnership have any limited partners who are not material participants?",
+          "helpText": "Limited partners generally cannot materially participate except under the 500-hour, 5-of-10-year, or personal service tests",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ARP-008",
+          "text": "Does the partnership have any suspended passive activity losses from prior years?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ARP-009",
+          "text": "Were any partnership interests disposed of during the year (which would release suspended passive losses)?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1065-ARP-008", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1065-ARP-010",
+          "text": "Does the partnership group multiple activities together under the activity grouping rules?",
+          "helpText": "Partnerships may elect to group activities as a single activity for purposes of the passive activity rules",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ARP-011",
+          "text": "Please describe the activity groupings",
+          "inputType": "text",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1065-ARP-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "state-filing",
+      "title": "State Filing Requirements",
+      "description": "State income tax and filing obligations for the partnership",
+      "sortOrder": 13,
+      "questions": [
+        {
+          "questionId": "1065-ST-001",
+          "text": "Include shared state-nexus questions",
+          "inputType": "section_include",
+          "sortOrder": 1,
+          "tags": ["shared.json", "state-nexus"]
+        },
+        {
+          "questionId": "1065-ST-002",
+          "text": "Does the partnership file composite returns on behalf of non-resident partners in any state?",
+          "helpText": "Some states require or allow partnerships to file a composite return and pay tax on behalf of non-resident partners",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ST-003",
+          "text": "Select states where composite returns are filed",
+          "inputType": "state_multi_select",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1065-ST-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ST-004",
+          "text": "Is the partnership subject to any state-level entity tax or franchise tax?",
+          "helpText": "Some states impose an entity-level tax on partnerships (e.g., California annual tax, New York filing fee)",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ST-005",
+          "text": "Select states where entity-level or franchise tax applies",
+          "inputType": "state_multi_select",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1065-ST-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ST-006",
+          "text": "Did the partnership elect to pay a pass-through entity tax (PTET) in any state?",
+          "helpText": "Many states now allow partnerships to elect to pay an entity-level tax that provides a SALT cap workaround for partners",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ST-007",
+          "text": "Select states where PTET election was made",
+          "inputType": "state_multi_select",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1065-ST-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ST-008",
+          "text": "Total PTET payments made during the tax year",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1065-ST-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1065-ST-009",
+          "text": "Were state estimated tax payments made during the year?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1065-ST-010",
+          "text": "Please upload documentation of state estimated tax payments",
+          "inputType": "file_upload",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1065-ST-009", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1065-ST-011",
+          "text": "Does the partnership have any state withholding obligations for non-resident partners?",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        }
+      ]
+    }
+  ]
+}

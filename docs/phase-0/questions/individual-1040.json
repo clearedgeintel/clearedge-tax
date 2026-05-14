@@ -1,0 +1,2892 @@
+{
+  "metadata": {
+    "fileId": "individual-1040",
+    "entityTypes": ["individual-1040"],
+    "version": "1.0.0",
+    "taxYear": 2025,
+    "description": "Complete intake question matrix for Individual Form 1040"
+  },
+  "sections": [
+    {
+      "sectionId": "filing-status",
+      "title": "Filing Status",
+      "description": "Determines the taxpayer's filing status, which affects standard deduction amounts, tax bracket thresholds, and eligibility for certain credits.",
+      "sortOrder": 0,
+      "questions": [
+        {
+          "questionId": "1040-FS-001",
+          "text": "What is your filing status for 2025?",
+          "helpText": "Your filing status determines your tax rates and standard deduction amount. If you are unsure, your tax preparer can help you choose the most beneficial status.",
+          "inputType": "multiple_choice",
+          "sortOrder": 1,
+          "options": [
+            { "value": "single", "label": "Single" },
+            { "value": "mfj", "label": "Married Filing Jointly" },
+            { "value": "mfs", "label": "Married Filing Separately" },
+            { "value": "hoh", "label": "Head of Household" },
+            { "value": "qss", "label": "Qualifying Surviving Spouse" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FS-002",
+          "text": "Date of marriage",
+          "helpText": "Enter the date you were legally married. This may be relevant for determining filing status eligibility.",
+          "inputType": "date",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs"] }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-FS-003",
+          "text": "Did your spouse pass away during 2023 or 2024?",
+          "helpText": "Qualifying Surviving Spouse status is available for taxpayers whose spouse died in one of the two prior tax years and who have a dependent child.",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "eq", "value": "qss" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FS-004",
+          "text": "Date of spouse's death",
+          "inputType": "date",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-FS-003", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FS-005",
+          "text": "Spouse's full legal name",
+          "helpText": "Enter the name exactly as it appears on their Social Security card.",
+          "inputType": "text",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs", "qss"] }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FS-006",
+          "text": "Spouse's Social Security Number",
+          "inputType": "ssn",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs", "qss"] }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FS-007",
+          "text": "Spouse's date of birth",
+          "inputType": "date",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs", "qss"] }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FS-008",
+          "text": "Name of the qualifying person for Head of Household status",
+          "helpText": "Head of Household status requires that you paid more than half the cost of keeping up a home for a qualifying person. This is typically a dependent child or parent.",
+          "inputType": "text",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "eq", "value": "hoh" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FS-009",
+          "text": "Relationship of the qualifying person to you",
+          "inputType": "multiple_choice",
+          "sortOrder": 9,
+          "options": [
+            { "value": "child", "label": "Son or Daughter" },
+            { "value": "stepchild", "label": "Stepchild" },
+            { "value": "foster_child", "label": "Foster Child" },
+            { "value": "sibling", "label": "Sibling" },
+            { "value": "parent", "label": "Parent" },
+            { "value": "grandchild", "label": "Grandchild" },
+            { "value": "other_relative", "label": "Other Qualifying Relative" }
+          ],
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "eq", "value": "hoh" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FS-010",
+          "text": "Did you pay more than half the cost of keeping up a home for this qualifying person?",
+          "helpText": "Costs include rent, mortgage interest, property taxes, insurance, utilities, food, and repairs.",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "eq", "value": "hoh" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FS-011",
+          "text": "If filing MFS, did you live with your spouse at any time during 2025?",
+          "helpText": "Living apart from your spouse for the entire year may affect eligibility for certain credits when filing separately.",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "eq", "value": "mfs" }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "personal-info",
+      "title": "Personal Information",
+      "description": "Taxpayer and spouse identification, contact details, and address information as required on page 1 of Form 1040.",
+      "sortOrder": 1,
+      "questions": [
+        {
+          "questionId": "1040-PI-001",
+          "text": "Taxpayer's first name",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-002",
+          "text": "Taxpayer's middle initial",
+          "inputType": "text",
+          "sortOrder": 2,
+          "validation": { "required": false, "maxLength": 1 }
+        },
+        {
+          "questionId": "1040-PI-003",
+          "text": "Taxpayer's last name",
+          "inputType": "text",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-004",
+          "text": "Taxpayer's Social Security Number",
+          "inputType": "ssn",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-005",
+          "text": "Taxpayer's date of birth",
+          "inputType": "date",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-006",
+          "text": "Taxpayer's occupation",
+          "helpText": "Enter your primary occupation as you would describe it (e.g., 'Teacher', 'Software Engineer', 'Retired').",
+          "inputType": "text",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-007",
+          "text": "Home address (street, apt/suite number)",
+          "inputType": "address",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-008",
+          "text": "Phone number",
+          "inputType": "phone",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-009",
+          "text": "Email address",
+          "inputType": "email",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-010",
+          "text": "Are you legally blind?",
+          "helpText": "Check 'Yes' if you are totally or partially blind. This may increase your standard deduction.",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-011",
+          "text": "Can anyone claim you as a dependent on their tax return?",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-012",
+          "text": "Spouse's first name",
+          "inputType": "text",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs"] }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-013",
+          "text": "Spouse's middle initial",
+          "inputType": "text",
+          "sortOrder": 13,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs"] }
+          ],
+          "validation": { "required": false, "maxLength": 1 }
+        },
+        {
+          "questionId": "1040-PI-014",
+          "text": "Spouse's last name",
+          "inputType": "text",
+          "sortOrder": 14,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs"] }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-015",
+          "text": "Spouse's occupation",
+          "inputType": "text",
+          "sortOrder": 15,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs"] }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-016",
+          "text": "Is your spouse legally blind?",
+          "inputType": "yes_no",
+          "sortOrder": 16,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs"] }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-PI-017",
+          "text": "Did your address change from last year?",
+          "inputType": "yes_no",
+          "sortOrder": 17,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "dependents",
+      "title": "Dependents",
+      "description": "Information about each dependent claimed on the return. Each dependent must meet either the qualifying child or qualifying relative test.",
+      "sortOrder": 2,
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "1040-DEP-001",
+          "text": "Do you have any dependents to claim on your 2025 return?",
+          "helpText": "A dependent is a qualifying child or qualifying relative who meets certain tests for relationship, age, residency, and support.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DEP-002",
+          "text": "Dependent's first name",
+          "inputType": "text",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DEP-003",
+          "text": "Dependent's last name",
+          "inputType": "text",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DEP-004",
+          "text": "Dependent's Social Security Number",
+          "inputType": "ssn",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DEP-005",
+          "text": "Dependent's date of birth",
+          "inputType": "date",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DEP-006",
+          "text": "Relationship to taxpayer",
+          "inputType": "multiple_choice",
+          "sortOrder": 6,
+          "options": [
+            { "value": "son", "label": "Son" },
+            { "value": "daughter", "label": "Daughter" },
+            { "value": "stepson", "label": "Stepson" },
+            { "value": "stepdaughter", "label": "Stepdaughter" },
+            { "value": "foster_child", "label": "Foster Child" },
+            { "value": "brother", "label": "Brother" },
+            { "value": "sister", "label": "Sister" },
+            { "value": "half_sibling", "label": "Half Brother/Sister" },
+            { "value": "stepsibling", "label": "Stepbrother/Stepsister" },
+            { "value": "grandchild", "label": "Grandchild" },
+            { "value": "niece_nephew", "label": "Niece/Nephew" },
+            { "value": "parent", "label": "Parent" },
+            { "value": "grandparent", "label": "Grandparent" },
+            { "value": "aunt_uncle", "label": "Aunt/Uncle" },
+            { "value": "other", "label": "Other Qualifying Relative" }
+          ],
+          "conditions": [
+            { "questionId": "1040-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DEP-007",
+          "text": "How many months did this dependent live with you during 2025?",
+          "helpText": "A qualifying child must have lived with you for more than half the year (more than 6 months). Temporary absences for school, vacation, or medical care count as time lived with you.",
+          "inputType": "number",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0, "max": 12 }
+        },
+        {
+          "questionId": "1040-DEP-008",
+          "text": "Is this dependent a qualifying child or a qualifying relative?",
+          "helpText": "A qualifying child must be under 19 (or under 24 if a full-time student), live with you for more than half the year, and not provide more than half their own support. A qualifying relative must have gross income below $5,050 and you must provide more than half their support.",
+          "inputType": "multiple_choice",
+          "sortOrder": 8,
+          "options": [
+            { "value": "qualifying_child", "label": "Qualifying Child" },
+            { "value": "qualifying_relative", "label": "Qualifying Relative" }
+          ],
+          "conditions": [
+            { "questionId": "1040-DEP-001", "operator": "eq", "value": true }
+          ],
+          "staffOnly": true,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DEP-009",
+          "text": "Is this dependent a full-time student?",
+          "helpText": "A full-time student is someone enrolled full-time at a school for at least 5 months during 2025.",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DEP-010",
+          "text": "Is this dependent permanently and totally disabled?",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DEP-011",
+          "text": "Did this dependent have gross income of $5,050 or more in 2025?",
+          "helpText": "Relevant for qualifying relative test. A qualifying relative's gross income must be below the exemption amount.",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1040-DEP-008", "operator": "eq", "value": "qualifying_relative" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DEP-012",
+          "text": "Is this dependent eligible for the Child Tax Credit?",
+          "helpText": "The child must be under age 17 at the end of 2025 and be a qualifying child. The credit is up to $2,000 per qualifying child.",
+          "inputType": "yes_no",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1040-DEP-001", "operator": "eq", "value": true }
+          ],
+          "formTriggers": [
+            {
+              "formId": "schedule-8812",
+              "formName": "Schedule 8812 — Credits for Qualifying Children and Other Dependents",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "staffOnly": true,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DEP-013",
+          "text": "Did this dependent provide more than half of their own support?",
+          "helpText": "Support includes food, housing, clothing, education, medical care, and similar expenses.",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "conditions": [
+            { "questionId": "1040-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "wages-salary",
+      "title": "Wages and Salary Income",
+      "description": "W-2 wage and salary information from all employers during 2025. Enter each W-2 separately.",
+      "sortOrder": 3,
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "1040-WS-001",
+          "text": "Did you (or your spouse) receive any wages, salaries, or tips in 2025?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-WS-002",
+          "text": "Upload W-2 form(s)",
+          "helpText": "Upload all W-2 forms received from employers. We will use these to verify the information entered below.",
+          "inputType": "file_upload",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-WS-003",
+          "text": "Employer name",
+          "inputType": "text",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-WS-004",
+          "text": "Employer EIN",
+          "helpText": "Found in Box b of your W-2.",
+          "inputType": "ein",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-WS-005",
+          "text": "Wages, tips, other compensation (Box 1)",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-WS-006",
+          "text": "Federal income tax withheld (Box 2)",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-WS-007",
+          "text": "Social Security wages (Box 3)",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-WS-008",
+          "text": "Social Security tax withheld (Box 4)",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-WS-009",
+          "text": "Medicare wages and tips (Box 5)",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-WS-010",
+          "text": "Medicare tax withheld (Box 6)",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-WS-011",
+          "text": "State wages (Box 16)",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-WS-012",
+          "text": "State income tax withheld (Box 17)",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-WS-013",
+          "text": "State (Box 15)",
+          "inputType": "state_select",
+          "sortOrder": 13,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-WS-014",
+          "text": "Did this W-2 include retirement plan contributions (Box 13 — Retirement plan checked)?",
+          "inputType": "yes_no",
+          "sortOrder": 14,
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-WS-015",
+          "text": "Is this W-2 for the taxpayer or the spouse?",
+          "inputType": "multiple_choice",
+          "sortOrder": 15,
+          "options": [
+            { "value": "taxpayer", "label": "Taxpayer" },
+            { "value": "spouse", "label": "Spouse" }
+          ],
+          "conditions": [
+            { "questionId": "1040-WS-001", "operator": "eq", "value": true },
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs"] }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "interest-dividends",
+      "title": "Interest and Dividend Income",
+      "description": "Report interest (1099-INT) and dividend (1099-DIV) income. Schedule B is required if total interest or ordinary dividends exceed $1,500.",
+      "sortOrder": 4,
+      "questions": [
+        {
+          "questionId": "1040-ID-001",
+          "text": "Did you receive any interest income in 2025?",
+          "helpText": "This includes interest from bank accounts, CDs, bonds, seller-financed mortgages, or other sources. You should receive Form 1099-INT or 1099-OID for most interest income.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ID-002",
+          "text": "Upload 1099-INT and/or 1099-OID forms",
+          "inputType": "file_upload",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-ID-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-ID-003",
+          "text": "Total taxable interest income",
+          "helpText": "Sum of Box 1 from all 1099-INT forms. Include interest from all sources.",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-ID-001", "operator": "eq", "value": true }
+          ],
+          "formTriggers": [
+            {
+              "formId": "schedule-b",
+              "formName": "Schedule B — Interest and Ordinary Dividends",
+              "triggerWhen": { "operator": "gt", "value": 1500 },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ID-004",
+          "text": "Tax-exempt interest income",
+          "helpText": "Interest from municipal bonds or other tax-exempt sources. Reported on 1040 Line 2a but not included in taxable income.",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-ID-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-ID-005",
+          "text": "Did you receive any interest from US savings bonds used for education expenses?",
+          "helpText": "Interest from Series EE or I bonds issued after 1989 may be excludable if used for qualified higher education expenses (Form 8815).",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-ID-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ID-006",
+          "text": "Did you receive any dividend income in 2025?",
+          "helpText": "This includes ordinary dividends, qualified dividends, and capital gain distributions from stocks, mutual funds, or other investments. You should receive Form 1099-DIV.",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ID-007",
+          "text": "Upload 1099-DIV forms",
+          "inputType": "file_upload",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-ID-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-ID-008",
+          "text": "Total ordinary dividends (Box 1a from all 1099-DIV forms)",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1040-ID-006", "operator": "eq", "value": true }
+          ],
+          "formTriggers": [
+            {
+              "formId": "schedule-b",
+              "formName": "Schedule B — Interest and Ordinary Dividends",
+              "triggerWhen": { "operator": "gt", "value": 1500 },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ID-009",
+          "text": "Total qualified dividends (Box 1b from all 1099-DIV forms)",
+          "helpText": "Qualified dividends are taxed at the lower capital gains rate. This amount should be equal to or less than your ordinary dividends.",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-ID-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ID-010",
+          "text": "Total capital gain distributions (Box 2a from all 1099-DIV forms)",
+          "helpText": "Capital gain distributions from mutual funds are reported here even if you did not sell any shares.",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-ID-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-ID-011",
+          "text": "Did you have any foreign accounts or receive distributions from a foreign trust?",
+          "helpText": "If yes, Schedule B Part III must be completed. You may also need to file FBAR (FinCEN 114) or Form 8938.",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "capital-gains",
+      "title": "Capital Gains and Losses",
+      "description": "Report sales of stocks, bonds, mutual funds, real estate, and other capital assets. Triggers Schedule D and Form 8949.",
+      "sortOrder": 5,
+      "questions": [
+        {
+          "questionId": "1040-CG-001",
+          "text": "Did you sell, exchange, or dispose of any stocks, bonds, mutual funds, or other investments in 2025?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "formTriggers": [
+            {
+              "formId": "schedule-d",
+              "formName": "Schedule D — Capital Gains and Losses",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            },
+            {
+              "formId": "form-8949",
+              "formName": "Form 8949 — Sales and Other Dispositions of Capital Assets",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CG-002",
+          "text": "Upload 1099-B forms or brokerage statements",
+          "helpText": "Upload all Forms 1099-B and/or year-end brokerage statements showing your sales transactions.",
+          "inputType": "file_upload",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-CG-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-CG-003",
+          "text": "Did you sell, exchange, or dispose of any real estate in 2025?",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "formTriggers": [
+            {
+              "formId": "schedule-d",
+              "formName": "Schedule D — Capital Gains and Losses",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CG-004",
+          "text": "Did you sell your primary residence?",
+          "helpText": "You may be able to exclude up to $250,000 ($500,000 if married filing jointly) of gain from the sale of your main home under IRC Section 121.",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-CG-003", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CG-005",
+          "text": "How long did you own and use the property as your main home?",
+          "helpText": "To qualify for the home sale exclusion, you must have owned and lived in the home as your main residence for at least 2 of the last 5 years.",
+          "inputType": "multiple_choice",
+          "sortOrder": 5,
+          "options": [
+            { "value": "less_than_1", "label": "Less than 1 year" },
+            { "value": "1_to_2", "label": "1 to 2 years" },
+            { "value": "2_plus", "label": "2 or more years" }
+          ],
+          "conditions": [
+            { "questionId": "1040-CG-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CG-006",
+          "text": "Sale price of primary residence",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1040-CG-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-CG-007",
+          "text": "Original purchase price (cost basis) of primary residence",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-CG-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-CG-008",
+          "text": "Did you receive any cryptocurrency, digital assets, or virtual currency during 2025 (including through mining, staking, airdrops, or hard forks)?",
+          "helpText": "This is a required question on the 1040. Answer 'Yes' if you received, sold, exchanged, or otherwise disposed of any digital assets.",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CG-009",
+          "text": "Did you sell, exchange, or dispose of any digital assets (cryptocurrency) in 2025?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-CG-008", "operator": "eq", "value": true }
+          ],
+          "formTriggers": [
+            {
+              "formId": "form-8949",
+              "formName": "Form 8949 — Sales and Other Dispositions of Capital Assets",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CG-010",
+          "text": "Do you have any capital loss carryovers from prior years?",
+          "helpText": "If your capital losses exceeded capital gains in a prior year, the unused loss can be carried forward. Check your prior year Schedule D or carryover worksheet.",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CG-011",
+          "text": "Amount of short-term capital loss carryover from prior year",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1040-CG-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-CG-012",
+          "text": "Amount of long-term capital loss carryover from prior year",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1040-CG-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "rental-income",
+      "title": "Rental Real Estate Income",
+      "description": "Report income and expenses from rental properties. Each property is entered separately. Triggers Schedule E Part I and potentially Form 8582 for passive activity losses.",
+      "sortOrder": 6,
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "1040-RENT-001",
+          "text": "Did you own any rental real estate properties in 2025?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "formTriggers": [
+            {
+              "formId": "schedule-e",
+              "formName": "Schedule E Part I — Supplemental Income and Loss (Rental Real Estate)",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-RENT-002",
+          "text": "Rental property address",
+          "inputType": "address",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-RENT-003",
+          "text": "Type of rental property",
+          "inputType": "multiple_choice",
+          "sortOrder": 3,
+          "options": [
+            { "value": "single_family", "label": "Single Family Residence" },
+            { "value": "multi_family", "label": "Multi-Family Residence" },
+            { "value": "vacation_short_term", "label": "Vacation/Short-Term Rental" },
+            { "value": "commercial", "label": "Commercial" },
+            { "value": "land", "label": "Land" },
+            { "value": "other", "label": "Other" }
+          ],
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-RENT-004",
+          "text": "Number of days the property was rented at fair rental value",
+          "inputType": "number",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0, "max": 365 }
+        },
+        {
+          "questionId": "1040-RENT-005",
+          "text": "Number of days of personal use",
+          "helpText": "Include days used by family members or anyone paying less than fair rental value. If personal use exceeds the greater of 14 days or 10% of rental days, deductions may be limited.",
+          "inputType": "number",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0, "max": 365 }
+        },
+        {
+          "questionId": "1040-RENT-006",
+          "text": "Total rents received",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-RENT-007",
+          "text": "Advertising expenses",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-RENT-008",
+          "text": "Insurance premiums",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-RENT-009",
+          "text": "Mortgage interest paid (Form 1098)",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-RENT-010",
+          "text": "Property taxes",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-RENT-011",
+          "text": "Repairs and maintenance",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-RENT-012",
+          "text": "Utilities paid by landlord",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-RENT-013",
+          "text": "Property management fees",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-RENT-014",
+          "text": "Depreciation expense (or date placed in service if new property)",
+          "helpText": "If this is a new rental property, provide the date placed in service and cost basis so we can calculate depreciation. Otherwise, provide the annual depreciation amount from your prior return.",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-RENT-015",
+          "text": "Did your total rental activities result in a net loss for 2025?",
+          "helpText": "Passive activity losses may be limited. An exception exists for active participants with AGI under $100K (up to $25K allowed). Form 8582 will be used to compute allowed losses.",
+          "inputType": "yes_no",
+          "sortOrder": 15,
+          "conditions": [
+            { "questionId": "1040-RENT-001", "operator": "eq", "value": true }
+          ],
+          "formTriggers": [
+            {
+              "formId": "form-8582",
+              "formName": "Form 8582 — Passive Activity Loss Limitations",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "passthrough-income",
+      "title": "Passthrough Income (K-1s)",
+      "description": "Report your share of income, deductions, and credits from S-Corporations, Partnerships, Trusts, and Estates via Schedule K-1. Triggers Schedule E Part II.",
+      "sortOrder": 7,
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "1040-K1-001",
+          "text": "Did you receive any Schedule K-1 forms in 2025?",
+          "helpText": "K-1 forms report your share of income from partnerships (Form 1065), S-Corporations (Form 1120-S), or trusts/estates (Form 1041).",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "formTriggers": [
+            {
+              "formId": "schedule-e-part-ii",
+              "formName": "Schedule E Part II — Income or Loss From Partnerships and S Corporations",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-K1-002",
+          "text": "Upload Schedule K-1 form(s)",
+          "inputType": "file_upload",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-K1-003",
+          "text": "Type of entity issuing the K-1",
+          "inputType": "multiple_choice",
+          "sortOrder": 3,
+          "options": [
+            { "value": "partnership", "label": "Partnership (Form 1065 K-1)" },
+            { "value": "s_corp", "label": "S-Corporation (Form 1120-S K-1)" },
+            { "value": "trust_estate", "label": "Trust or Estate (Form 1041 K-1)" }
+          ],
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-K1-004",
+          "text": "Name of the entity",
+          "inputType": "text",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-K1-005",
+          "text": "Entity EIN",
+          "inputType": "ein",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-K1-006",
+          "text": "Ordinary business income (loss) — Line 1",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-K1-007",
+          "text": "Net rental real estate income (loss) — Line 2",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-K1-008",
+          "text": "Interest income — Line 5",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-K1-009",
+          "text": "Ordinary dividends — Line 6a",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-K1-010",
+          "text": "Net short-term capital gain (loss) — Line 8",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-K1-011",
+          "text": "Net long-term capital gain (loss) — Line 9a",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-K1-012",
+          "text": "Section 199A qualified business income (QBI)",
+          "helpText": "This amount is reported on Schedule K-1 and is used to calculate the Qualified Business Income Deduction (up to 20% of QBI) on Form 8995 or 8995-A.",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-K1-013",
+          "text": "Distributions received from this entity during 2025",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-K1-014",
+          "text": "Do you materially participate in this entity's business activities?",
+          "helpText": "Material participation generally requires working in the activity for more than 500 hours during the year, or meeting one of the other IRS tests. This affects whether losses are passive or non-passive.",
+          "inputType": "yes_no",
+          "sortOrder": 14,
+          "conditions": [
+            { "questionId": "1040-K1-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "self-employment",
+      "title": "Self-Employment Income",
+      "description": "Gateway section for sole proprietorship / independent contractor income. Links to the detailed Schedule C question file. Triggers Schedule SE for self-employment tax.",
+      "sortOrder": 8,
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "1040-SE-001",
+          "text": "Did you operate a sole proprietorship, freelance business, or work as an independent contractor in 2025?",
+          "helpText": "This includes gig economy income (Uber, Lyft, DoorDash, etc.), freelance work, consulting, or any business you operated as a sole proprietor or single-member LLC. You may have received Form 1099-NEC or 1099-K.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "formTriggers": [
+            {
+              "formId": "schedule-c",
+              "formName": "Schedule C — Profit or Loss From Business",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            },
+            {
+              "formId": "schedule-se",
+              "formName": "Schedule SE — Self-Employment Tax",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-SE-002",
+          "text": "Business details — Schedule C",
+          "helpText": "This section will include the full Schedule C interview for your business.",
+          "inputType": "section_include",
+          "sortOrder": 2,
+          "includeSection": { "fileId": "sole-prop-schedule-c", "sectionId": "business-info" },
+          "conditions": [
+            { "questionId": "1040-SE-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1040-SE-003",
+          "text": "Business income — Schedule C",
+          "inputType": "section_include",
+          "sortOrder": 3,
+          "includeSection": { "fileId": "sole-prop-schedule-c", "sectionId": "income" },
+          "conditions": [
+            { "questionId": "1040-SE-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1040-SE-004",
+          "text": "Business expenses — Schedule C",
+          "inputType": "section_include",
+          "sortOrder": 4,
+          "includeSection": { "fileId": "sole-prop-schedule-c", "sectionId": "expenses" },
+          "conditions": [
+            { "questionId": "1040-SE-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1040-SE-005",
+          "text": "Cost of goods sold — Schedule C",
+          "inputType": "section_include",
+          "sortOrder": 5,
+          "includeSection": { "fileId": "sole-prop-schedule-c", "sectionId": "cost-of-goods-sold" },
+          "conditions": [
+            { "questionId": "1040-SE-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1040-SE-006",
+          "text": "Vehicle / home office — Schedule C",
+          "inputType": "section_include",
+          "sortOrder": 6,
+          "includeSection": { "fileId": "sole-prop-schedule-c", "sectionId": "vehicle-use" },
+          "conditions": [
+            { "questionId": "1040-SE-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "1040-SE-007",
+          "text": "Upload 1099-NEC and/or 1099-K forms",
+          "inputType": "file_upload",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-SE-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        }
+      ]
+    },
+    {
+      "sectionId": "retirement-income",
+      "title": "Retirement Income",
+      "description": "Pensions, annuities, IRA distributions, Social Security benefits, and Roth conversions. Enter each 1099-R separately.",
+      "sortOrder": 9,
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "1040-RET-001",
+          "text": "Did you receive any pension, annuity, or IRA distributions in 2025?",
+          "helpText": "This includes distributions from 401(k), 403(b), IRA, pension plans, and annuities. You should receive Form 1099-R for each distribution.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-RET-002",
+          "text": "Upload 1099-R form(s)",
+          "inputType": "file_upload",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-RET-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-RET-003",
+          "text": "Payer name (from 1099-R)",
+          "inputType": "text",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-RET-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-RET-004",
+          "text": "Gross distribution amount (Box 1)",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-RET-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-RET-005",
+          "text": "Taxable amount (Box 2a)",
+          "helpText": "If this box is blank and the 'Taxable amount not determined' box is checked, we will need to calculate the taxable portion.",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-RET-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-RET-006",
+          "text": "Federal income tax withheld (Box 4)",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1040-RET-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-RET-007",
+          "text": "Distribution code (Box 7)",
+          "helpText": "The distribution code indicates the type of distribution (e.g., 1=Early distribution, 7=Normal distribution, G=Rollover). This determines how the distribution is taxed.",
+          "inputType": "text",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-RET-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-RET-008",
+          "text": "Was this a Roth conversion (rollover from traditional IRA to Roth IRA)?",
+          "helpText": "Roth conversions are taxable in the year of conversion but provide tax-free growth going forward.",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1040-RET-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-RET-009",
+          "text": "Did you roll over any portion of this distribution to another retirement account within 60 days?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-RET-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-RET-010",
+          "text": "Amount rolled over",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-RET-009", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-RET-011",
+          "text": "Did you receive Social Security benefits in 2025?",
+          "helpText": "Report the total benefits from Form SSA-1099 Box 5. Up to 85% of Social Security benefits may be taxable depending on your combined income.",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-RET-012",
+          "text": "Upload SSA-1099 form(s)",
+          "inputType": "file_upload",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1040-RET-011", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-RET-013",
+          "text": "Total Social Security benefits received (Box 5 of SSA-1099)",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "conditions": [
+            { "questionId": "1040-RET-011", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-RET-014",
+          "text": "Federal income tax withheld from Social Security benefits",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "conditions": [
+            { "questionId": "1040-RET-011", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "other-income",
+      "title": "Other Income",
+      "description": "Miscellaneous income sources including gambling winnings, alimony, jury duty pay, prizes, unemployment compensation, and state tax refunds.",
+      "sortOrder": 10,
+      "questions": [
+        {
+          "questionId": "1040-OI-001",
+          "text": "Did you have any gambling or lottery winnings in 2025?",
+          "helpText": "Gambling winnings are fully taxable. You may receive Form W-2G for certain winnings. Gambling losses can be deducted only if you itemize, and only up to the amount of winnings.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-OI-002",
+          "text": "Total gambling/lottery winnings",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-OI-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-OI-003",
+          "text": "Total gambling losses (for itemized deduction purposes)",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-OI-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-OI-004",
+          "text": "Upload W-2G forms",
+          "inputType": "file_upload",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-OI-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-OI-005",
+          "text": "Did you receive alimony payments under a divorce or separation agreement executed before January 1, 2019?",
+          "helpText": "Alimony received under pre-2019 agreements is taxable income to the recipient. Agreements executed after 12/31/2018 are not taxable to the recipient.",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-OI-006",
+          "text": "Total alimony received",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1040-OI-005", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-OI-007",
+          "text": "Date of divorce or separation agreement",
+          "inputType": "date",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-OI-005", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-OI-008",
+          "text": "Payer's Social Security Number (for alimony received)",
+          "inputType": "ssn",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1040-OI-005", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-OI-009",
+          "text": "Did you receive any jury duty pay in 2025?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-OI-010",
+          "text": "Jury duty pay received",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-OI-009", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-OI-011",
+          "text": "Did you receive any prizes, awards, or contest winnings (other than gambling)?",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-OI-012",
+          "text": "Total prizes/awards received",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1040-OI-011", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-OI-013",
+          "text": "Did you receive any 1099-MISC or 1099-NEC income not reported elsewhere on this return?",
+          "helpText": "If you already reported this income as self-employment income in the Schedule C section, do not report it here.",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-OI-014",
+          "text": "Total other 1099-MISC/1099-NEC income",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "conditions": [
+            { "questionId": "1040-OI-013", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-OI-015",
+          "text": "Did you receive unemployment compensation in 2025?",
+          "helpText": "Unemployment compensation is reported on Form 1099-G, Box 1. It is fully taxable for federal purposes.",
+          "inputType": "yes_no",
+          "sortOrder": 15,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-OI-016",
+          "text": "Total unemployment compensation received",
+          "inputType": "currency",
+          "sortOrder": 16,
+          "conditions": [
+            { "questionId": "1040-OI-015", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-OI-017",
+          "text": "Upload 1099-G form(s)",
+          "inputType": "file_upload",
+          "sortOrder": 17,
+          "conditions": [
+            { "questionId": "1040-OI-015", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-OI-018",
+          "text": "Did you receive a state or local income tax refund in 2025?",
+          "helpText": "A state/local tax refund may be taxable if you itemized deductions last year and received a tax benefit from deducting state income taxes. Reported on Form 1099-G.",
+          "inputType": "yes_no",
+          "sortOrder": 18,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-OI-019",
+          "text": "State/local income tax refund amount",
+          "inputType": "currency",
+          "sortOrder": 19,
+          "conditions": [
+            { "questionId": "1040-OI-018", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-OI-020",
+          "text": "Did you itemize deductions on your 2024 federal return?",
+          "helpText": "If you took the standard deduction last year, the state refund is generally not taxable.",
+          "inputType": "yes_no",
+          "sortOrder": 20,
+          "conditions": [
+            { "questionId": "1040-OI-018", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "adjustments",
+      "title": "Adjustments to Income",
+      "description": "Above-the-line deductions that reduce adjusted gross income (AGI). These are claimed on Schedule 1 Part II.",
+      "sortOrder": 11,
+      "questions": [
+        {
+          "questionId": "1040-ADJ-001",
+          "text": "Did you pay student loan interest in 2025?",
+          "helpText": "You can deduct up to $2,500 of student loan interest paid. You should receive Form 1098-E from your lender. The deduction phases out at higher income levels.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ADJ-002",
+          "text": "Student loan interest paid (from Form 1098-E)",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-ADJ-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0, "max": 2500 }
+        },
+        {
+          "questionId": "1040-ADJ-003",
+          "text": "Are you an eligible educator (K-12 teacher, instructor, counselor, principal, or aide for at least 900 hours)?",
+          "helpText": "Eligible educators can deduct up to $300 of unreimbursed classroom expenses ($600 if married filing jointly and both spouses are eligible educators).",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ADJ-004",
+          "text": "Educator expenses paid",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-ADJ-003", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0, "max": 300 }
+        },
+        {
+          "questionId": "1040-ADJ-005",
+          "text": "Did you contribute to a Health Savings Account (HSA) in 2025?",
+          "helpText": "HSA contributions are deductible if you were covered under a High Deductible Health Plan (HDHP). Limits for 2025: $4,300 self-only, $8,550 family. An additional $1,000 catch-up is available if you are age 55 or older.",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "formTriggers": [
+            {
+              "formId": "form-8889",
+              "formName": "Form 8889 — Health Savings Accounts",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ADJ-006",
+          "text": "Total HSA contributions for 2025 (including employer contributions)",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1040-ADJ-005", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ADJ-007",
+          "text": "HSA coverage type",
+          "inputType": "multiple_choice",
+          "sortOrder": 7,
+          "options": [
+            { "value": "self_only", "label": "Self-only HDHP coverage" },
+            { "value": "family", "label": "Family HDHP coverage" }
+          ],
+          "conditions": [
+            { "questionId": "1040-ADJ-005", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ADJ-008",
+          "text": "Did you make contributions to a traditional IRA in 2025?",
+          "helpText": "Traditional IRA contributions may be fully or partially deductible depending on your income, filing status, and whether you or your spouse are covered by an employer retirement plan.",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ADJ-009",
+          "text": "Total traditional IRA contributions for 2025",
+          "helpText": "The maximum contribution for 2025 is $7,000 ($8,000 if age 50 or older).",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-ADJ-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ADJ-010",
+          "text": "Did you pay alimony under a divorce or separation agreement executed before January 1, 2019?",
+          "helpText": "Alimony paid under pre-2019 agreements is deductible by the payer. Agreements executed after 12/31/2018 are not deductible by the payer.",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ADJ-011",
+          "text": "Total alimony paid",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1040-ADJ-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ADJ-012",
+          "text": "Recipient's Social Security Number",
+          "inputType": "ssn",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "1040-ADJ-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ADJ-013",
+          "text": "Are you a member of the Armed Forces who moved due to a permanent change of station?",
+          "helpText": "Only active-duty military members moving under orders to a permanent change of station can deduct moving expenses. Trigger Form 3903.",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "formTriggers": [
+            {
+              "formId": "form-3903",
+              "formName": "Form 3903 — Moving Expenses",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ADJ-014",
+          "text": "Moving expenses (military PCS only)",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "conditions": [
+            { "questionId": "1040-ADJ-013", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ADJ-015",
+          "text": "Did you pay a penalty for early withdrawal of savings?",
+          "helpText": "Reported on Form 1099-INT or 1099-OID, Box 2. This penalty is deductible as an adjustment to income.",
+          "inputType": "yes_no",
+          "sortOrder": 15,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ADJ-016",
+          "text": "Early withdrawal penalty amount",
+          "inputType": "currency",
+          "sortOrder": 16,
+          "conditions": [
+            { "questionId": "1040-ADJ-015", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "deductions",
+      "title": "Deduction Method",
+      "description": "Choose between the standard deduction and itemizing deductions. The standard deduction amount varies by filing status.",
+      "sortOrder": 12,
+      "questions": [
+        {
+          "questionId": "1040-DED-001",
+          "text": "Do you want to itemize deductions or take the standard deduction?",
+          "helpText": "Standard deduction amounts for 2025: Single/MFS = $15,000, MFJ/QSS = $30,000, HOH = $22,500. Additional amounts for age 65+ or blind. Itemize only if your total itemized deductions exceed the standard deduction.",
+          "inputType": "multiple_choice",
+          "sortOrder": 1,
+          "options": [
+            { "value": "standard", "label": "Standard Deduction" },
+            { "value": "itemized", "label": "Itemized Deductions (Schedule A)" }
+          ],
+          "formTriggers": [
+            {
+              "formId": "schedule-a",
+              "formName": "Schedule A — Itemized Deductions",
+              "triggerWhen": { "operator": "eq", "value": "itemized" },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DED-002",
+          "text": "Your standard deduction amount based on filing status",
+          "helpText": "This is the standard deduction amount applicable to your filing status. Additional amounts apply if you or your spouse are age 65+ or legally blind.",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "staffOnly": true,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-DED-003",
+          "text": "Are you age 65 or older as of December 31, 2025?",
+          "helpText": "If yes, you qualify for an additional standard deduction amount ($1,950 if single/HOH, $1,550 if MFJ/MFS/QSS for 2025).",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-DED-001", "operator": "eq", "value": "standard" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DED-004",
+          "text": "Is your spouse age 65 or older as of December 31, 2025?",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-DED-001", "operator": "eq", "value": "standard" },
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs"] }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-DED-005",
+          "text": "Would you like us to calculate which method gives you a larger deduction?",
+          "helpText": "We can compare your itemized deductions to the standard deduction to determine which method benefits you more.",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "validation": { "required": false }
+        }
+      ]
+    },
+    {
+      "sectionId": "itemized-deductions",
+      "title": "Itemized Deductions (Schedule A)",
+      "description": "Detailed itemized deduction entries for medical expenses, state and local taxes (SALT), mortgage interest, charitable contributions, and casualty losses.",
+      "sortOrder": 13,
+      "conditions": [
+        { "questionId": "1040-DED-001", "operator": "eq", "value": "itemized" }
+      ],
+      "questions": [
+        {
+          "questionId": "1040-ITEM-001",
+          "text": "Total medical and dental expenses paid in 2025",
+          "helpText": "Include insurance premiums (not paid by employer), doctor/dentist fees, prescriptions, hospital stays, medical equipment, and long-term care premiums. Only the amount exceeding 7.5% of your AGI is deductible.",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ITEM-002",
+          "text": "Were any medical expenses reimbursed by insurance or other sources?",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ITEM-003",
+          "text": "Amount of medical expenses reimbursed",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-ITEM-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ITEM-004",
+          "text": "Would you like to deduct state and local income taxes or general sales taxes?",
+          "helpText": "You can deduct either state/local income taxes OR general sales taxes, but not both. Most taxpayers benefit more from deducting income taxes. The total SALT deduction (income/sales tax + property tax) is capped at $10,000 ($5,000 if MFS).",
+          "inputType": "multiple_choice",
+          "sortOrder": 4,
+          "options": [
+            { "value": "income_tax", "label": "State and local income taxes" },
+            { "value": "sales_tax", "label": "General sales taxes" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ITEM-005",
+          "text": "State and local income taxes paid in 2025 (from W-2s, estimated payments, and prior-year balance due)",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-ITEM-004", "operator": "eq", "value": "income_tax" }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ITEM-006",
+          "text": "Real estate (property) taxes paid in 2025",
+          "helpText": "Include property taxes on your primary home and any other real property you own (not rental properties — those are deducted on Schedule E).",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ITEM-007",
+          "text": "Personal property taxes paid (e.g., vehicle registration based on value)",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-ITEM-008",
+          "text": "Total SALT deduction (staff-calculated, capped at $10,000 or $5,000 for MFS)",
+          "helpText": "The Tax Cuts and Jobs Act limits the combined state and local tax deduction to $10,000 ($5,000 for MFS). This is calculated from the above entries.",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "staffOnly": true,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-ITEM-009",
+          "text": "Home mortgage interest paid (from Form 1098)",
+          "helpText": "Deductible on mortgage debt up to $750,000 ($375,000 if MFS) for loans originated after 12/15/2017. For older loans, the limit is $1,000,000.",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-ITEM-010",
+          "text": "Upload Form 1098 (Mortgage Interest Statement)",
+          "inputType": "file_upload",
+          "sortOrder": 10,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-ITEM-011",
+          "text": "Mortgage points paid (if applicable)",
+          "helpText": "Points paid on the purchase of your main home are generally deductible in the year paid. Refinance points are amortized over the life of the loan.",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-ITEM-012",
+          "text": "Total cash contributions to charity",
+          "helpText": "Include donations to qualified organizations supported by receipts or bank records. Cash contributions are generally deductible up to 60% of AGI.",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-ITEM-013",
+          "text": "Did you make any non-cash charitable contributions (clothing, household items, vehicles, etc.)?",
+          "helpText": "Non-cash contributions require documentation of fair market value. Donations over $500 require Form 8283.",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "formTriggers": [
+            {
+              "formId": "form-8283",
+              "formName": "Form 8283 — Noncash Charitable Contributions",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ITEM-014",
+          "text": "Total fair market value of non-cash charitable contributions",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "conditions": [
+            { "questionId": "1040-ITEM-013", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ITEM-015",
+          "text": "Did you suffer any casualty or theft losses in a federally declared disaster area?",
+          "helpText": "Personal casualty and theft losses are deductible only if attributable to a federally declared disaster. Each loss must exceed $100 and total net losses must exceed 10% of AGI.",
+          "inputType": "yes_no",
+          "sortOrder": 15,
+          "formTriggers": [
+            {
+              "formId": "form-4684",
+              "formName": "Form 4684 — Casualties and Thefts",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ITEM-016",
+          "text": "Description and amount of casualty/theft loss",
+          "inputType": "currency",
+          "sortOrder": 16,
+          "conditions": [
+            { "questionId": "1040-ITEM-015", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-ITEM-017",
+          "text": "FEMA disaster declaration number",
+          "inputType": "text",
+          "sortOrder": 17,
+          "conditions": [
+            { "questionId": "1040-ITEM-015", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "credits",
+      "title": "Tax Credits",
+      "description": "Credits directly reduce your tax liability. Includes child tax credit, earned income credit, education credits, child/dependent care credit, and energy credits.",
+      "sortOrder": 14,
+      "questions": [
+        {
+          "questionId": "1040-CR-001",
+          "text": "Do you have qualifying children under age 17 for the Child Tax Credit?",
+          "helpText": "The Child Tax Credit is up to $2,000 per qualifying child under age 17. Up to $1,700 may be refundable as the Additional Child Tax Credit for 2025.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "formTriggers": [
+            {
+              "formId": "schedule-8812",
+              "formName": "Schedule 8812 — Credits for Qualifying Children and Other Dependents",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CR-002",
+          "text": "Do you want to claim the Earned Income Tax Credit (EITC)?",
+          "helpText": "The EITC is a refundable credit for low-to-moderate income workers. The amount depends on your income, filing status, and number of qualifying children. You must have earned income and meet AGI limits.",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "formTriggers": [
+            {
+              "formId": "schedule-eic",
+              "formName": "Schedule EIC — Earned Income Credit",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CR-003",
+          "text": "Did you or your dependents have qualifying education expenses in 2025?",
+          "helpText": "You may be eligible for the American Opportunity Credit (up to $2,500 per student, first 4 years of college) or the Lifetime Learning Credit (up to $2,000 per return).",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "formTriggers": [
+            {
+              "formId": "form-8863",
+              "formName": "Form 8863 — Education Credits",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CR-004",
+          "text": "Which education credit are you claiming?",
+          "inputType": "multiple_choice",
+          "sortOrder": 4,
+          "options": [
+            { "value": "aotc", "label": "American Opportunity Tax Credit (AOTC)" },
+            { "value": "llc", "label": "Lifetime Learning Credit (LLC)" }
+          ],
+          "conditions": [
+            { "questionId": "1040-CR-003", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CR-005",
+          "text": "Upload Form 1098-T (Tuition Statement)",
+          "inputType": "file_upload",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-CR-003", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-CR-006",
+          "text": "Qualified tuition and related expenses paid",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1040-CR-003", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-CR-007",
+          "text": "Name of student",
+          "inputType": "text",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-CR-003", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CR-008",
+          "text": "Did you pay for child or dependent care so you (and your spouse, if filing jointly) could work or look for work?",
+          "helpText": "The Child and Dependent Care Credit covers expenses for children under 13 or a disabled spouse/dependent. Maximum eligible expenses: $3,000 for one qualifying person, $6,000 for two or more.",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "formTriggers": [
+            {
+              "formId": "form-2441",
+              "formName": "Form 2441 — Child and Dependent Care Expenses",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CR-009",
+          "text": "Care provider name",
+          "inputType": "text",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-CR-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CR-010",
+          "text": "Care provider EIN or SSN",
+          "inputType": "text",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-CR-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CR-011",
+          "text": "Total child/dependent care expenses paid",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1040-CR-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-CR-012",
+          "text": "Did you adopt a child in 2025 or have qualifying adoption expenses?",
+          "helpText": "The Adoption Credit allows a credit up to $17,280 per child for qualified adoption expenses. Form 8839 is required.",
+          "inputType": "yes_no",
+          "sortOrder": 12,
+          "formTriggers": [
+            {
+              "formId": "form-8839",
+              "formName": "Form 8839 — Qualified Adoption Expenses",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CR-013",
+          "text": "Did you make energy-efficient improvements to your home in 2025?",
+          "helpText": "The Energy Efficient Home Improvement Credit (25C) covers qualifying improvements like insulation, windows, doors, heat pumps, and biomass stoves. The Residential Clean Energy Credit (25D) covers solar panels, wind turbines, geothermal, and battery storage.",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "formTriggers": [
+            {
+              "formId": "form-5695",
+              "formName": "Form 5695 — Residential Energy Credits",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CR-014",
+          "text": "What type of energy improvements did you make?",
+          "inputType": "multi_select",
+          "sortOrder": 14,
+          "options": [
+            { "value": "solar_electric", "label": "Solar electric (photovoltaic) panels" },
+            { "value": "solar_water", "label": "Solar water heating" },
+            { "value": "wind", "label": "Small wind turbine" },
+            { "value": "geothermal", "label": "Geothermal heat pump" },
+            { "value": "battery", "label": "Battery storage technology" },
+            { "value": "insulation", "label": "Insulation/air sealing" },
+            { "value": "windows_doors", "label": "Energy-efficient windows/doors" },
+            { "value": "heat_pump", "label": "Heat pump (HVAC or water heater)" },
+            { "value": "biomass", "label": "Biomass stove/boiler" },
+            { "value": "central_ac", "label": "Central air conditioning" }
+          ],
+          "conditions": [
+            { "questionId": "1040-CR-013", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-CR-015",
+          "text": "Did you make contributions to a qualified retirement plan and your AGI is within the Saver's Credit limits?",
+          "helpText": "The Retirement Savings Contributions Credit (Saver's Credit) is available if your AGI is below $38,250 (single), $57,375 (HOH), or $76,500 (MFJ) for 2025. Credit is 10%-50% of up to $2,000 in contributions ($4,000 if MFJ).",
+          "inputType": "yes_no",
+          "sortOrder": 15,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "estimated-payments",
+      "title": "Estimated Tax Payments",
+      "description": "Quarterly estimated tax payments made for 2025 and any overpayment from the prior year applied to 2025.",
+      "sortOrder": 15,
+      "questions": [
+        {
+          "questionId": "1040-EST-001",
+          "text": "Did you make estimated tax payments for 2025?",
+          "helpText": "Estimated tax payments are typically made quarterly using Form 1040-ES. These payments are credited against your tax liability.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-EST-002",
+          "text": "Q1 estimated payment (due April 15, 2025)",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-EST-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-EST-003",
+          "text": "Q2 estimated payment (due June 16, 2025)",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-EST-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-EST-004",
+          "text": "Q3 estimated payment (due September 15, 2025)",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-EST-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-EST-005",
+          "text": "Q4 estimated payment (due January 15, 2026)",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-EST-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false, "min": 0 }
+        },
+        {
+          "questionId": "1040-EST-006",
+          "text": "Did you apply an overpayment from your 2024 return to your 2025 estimated tax?",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-EST-007",
+          "text": "Amount of prior-year overpayment applied to 2025",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-EST-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-EST-008",
+          "text": "Did you make any estimated payments to state or local tax authorities for 2025?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-EST-009",
+          "text": "Total state/local estimated tax payments for 2025",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-EST-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "health-coverage",
+      "title": "Health Insurance Coverage",
+      "description": "Affordable Care Act (ACA) marketplace coverage, premium tax credit reconciliation, and related reporting.",
+      "sortOrder": 16,
+      "questions": [
+        {
+          "questionId": "1040-HC-001",
+          "text": "Did you, your spouse, or any dependents have health insurance coverage through the ACA Marketplace (Healthcare.gov or a state exchange) in 2025?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "formTriggers": [
+            {
+              "formId": "form-8962",
+              "formName": "Form 8962 — Premium Tax Credit",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-HC-002",
+          "text": "Upload Form 1095-A (Health Insurance Marketplace Statement)",
+          "helpText": "Form 1095-A is required to reconcile advance premium tax credits. You should receive this from the Marketplace by January 31.",
+          "inputType": "file_upload",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-HC-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-HC-003",
+          "text": "Monthly enrollment premiums (Column A totals from 1095-A)",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-HC-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-HC-004",
+          "text": "Monthly SLCSP premium (Column B totals from 1095-A)",
+          "helpText": "Second Lowest Cost Silver Plan premium — used to calculate your premium tax credit.",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-HC-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-HC-005",
+          "text": "Monthly advance payment of PTC (Column C totals from 1095-A)",
+          "helpText": "Advance premium tax credit payments made on your behalf. These will be reconciled on Form 8962. You may owe additional tax or receive a larger credit.",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-HC-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-HC-006",
+          "text": "Did all members of your household have qualifying health coverage for every month of 2025?",
+          "helpText": "Qualifying coverage includes employer-sponsored insurance, Marketplace coverage, Medicare, Medicaid, CHIP, TRICARE, VA health care, and other recognized coverage.",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-HC-007",
+          "text": "Which months lacked qualifying coverage?",
+          "inputType": "multi_select",
+          "sortOrder": 7,
+          "options": [
+            { "value": "jan", "label": "January" },
+            { "value": "feb", "label": "February" },
+            { "value": "mar", "label": "March" },
+            { "value": "apr", "label": "April" },
+            { "value": "may", "label": "May" },
+            { "value": "jun", "label": "June" },
+            { "value": "jul", "label": "July" },
+            { "value": "aug", "label": "August" },
+            { "value": "sep", "label": "September" },
+            { "value": "oct", "label": "October" },
+            { "value": "nov", "label": "November" },
+            { "value": "dec", "label": "December" }
+          ],
+          "conditions": [
+            { "questionId": "1040-HC-006", "operator": "eq", "value": false }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-HC-008",
+          "text": "Did you receive Form 1095-B or 1095-C from an employer or insurance provider?",
+          "helpText": "Form 1095-B is issued by insurance companies; Form 1095-C is issued by applicable large employers. Keep these for your records.",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": false }
+        }
+      ]
+    },
+    {
+      "sectionId": "foreign-income",
+      "title": "Foreign Income and Assets",
+      "description": "Foreign earned income, foreign bank accounts (FBAR), and foreign financial assets (FATCA). May trigger Form 2555, FBAR filing, or Form 8938.",
+      "sortOrder": 17,
+      "questions": [
+        {
+          "questionId": "1040-FI-001",
+          "text": "Did you earn income from a foreign country in 2025?",
+          "helpText": "Foreign earned income includes wages, salaries, and self-employment income earned while living and working abroad. You may qualify for the Foreign Earned Income Exclusion (up to $130,000 for 2025).",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "formTriggers": [
+            {
+              "formId": "form-2555",
+              "formName": "Form 2555 — Foreign Earned Income",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FI-002",
+          "text": "Country where foreign income was earned",
+          "inputType": "text",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-FI-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FI-003",
+          "text": "Total foreign earned income",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-FI-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-FI-004",
+          "text": "Did you pay income taxes to a foreign government?",
+          "helpText": "You may be able to claim a Foreign Tax Credit (Form 1116) for taxes paid to foreign governments, instead of or in addition to the Foreign Earned Income Exclusion.",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-FI-001", "operator": "eq", "value": true }
+          ],
+          "formTriggers": [
+            {
+              "formId": "form-1116",
+              "formName": "Form 1116 — Foreign Tax Credit",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-FI-005",
+          "text": "Foreign taxes paid",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-FI-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-FI-006",
+          "text": "Did you have a financial interest in or signature authority over any foreign financial accounts (bank accounts, securities accounts, or other financial accounts) at any time during 2025?",
+          "helpText": "If the aggregate value of all foreign financial accounts exceeded $10,000 at any time during the year, you are required to file FinCEN 114 (FBAR) electronically with the Financial Crimes Enforcement Network.",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true },
+          "tags": ["fbar"]
+        },
+        {
+          "questionId": "1040-FI-007",
+          "text": "Did the aggregate value of all foreign accounts exceed $10,000 at any time during 2025?",
+          "helpText": "IMPORTANT: FBAR (FinCEN 114) is filed separately from the tax return through the BSA E-Filing system. The deadline is April 15 with an automatic extension to October 15.",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-FI-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true },
+          "tags": ["fbar"]
+        },
+        {
+          "questionId": "1040-FI-008",
+          "text": "Maximum aggregate value of all foreign financial accounts during 2025",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1040-FI-007", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-FI-009",
+          "text": "Did you hold specified foreign financial assets with a total value exceeding $50,000 (single) or $200,000 (MFJ) at any time during 2025?",
+          "helpText": "FATCA reporting (Form 8938) is required for specified foreign financial assets exceeding the applicable threshold. Thresholds vary based on filing status and whether you live in the US or abroad.",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "formTriggers": [
+            {
+              "formId": "form-8938",
+              "formName": "Form 8938 — Statement of Specified Foreign Financial Assets (FATCA)",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ],
+          "validation": { "required": true },
+          "tags": ["fatca"]
+        },
+        {
+          "questionId": "1040-FI-010",
+          "text": "Total value of specified foreign financial assets at end of year",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-FI-009", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-FI-011",
+          "text": "Did you receive any distributions from, or were you a grantor of, or transferor to, a foreign trust?",
+          "helpText": "Transactions involving foreign trusts may require Form 3520 and/or Form 3520-A. Significant penalties apply for failure to report.",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "state-filing",
+      "title": "State Tax Filing Information",
+      "description": "State residency and income sourcing information needed to prepare state tax returns.",
+      "sortOrder": 18,
+      "questions": [
+        {
+          "questionId": "1040-ST-001",
+          "text": "What state were you a resident of for all of 2025?",
+          "helpText": "Your resident state is generally where you have your permanent home. If you lived in more than one state, indicate the state where you were domiciled.",
+          "inputType": "state_select",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ST-002",
+          "text": "Were you a part-year resident of any state during 2025?",
+          "helpText": "A part-year resident is someone who moved into or out of a state during the year. You would file a part-year resident return for each state.",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ST-003",
+          "text": "Select all states where you were a part-year resident",
+          "inputType": "state_multi_select",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-ST-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ST-004",
+          "text": "Date you moved (for part-year residency)",
+          "inputType": "date",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "1040-ST-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ST-005",
+          "text": "Did you earn income in a state other than your resident state?",
+          "helpText": "If you worked in another state, you may need to file a nonresident return in that state. Your resident state typically provides a credit for taxes paid to other states.",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ST-006",
+          "text": "Select all states where you earned nonresident income",
+          "inputType": "state_multi_select",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "1040-ST-005", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ST-007",
+          "text": "Type of income earned in nonresident state(s)",
+          "inputType": "multi_select",
+          "sortOrder": 7,
+          "options": [
+            { "value": "wages", "label": "Wages/Salary" },
+            { "value": "self_employment", "label": "Self-Employment Income" },
+            { "value": "rental", "label": "Rental Income" },
+            { "value": "business", "label": "Business Income (K-1)" },
+            { "value": "capital_gains", "label": "Capital Gains (real property in that state)" },
+            { "value": "other", "label": "Other" }
+          ],
+          "conditions": [
+            { "questionId": "1040-ST-005", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ST-008",
+          "text": "Did your spouse have a different resident state?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "in", "value": ["mfj", "mfs"] }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ST-009",
+          "text": "Spouse's resident state",
+          "inputType": "state_select",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-ST-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-ST-010",
+          "text": "Do you live in a community property state?",
+          "helpText": "Community property states include AZ, CA, ID, LA, NV, NM, TX, WA, and WI. This affects income allocation if filing MFS.",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-FS-001", "operator": "eq", "value": "mfs" }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "bank-info",
+      "title": "Refund and Payment Information",
+      "description": "Direct deposit information for refunds and payment method preferences for balance due.",
+      "sortOrder": 19,
+      "questions": [
+        {
+          "questionId": "1040-BANK-001",
+          "text": "If you are due a refund, would you like to receive it by direct deposit?",
+          "helpText": "Direct deposit is the fastest and safest way to receive your refund. You can split your refund into up to three accounts using Form 8888.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-BANK-002",
+          "text": "Bank routing number (9 digits)",
+          "helpText": "The routing number is the 9-digit number at the bottom left of your check. Verify this number carefully — an incorrect routing number can delay your refund.",
+          "inputType": "text",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "1040-BANK-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "pattern": "^[0-9]{9}$" }
+        },
+        {
+          "questionId": "1040-BANK-003",
+          "text": "Bank account number",
+          "inputType": "text",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "1040-BANK-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "pattern": "^[0-9]{4,17}$" }
+        },
+        {
+          "questionId": "1040-BANK-004",
+          "text": "Account type",
+          "inputType": "multiple_choice",
+          "sortOrder": 4,
+          "options": [
+            { "value": "checking", "label": "Checking" },
+            { "value": "savings", "label": "Savings" }
+          ],
+          "conditions": [
+            { "questionId": "1040-BANK-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-BANK-005",
+          "text": "Is this account in the taxpayer's name (or joint with spouse)?",
+          "helpText": "The IRS requires that the direct deposit account be in the taxpayer's name. Refunds cannot be deposited into accounts belonging to other individuals.",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "1040-BANK-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-BANK-006",
+          "text": "Would you like to apply part or all of your refund to next year's (2026) estimated tax?",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "1040-BANK-007",
+          "text": "Amount to apply to 2026 estimated tax",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "1040-BANK-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "1040-BANK-008",
+          "text": "If you owe a balance, how would you like to pay?",
+          "inputType": "multiple_choice",
+          "sortOrder": 8,
+          "options": [
+            { "value": "direct_debit", "label": "Direct debit (electronic funds withdrawal)" },
+            { "value": "eftps", "label": "EFTPS (Electronic Federal Tax Payment System)" },
+            { "value": "credit_card", "label": "Credit or debit card (processing fee applies)" },
+            { "value": "check", "label": "Check or money order" },
+            { "value": "installment", "label": "Installment agreement (Form 9465)" }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-BANK-009",
+          "text": "Preferred direct debit date for balance due payment",
+          "helpText": "You can schedule a direct debit for any date up to and including the filing due date. The payment will be withdrawn on the date you specify.",
+          "inputType": "date",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "1040-BANK-008", "operator": "eq", "value": "direct_debit" }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "1040-BANK-010",
+          "text": "Bank routing number for direct debit payment",
+          "inputType": "text",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "1040-BANK-008", "operator": "eq", "value": "direct_debit" }
+          ],
+          "validation": { "required": true, "pattern": "^[0-9]{9}$" }
+        },
+        {
+          "questionId": "1040-BANK-011",
+          "text": "Bank account number for direct debit payment",
+          "inputType": "text",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "1040-BANK-008", "operator": "eq", "value": "direct_debit" }
+          ],
+          "validation": { "required": true, "pattern": "^[0-9]{4,17}$" }
+        }
+      ]
+    }
+  ]
+}

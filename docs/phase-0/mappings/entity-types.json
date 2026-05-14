@@ -1,0 +1,122 @@
+{
+  "entityTypes": [
+    {
+      "id": "individual-1040",
+      "name": "Individual",
+      "formNumber": "1040",
+      "description": "Individual income tax return",
+      "filingStatuses": ["single", "mfj", "mfs", "hoh", "qss"],
+      "defaultDeadline": "04-15",
+      "extensionForm": "4868",
+      "extendedDeadline": "10-15",
+      "estimatedPaymentDates": ["04-15", "06-15", "09-15", "01-15"],
+      "questionFile": "individual-1040"
+    },
+    {
+      "id": "s-corp-1120s",
+      "name": "S-Corporation",
+      "formNumber": "1120-S",
+      "description": "U.S. Income Tax Return for an S Corporation",
+      "filingStatuses": [],
+      "defaultDeadline": "03-15",
+      "extensionForm": "7004",
+      "extendedDeadline": "09-15",
+      "estimatedPaymentDates": [],
+      "issuesK1": true,
+      "questionFile": "s-corp-1120s"
+    },
+    {
+      "id": "partnership-1065",
+      "name": "Partnership / LLC",
+      "formNumber": "1065",
+      "description": "U.S. Return of Partnership Income",
+      "filingStatuses": [],
+      "defaultDeadline": "03-15",
+      "extensionForm": "7004",
+      "extendedDeadline": "09-15",
+      "estimatedPaymentDates": [],
+      "issuesK1": true,
+      "questionFile": "partnership-1065"
+    },
+    {
+      "id": "sole-prop-schedule-c",
+      "name": "Sole Proprietorship",
+      "formNumber": "Schedule C",
+      "description": "Profit or Loss From Business — filed as part of Form 1040",
+      "filingStatuses": [],
+      "defaultDeadline": "04-15",
+      "extensionForm": "4868",
+      "extendedDeadline": "10-15",
+      "estimatedPaymentDates": ["04-15", "06-15", "09-15", "01-15"],
+      "parentEntity": "individual-1040",
+      "questionFile": "sole-prop-schedule-c"
+    },
+    {
+      "id": "nonprofit-990n",
+      "name": "Non-profit (e-Postcard)",
+      "formNumber": "990-N",
+      "description": "Electronic Notice for tax-exempt organizations with gross receipts ≤ $50,000",
+      "filingStatuses": [],
+      "defaultDeadline": "05-15",
+      "extensionForm": "8868",
+      "extendedDeadline": "11-15",
+      "estimatedPaymentDates": [],
+      "thresholds": {
+        "maxGrossReceipts": 50000
+      },
+      "questionFile": "nonprofit-990"
+    },
+    {
+      "id": "nonprofit-990ez",
+      "name": "Non-profit (Short Form)",
+      "formNumber": "990-EZ",
+      "description": "Short Form Return of Organization Exempt From Income Tax",
+      "filingStatuses": [],
+      "defaultDeadline": "05-15",
+      "extensionForm": "8868",
+      "extendedDeadline": "11-15",
+      "estimatedPaymentDates": [],
+      "thresholds": {
+        "maxGrossReceipts": 200000,
+        "maxAssets": 500000
+      },
+      "questionFile": "nonprofit-990"
+    },
+    {
+      "id": "nonprofit-990",
+      "name": "Non-profit (Full Form)",
+      "formNumber": "990",
+      "description": "Return of Organization Exempt From Income Tax",
+      "filingStatuses": [],
+      "defaultDeadline": "05-15",
+      "extensionForm": "8868",
+      "extendedDeadline": "11-15",
+      "estimatedPaymentDates": [],
+      "questionFile": "nonprofit-990"
+    },
+    {
+      "id": "nonprofit-990pf",
+      "name": "Private Foundation",
+      "formNumber": "990-PF",
+      "description": "Return of Private Foundation",
+      "filingStatuses": [],
+      "defaultDeadline": "05-15",
+      "extensionForm": "8868",
+      "extendedDeadline": "11-15",
+      "estimatedPaymentDates": ["05-15", "08-15", "11-15", "02-15"],
+      "questionFile": "nonprofit-990"
+    },
+    {
+      "id": "nonprofit-990t",
+      "name": "Non-profit (UBIT)",
+      "formNumber": "990-T",
+      "description": "Exempt Organization Business Income Tax Return",
+      "filingStatuses": [],
+      "defaultDeadline": "05-15",
+      "extensionForm": "8868",
+      "extendedDeadline": "11-15",
+      "estimatedPaymentDates": ["04-15", "06-15", "09-15", "12-15"],
+      "questionFile": "nonprofit-990"
+    }
+  ]
+}

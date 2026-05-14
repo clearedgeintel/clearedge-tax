@@ -1,0 +1,857 @@
+{
+  "metadata": {
+    "fileId": "sole-prop-schedule-c",
+    "entityTypes": ["sole-prop-schedule-c"],
+    "version": "1.0.0",
+    "taxYear": 2025,
+    "description": "Schedule C (Profit or Loss From Business) intake questions for sole proprietorships and single-member LLCs. Referenced by the 1040 interview via section_include."
+  },
+  "sections": [
+    {
+      "sectionId": "business-info",
+      "title": "Business Information",
+      "description": "Basic business identification and setup",
+      "sortOrder": 0,
+      "questions": [
+        {
+          "questionId": "SCHC-BIZ-001",
+          "text": "What is the name of your business?",
+          "helpText": "If you don't have a formal business name, enter your own name",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-BIZ-002",
+          "text": "Does your business have an EIN (Employer Identification Number)?",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-BIZ-003",
+          "text": "Business EIN",
+          "inputType": "ein",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "SCHC-BIZ-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-BIZ-004",
+          "text": "Business address (if different from home address)",
+          "inputType": "address",
+          "sortOrder": 4,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "SCHC-BIZ-005",
+          "text": "What is the principal business activity?",
+          "helpText": "Describe what your business does (e.g., 'Consulting', 'Web Development', 'Landscaping')",
+          "inputType": "text",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-BIZ-006",
+          "text": "Business activity code (NAICS)",
+          "helpText": "6-digit code from the Principal Business Activity Codes list. Staff can assist with this.",
+          "inputType": "text",
+          "sortOrder": 6,
+          "validation": { "required": true, "pattern": "^[0-9]{6}$" }
+        },
+        {
+          "questionId": "SCHC-BIZ-007",
+          "text": "What accounting method does the business use?",
+          "inputType": "multiple_choice",
+          "sortOrder": 7,
+          "options": [
+            { "value": "cash", "label": "Cash" },
+            { "value": "accrual", "label": "Accrual" },
+            { "value": "other", "label": "Other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-BIZ-008",
+          "text": "Describe the accounting method",
+          "inputType": "text",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "SCHC-BIZ-007", "operator": "eq", "value": "other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-BIZ-009",
+          "text": "Did you start or acquire this business during the tax year?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-BIZ-010",
+          "text": "Date the business started or was acquired",
+          "inputType": "date",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "SCHC-BIZ-009", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-BIZ-011",
+          "text": "Did you make any payments that would require you to file Form 1099?",
+          "helpText": "Generally, if you paid $600 or more to a non-employee for services",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-BIZ-012",
+          "text": "Did you or will you file all required Forms 1099?",
+          "inputType": "yes_no",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "SCHC-BIZ-011", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-BIZ-013",
+          "text": "Did you materially participate in the operation of this business during the tax year?",
+          "helpText": "Material participation means you were involved in the business on a regular, continuous, and substantial basis",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "validation": { "required": true },
+          "formTriggers": [
+            {
+              "formId": "form-8582",
+              "formName": "Passive Activity Loss Limitations",
+              "triggerWhen": { "operator": "eq", "value": false },
+              "action": "include"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "gross-income",
+      "title": "Gross Income / Receipts",
+      "description": "Total business revenue before expenses",
+      "sortOrder": 1,
+      "questions": [
+        {
+          "questionId": "SCHC-INC-001",
+          "text": "What were your total gross receipts or sales for the year?",
+          "helpText": "Include all income received from your business before any deductions",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-INC-002",
+          "text": "Did you have any returns and allowances?",
+          "helpText": "Refunds, rebates, or discounts given to customers",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-INC-003",
+          "text": "Total returns and allowances",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "SCHC-INC-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-INC-004",
+          "text": "Did you have any other business income not included in gross receipts?",
+          "helpText": "For example: recovered bad debts, interest on business accounts, fuel tax credits",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-INC-005",
+          "text": "Total other business income",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "SCHC-INC-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-INC-006",
+          "text": "Description of other business income",
+          "inputType": "text",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "SCHC-INC-004", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "SCHC-INC-007",
+          "text": "Did you receive any 1099-NEC or 1099-MISC forms for this business?",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-INC-008",
+          "text": "Please upload all 1099-NEC and 1099-MISC forms",
+          "inputType": "file_upload",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "SCHC-INC-007", "operator": "eq", "value": true }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "cogs",
+      "title": "Cost of Goods Sold",
+      "description": "For businesses that sell products or have inventory",
+      "sortOrder": 2,
+      "conditions": [
+        { "questionId": "SCHC-COGS-001", "operator": "eq", "value": true }
+      ],
+      "questions": [
+        {
+          "questionId": "SCHC-COGS-001",
+          "text": "Does your business sell products or have inventory?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-COGS-002",
+          "text": "What inventory valuation method do you use?",
+          "inputType": "multiple_choice",
+          "sortOrder": 2,
+          "options": [
+            { "value": "cost", "label": "Cost" },
+            { "value": "lower_of_cost_or_market", "label": "Lower of cost or market" },
+            { "value": "other", "label": "Other" }
+          ],
+          "conditions": [
+            { "questionId": "SCHC-COGS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-COGS-003",
+          "text": "Was there any change in determining quantities, costs, or valuations between opening and closing inventory?",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "SCHC-COGS-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "SCHC-COGS-004",
+          "text": "Inventory at beginning of year",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "SCHC-COGS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-COGS-005",
+          "text": "Purchases less cost of items withdrawn for personal use",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "SCHC-COGS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-COGS-006",
+          "text": "Cost of labor (not including amounts paid to yourself)",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "SCHC-COGS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-COGS-007",
+          "text": "Materials and supplies",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "SCHC-COGS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-COGS-008",
+          "text": "Other costs",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "SCHC-COGS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-COGS-009",
+          "text": "Inventory at end of year",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "SCHC-COGS-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "expenses",
+      "title": "Business Expenses",
+      "description": "Deductible business expenses (Schedule C Lines 8–27)",
+      "sortOrder": 3,
+      "questions": [
+        {
+          "questionId": "SCHC-EXP-001",
+          "text": "Advertising expenses",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-002",
+          "text": "Did you use a vehicle for business purposes?",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-EXP-003",
+          "text": "Commissions and fees paid",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-004",
+          "text": "Contract labor expenses",
+          "helpText": "Payments to independent contractors for services",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-005",
+          "text": "Depletion expense",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-006",
+          "text": "Employee benefit programs (other than pension/profit-sharing)",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-007",
+          "text": "Insurance (other than health)",
+          "helpText": "Business liability, professional liability, property insurance, etc.",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-008",
+          "text": "Interest on business debt (mortgage)",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-009",
+          "text": "Interest on business debt (other)",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-010",
+          "text": "Legal and professional services",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-011",
+          "text": "Office expenses",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-012",
+          "text": "Pension and profit-sharing plans",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-013",
+          "text": "Rent or lease — vehicles, machinery, equipment",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-014",
+          "text": "Rent or lease — other business property",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-015",
+          "text": "Repairs and maintenance",
+          "inputType": "currency",
+          "sortOrder": 15,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-016",
+          "text": "Supplies (not included in COGS)",
+          "inputType": "currency",
+          "sortOrder": 16,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-017",
+          "text": "Taxes and licenses",
+          "helpText": "Business taxes, licenses, and permits (not federal income tax)",
+          "inputType": "currency",
+          "sortOrder": 17,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-018",
+          "text": "Travel expenses",
+          "helpText": "Transportation, lodging, and meals while away from home for business",
+          "inputType": "currency",
+          "sortOrder": 18,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-019",
+          "text": "Meals (business related, 50% deductible)",
+          "inputType": "currency",
+          "sortOrder": 19,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-020",
+          "text": "Utilities",
+          "inputType": "currency",
+          "sortOrder": 20,
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-EXP-021",
+          "text": "Wages paid to employees (W-2)",
+          "inputType": "currency",
+          "sortOrder": 21,
+          "validation": { "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "vehicle-use",
+      "title": "Vehicle Use",
+      "description": "Business use of vehicle — Form 4562 Part V",
+      "sortOrder": 4,
+      "conditions": [
+        { "questionId": "SCHC-EXP-002", "operator": "eq", "value": true }
+      ],
+      "repeatable": true,
+      "questions": [
+        {
+          "questionId": "SCHC-VEH-001",
+          "text": "Vehicle description (year, make, model)",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-VEH-002",
+          "text": "Date the vehicle was placed in service",
+          "inputType": "date",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-VEH-003",
+          "text": "Total miles driven during the year",
+          "inputType": "number",
+          "sortOrder": 3,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-VEH-004",
+          "text": "Business miles driven during the year",
+          "inputType": "number",
+          "sortOrder": 4,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-VEH-005",
+          "text": "Commuting miles during the year",
+          "inputType": "number",
+          "sortOrder": 5,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-VEH-006",
+          "text": "Which method would you like to use for vehicle expenses?",
+          "helpText": "Standard mileage rate is simpler; actual expenses may yield a larger deduction",
+          "inputType": "multiple_choice",
+          "sortOrder": 6,
+          "options": [
+            { "value": "standard_mileage", "label": "Standard mileage rate" },
+            { "value": "actual_expenses", "label": "Actual expenses" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-VEH-007",
+          "text": "Total actual vehicle expenses (gas, oil, repairs, insurance, registration, etc.)",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "SCHC-VEH-006", "operator": "eq", "value": "actual_expenses" }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-VEH-008",
+          "text": "Was the vehicle available for personal use during off-duty hours?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-VEH-009",
+          "text": "Do you have written evidence to support your business use?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-VEH-010",
+          "text": "Is the evidence written contemporaneous records (mileage log)?",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "SCHC-VEH-009", "operator": "eq", "value": true }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "home-office",
+      "title": "Home Office",
+      "description": "Business use of home — Form 8829 or simplified method",
+      "sortOrder": 5,
+      "questions": [
+        {
+          "questionId": "SCHC-HOME-001",
+          "text": "Did you use part of your home regularly and exclusively for business?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true },
+          "formTriggers": [
+            {
+              "formId": "form-8829",
+              "formName": "Expenses for Business Use of Your Home",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ]
+        },
+        {
+          "questionId": "SCHC-HOME-002",
+          "text": "Which method would you like to use for the home office deduction?",
+          "inputType": "multiple_choice",
+          "sortOrder": 2,
+          "options": [
+            { "value": "simplified", "label": "Simplified method ($5/sq ft, max 300 sq ft = $1,500)" },
+            { "value": "regular", "label": "Regular method (actual expenses)" }
+          ],
+          "conditions": [
+            { "questionId": "SCHC-HOME-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-HOME-003",
+          "text": "Square footage of the area used regularly and exclusively for business",
+          "inputType": "number",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "SCHC-HOME-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 1 }
+        },
+        {
+          "questionId": "SCHC-HOME-004",
+          "text": "Total square footage of your home",
+          "inputType": "number",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "SCHC-HOME-002", "operator": "eq", "value": "regular" }
+          ],
+          "validation": { "required": true, "min": 1 }
+        },
+        {
+          "questionId": "SCHC-HOME-005",
+          "text": "Do you own or rent your home?",
+          "inputType": "multiple_choice",
+          "sortOrder": 5,
+          "options": [
+            { "value": "own", "label": "Own" },
+            { "value": "rent", "label": "Rent" }
+          ],
+          "conditions": [
+            { "questionId": "SCHC-HOME-002", "operator": "eq", "value": "regular" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-HOME-006",
+          "text": "Mortgage interest paid",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "SCHC-HOME-005", "operator": "eq", "value": "own" }
+          ],
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-HOME-007",
+          "text": "Real estate taxes paid",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "SCHC-HOME-005", "operator": "eq", "value": "own" }
+          ],
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-HOME-008",
+          "text": "Rent paid",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "SCHC-HOME-005", "operator": "eq", "value": "rent" }
+          ],
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-HOME-009",
+          "text": "Insurance on home",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "SCHC-HOME-002", "operator": "eq", "value": "regular" }
+          ],
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-HOME-010",
+          "text": "Utilities (electricity, gas, water, etc.)",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "SCHC-HOME-002", "operator": "eq", "value": "regular" }
+          ],
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-HOME-011",
+          "text": "Repairs and maintenance on home",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "SCHC-HOME-002", "operator": "eq", "value": "regular" }
+          ],
+          "validation": { "min": 0 }
+        },
+        {
+          "questionId": "SCHC-HOME-012",
+          "text": "Other home expenses (security, HOA fees, etc.)",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "SCHC-HOME-002", "operator": "eq", "value": "regular" }
+          ],
+          "validation": { "min": 0 }
+        }
+      ]
+    },
+    {
+      "sectionId": "depreciation",
+      "title": "Depreciation & Amortization",
+      "description": "Form 4562 — Section 179, bonus depreciation, MACRS",
+      "sortOrder": 6,
+      "questions": [
+        {
+          "questionId": "SCHC-DEP-001",
+          "text": "Did you purchase any business assets (equipment, furniture, computers, etc.) during the tax year?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true },
+          "formTriggers": [
+            {
+              "formId": "form-4562",
+              "formName": "Depreciation and Amortization",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ]
+        },
+        {
+          "questionId": "SCHC-DEP-002",
+          "text": "Description of asset",
+          "inputType": "text",
+          "sortOrder": 2,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "SCHC-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-DEP-003",
+          "text": "Date placed in service",
+          "inputType": "date",
+          "sortOrder": 3,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "SCHC-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-DEP-004",
+          "text": "Cost or other basis of asset",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "SCHC-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "SCHC-DEP-005",
+          "text": "Business use percentage",
+          "inputType": "percentage",
+          "sortOrder": 5,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "SCHC-DEP-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0, "max": 100 },
+          "defaultValue": 100
+        },
+        {
+          "questionId": "SCHC-DEP-006",
+          "text": "Would you like to elect Section 179 expensing for any assets?",
+          "helpText": "Section 179 allows you to deduct the full cost of qualifying assets in the year of purchase",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "SCHC-DEP-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "SCHC-DEP-007",
+          "text": "Do you have any existing assets from prior years that are still being depreciated?",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-DEP-008",
+          "text": "Please upload the depreciation schedule from the prior year return",
+          "inputType": "file_upload",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "SCHC-DEP-007", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "SCHC-DEP-009",
+          "text": "Did you dispose of (sell, trade, or discard) any business assets during the year?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true },
+          "formTriggers": [
+            {
+              "formId": "form-4797",
+              "formName": "Sales of Business Property",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "include"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "other-expenses",
+      "title": "Other Expenses",
+      "description": "Business expenses not listed in the standard categories",
+      "sortOrder": 7,
+      "questions": [
+        {
+          "questionId": "SCHC-OTH-001",
+          "text": "Do you have any other business expenses not listed above?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-OTH-002",
+          "text": "Description of other expense",
+          "inputType": "text",
+          "sortOrder": 2,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "SCHC-OTH-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SCHC-OTH-003",
+          "text": "Amount of other expense",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "repeatable": true,
+          "conditions": [
+            { "questionId": "SCHC-OTH-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 0 }
+        }
+      ]
+    }
+  ]
+}

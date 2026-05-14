@@ -1,0 +1,3006 @@
+{
+  "metadata": {
+    "fileId": "nonprofit-990",
+    "entityTypes": [
+      "nonprofit-990n",
+      "nonprofit-990ez",
+      "nonprofit-990",
+      "nonprofit-990pf",
+      "nonprofit-990t"
+    ],
+    "version": "1.0.0",
+    "taxYear": 2025,
+    "description": "Complete intake question matrix for the 990 family (990-N, 990-EZ, 990, 990-PF, 990-T)"
+  },
+  "sections": [
+    {
+      "sectionId": "variant-determination",
+      "title": "990 Variant Determination",
+      "description": "Routing questions that determine which Form 990 variant the organization must file. Private foundations file 990-PF; gross receipts up to $50K file 990-N (e-Postcard); gross receipts under $200K and total assets under $500K file 990-EZ; all others file 990. Organizations with unrelated business income over $1,000 must also file 990-T.",
+      "sortOrder": 0,
+      "questions": [
+        {
+          "questionId": "990-VAR-001",
+          "text": "Is this organization a private foundation as defined under Section 509(a)?",
+          "helpText": "Private foundations are typically funded by a single source (individual, family, or corporation) and must file Form 990-PF regardless of income level. If the IRS determination letter classifies the organization as a private foundation, select Yes.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true },
+          "formTriggers": [
+            {
+              "formId": "990-PF",
+              "formName": "Return of Private Foundation",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "require"
+            }
+          ]
+        },
+        {
+          "questionId": "990-VAR-002",
+          "text": "What is the organization's private foundation type?",
+          "helpText": "A private operating foundation actively conducts its own charitable programs. A private non-operating foundation primarily makes grants to other organizations.",
+          "inputType": "multiple_choice",
+          "sortOrder": 2,
+          "options": [
+            { "value": "non-operating", "label": "Private non-operating foundation" },
+            { "value": "operating", "label": "Private operating foundation" },
+            { "value": "exempt-operating", "label": "Exempt operating foundation" }
+          ],
+          "conditions": [
+            { "questionId": "990-VAR-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-VAR-003",
+          "text": "What were the organization's gross receipts for the tax year?",
+          "helpText": "Gross receipts include all revenue from all sources before any expenses. This includes contributions, program service revenue, investment income, and all other income.",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-VAR-004",
+          "text": "What were the organization's total assets at the end of the tax year?",
+          "helpText": "Total assets include cash, investments, property, equipment, and all other assets at fair market value or book value as reported on the balance sheet.",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-VAR-005",
+          "text": "Has the organization been in existence for less than one year?",
+          "helpText": "First-year organizations may have different filing thresholds. A first-year organization generally cannot file Form 990-N.",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-VAR-006",
+          "text": "Is the organization a Section 527 political organization?",
+          "helpText": "Section 527 political organizations have separate filing requirements and cannot file Form 990-N regardless of gross receipts.",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-VAR-007",
+          "text": "Is the organization included in a group return filed by a central/parent organization?",
+          "helpText": "If Yes, the subordinate organization may not need to file its own Form 990. The central organization files a group return covering all included subordinates.",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-VAR-008",
+          "text": "Did the organization have unrelated business gross income of $1,000 or more during the tax year?",
+          "helpText": "Unrelated business income is income from a trade or business regularly carried on that is not substantially related to the organization's exempt purpose. If gross UBI exceeds $1,000, Form 990-T must also be filed.",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true },
+          "formTriggers": [
+            {
+              "formId": "990-T",
+              "formName": "Exempt Organization Business Income Tax Return",
+              "triggerWhen": { "operator": "eq", "value": true },
+              "action": "require"
+            }
+          ]
+        },
+        {
+          "questionId": "990-VAR-009",
+          "text": "What was the total unrelated business gross income?",
+          "helpText": "Enter the total gross income from all unrelated business activities before deductions.",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "990-VAR-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "min": 1000 }
+        },
+        {
+          "questionId": "990-VAR-010",
+          "text": "Is the organization electing to file a full Form 990 even though it qualifies for 990-EZ or 990-N?",
+          "helpText": "Some organizations voluntarily file a more detailed return for transparency or donor relations purposes. This is always permitted.",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "990-VAR-001", "operator": "eq", "value": false }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-VAR-011",
+          "text": "Is this a final return (organization terminated or dissolved)?",
+          "helpText": "Check Yes if the organization has terminated, dissolved, or otherwise ceased operations and this is the final return to be filed.",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-VAR-012",
+          "text": "Is this return being filed for a short tax year (less than 12 months)?",
+          "helpText": "A short tax year can occur due to a change in accounting period or when the organization was formed or dissolved mid-year.",
+          "inputType": "yes_no",
+          "sortOrder": 12,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-VAR-013",
+          "text": "Short tax year start date",
+          "inputType": "date",
+          "sortOrder": 13,
+          "conditions": [
+            { "questionId": "990-VAR-012", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-VAR-014",
+          "text": "Short tax year end date",
+          "inputType": "date",
+          "sortOrder": 14,
+          "conditions": [
+            { "questionId": "990-VAR-012", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-VAR-015",
+          "text": "Computed 990 variant",
+          "helpText": "Auto-determined based on private foundation status, gross receipts, and total assets. Private foundation = 990-PF. Gross receipts <= $50,000 = 990-N. Gross receipts < $200,000 AND total assets < $500,000 = 990-EZ. Otherwise = 990 (full).",
+          "inputType": "multiple_choice",
+          "sortOrder": 15,
+          "staffOnly": true,
+          "options": [
+            { "value": "nonprofit-990n", "label": "Form 990-N (e-Postcard)" },
+            { "value": "nonprofit-990ez", "label": "Form 990-EZ" },
+            { "value": "nonprofit-990", "label": "Form 990 (Full)" },
+            { "value": "nonprofit-990pf", "label": "Form 990-PF" }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "org-info",
+      "title": "Organization Information",
+      "description": "Basic identification and organizational details required on all 990 series returns except the 990-N e-Postcard.",
+      "sortOrder": 1,
+      "appliesToEntityTypes": ["nonprofit-990ez", "nonprofit-990", "nonprofit-990pf", "nonprofit-990t"],
+      "questions": [
+        {
+          "questionId": "990-ORG-001",
+          "text": "Organization legal name (as shown on IRS determination letter)",
+          "helpText": "Enter the exact legal name as it appears on your IRS determination letter or articles of incorporation.",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-002",
+          "text": "Doing business as (DBA) name, if different",
+          "helpText": "Enter any trade names or assumed names under which the organization operates.",
+          "inputType": "text",
+          "sortOrder": 2,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-ORG-003",
+          "text": "Employer Identification Number (EIN)",
+          "helpText": "The 9-digit number assigned by the IRS (XX-XXXXXXX format).",
+          "inputType": "ein",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-004",
+          "text": "Organization mailing address",
+          "helpText": "Enter the organization's primary mailing address. Use a street address rather than a PO Box if possible.",
+          "inputType": "address",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-005",
+          "text": "Is the mailing address different from the physical address?",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-006",
+          "text": "Physical address (if different from mailing address)",
+          "inputType": "address",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "990-ORG-005", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-007",
+          "text": "Organization phone number",
+          "inputType": "phone",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-008",
+          "text": "Organization website URL",
+          "helpText": "Enter the full URL including https://. Enter 'N/A' if the organization does not have a website.",
+          "inputType": "text",
+          "sortOrder": 8,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-ORG-009",
+          "text": "Year of formation (incorporation or trust creation)",
+          "helpText": "The year the organization was legally created under state law.",
+          "inputType": "number",
+          "sortOrder": 9,
+          "validation": { "required": true, "min": 1800, "max": 2025 }
+        },
+        {
+          "questionId": "990-ORG-010",
+          "text": "State of legal domicile (incorporation or formation)",
+          "inputType": "state_select",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-011",
+          "text": "Type of exempt status",
+          "helpText": "Select the IRC section under which the organization is exempt. This is shown on your IRS determination letter.",
+          "inputType": "multiple_choice",
+          "sortOrder": 11,
+          "options": [
+            { "value": "501c3", "label": "501(c)(3) — Charitable, religious, educational, scientific" },
+            { "value": "501c4", "label": "501(c)(4) — Social welfare" },
+            { "value": "501c5", "label": "501(c)(5) — Labor, agricultural, horticultural" },
+            { "value": "501c6", "label": "501(c)(6) — Business leagues, chambers of commerce" },
+            { "value": "501c7", "label": "501(c)(7) — Social and recreational clubs" },
+            { "value": "501c8", "label": "501(c)(8) — Fraternal beneficiary societies" },
+            { "value": "501c9", "label": "501(c)(9) — Voluntary employees' beneficiary associations" },
+            { "value": "501c10", "label": "501(c)(10) — Domestic fraternal societies" },
+            { "value": "501c13", "label": "501(c)(13) — Cemetery companies" },
+            { "value": "501c19", "label": "501(c)(19) — Veterans' organizations" },
+            { "value": "501d", "label": "501(d) — Religious and apostolic organizations" },
+            { "value": "501e", "label": "501(e) — Cooperative hospital service organizations" },
+            { "value": "527", "label": "527 — Political organizations" },
+            { "value": "other", "label": "Other exempt status (specify)" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-012",
+          "text": "Other exempt status description",
+          "inputType": "text",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "990-ORG-011", "operator": "eq", "value": "other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-013",
+          "text": "Group exemption number (GEN), if applicable",
+          "helpText": "If the organization is covered under a group exemption letter, enter the four-digit GEN. Leave blank if not part of a group exemption.",
+          "inputType": "text",
+          "sortOrder": 13,
+          "validation": { "required": false, "pattern": "^[0-9]{4}$" }
+        },
+        {
+          "questionId": "990-ORG-014",
+          "text": "Accounting method used",
+          "inputType": "multiple_choice",
+          "sortOrder": 14,
+          "options": [
+            { "value": "cash", "label": "Cash" },
+            { "value": "accrual", "label": "Accrual" },
+            { "value": "other", "label": "Other" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-015",
+          "text": "Fiscal year end month",
+          "helpText": "Select the month in which the organization's fiscal year ends. Most organizations use December (calendar year).",
+          "inputType": "multiple_choice",
+          "sortOrder": 15,
+          "options": [
+            { "value": "01", "label": "January" },
+            { "value": "02", "label": "February" },
+            { "value": "03", "label": "March" },
+            { "value": "04", "label": "April" },
+            { "value": "05", "label": "May" },
+            { "value": "06", "label": "June" },
+            { "value": "07", "label": "July" },
+            { "value": "08", "label": "August" },
+            { "value": "09", "label": "September" },
+            { "value": "10", "label": "October" },
+            { "value": "11", "label": "November" },
+            { "value": "12", "label": "December" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-016",
+          "text": "Is this an amended return?",
+          "helpText": "Select Yes if this return is being filed to correct a previously filed Form 990, 990-EZ, or 990-PF.",
+          "inputType": "yes_no",
+          "sortOrder": 16,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-017",
+          "text": "Has the organization's name changed since it last filed a return?",
+          "inputType": "yes_no",
+          "sortOrder": 17,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-018",
+          "text": "Has the organization's address changed since it last filed a return?",
+          "inputType": "yes_no",
+          "sortOrder": 18,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-019",
+          "text": "Principal officer or executive director name",
+          "helpText": "Enter the name of the organization's principal officer (president, executive director, or equivalent).",
+          "inputType": "text",
+          "sortOrder": 19,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-020",
+          "text": "Principal officer email address",
+          "inputType": "email",
+          "sortOrder": 20,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ORG-021",
+          "text": "Principal officer phone number",
+          "inputType": "phone",
+          "sortOrder": 21,
+          "validation": { "required": false }
+        }
+      ]
+    },
+    {
+      "sectionId": "mission-activities",
+      "title": "Mission and Program Activities",
+      "description": "Describes the organization's mission, program service accomplishments, and how the organization achieved its exempt purpose during the tax year.",
+      "sortOrder": 2,
+      "appliesToEntityTypes": ["nonprofit-990", "nonprofit-990ez"],
+      "questions": [
+        {
+          "questionId": "990-MIS-001",
+          "text": "Organization's mission or most significant activities",
+          "helpText": "Briefly describe the organization's mission statement or its most significant activities. This appears on Part III, Line 1 of Form 990.",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-MIS-002",
+          "text": "Did the organization undertake any new significant program services during the tax year?",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-MIS-003",
+          "text": "Describe the new significant program services",
+          "inputType": "text",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "990-MIS-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-MIS-004",
+          "text": "Did the organization cease conducting or make significant changes in how it conducts any program services?",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-MIS-005",
+          "text": "Describe the program services that were ceased or significantly changed",
+          "inputType": "text",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "990-MIS-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-MIS-006",
+          "text": "Total number of voting members of the governing body",
+          "helpText": "Enter the total number of individuals who are voting members of the organization's governing body (board of directors or equivalent).",
+          "inputType": "number",
+          "sortOrder": 6,
+          "validation": { "required": true, "min": 1 }
+        },
+        {
+          "questionId": "990-MIS-007",
+          "text": "Number of independent voting members of the governing body",
+          "helpText": "Independent members are those who are not compensated as officers or employees of the organization and do not have a family or business relationship with other officers, directors, or key employees.",
+          "inputType": "number",
+          "sortOrder": 7,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "990-MIS-008",
+          "text": "Total number of employees",
+          "inputType": "number",
+          "sortOrder": 8,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "990-MIS-009",
+          "text": "Total number of volunteers",
+          "helpText": "Estimate the total number of individuals who provided volunteer services to the organization during the tax year.",
+          "inputType": "number",
+          "sortOrder": 9,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "990-MIS-010",
+          "text": "Total unrelated business revenue (from Part VIII, column C)",
+          "helpText": "Enter the total revenue from unrelated business activities as reported on the revenue statement.",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-MIS-011",
+          "text": "Program service accomplishments",
+          "helpText": "Describe each of the organization's three largest program services, as measured by expenses. Add one entry per program service. Include a description, expenses, grants included in expenses, and revenue generated.",
+          "inputType": "text",
+          "sortOrder": 11,
+          "repeatable": true,
+          "validation": { "required": true, "minItems": 1, "maxItems": 10 },
+          "tags": ["program-service"]
+        },
+        {
+          "questionId": "990-MIS-012",
+          "text": "Program service description",
+          "helpText": "Describe the program service activity, including the number of persons benefited and the specific accomplishments.",
+          "inputType": "text",
+          "sortOrder": 12,
+          "repeatable": true,
+          "validation": { "required": true },
+          "tags": ["program-service"]
+        },
+        {
+          "questionId": "990-MIS-013",
+          "text": "Program service expenses",
+          "helpText": "Total expenses allocated to this program service.",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "repeatable": true,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true },
+          "tags": ["program-service"]
+        },
+        {
+          "questionId": "990-MIS-014",
+          "text": "Grants and allocations included in program service expenses",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "repeatable": true,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false },
+          "tags": ["program-service"]
+        },
+        {
+          "questionId": "990-MIS-015",
+          "text": "Revenue generated by this program service",
+          "inputType": "currency",
+          "sortOrder": 15,
+          "repeatable": true,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false },
+          "tags": ["program-service"]
+        }
+      ]
+    },
+    {
+      "sectionId": "governance",
+      "title": "Governance, Management, and Disclosure",
+      "description": "Part VI of Form 990 — questions about the organization's governing body, policies, and disclosure practices. Required for the full Form 990 only.",
+      "sortOrder": 3,
+      "appliesToEntityTypes": ["nonprofit-990"],
+      "questions": [
+        {
+          "questionId": "990-GOV-001",
+          "text": "Number of voting members of the governing body at end of tax year",
+          "inputType": "number",
+          "sortOrder": 1,
+          "validation": { "required": true, "min": 1 }
+        },
+        {
+          "questionId": "990-GOV-002",
+          "text": "Number of independent voting members at end of tax year",
+          "helpText": "Members who do not have a material financial interest in the organization, are not compensated as officers, and have no family or business relationship with other insiders.",
+          "inputType": "number",
+          "sortOrder": 2,
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "990-GOV-003",
+          "text": "Did any officer, director, trustee, or key employee have a family relationship or a business relationship with any other officer, director, trustee, or key employee?",
+          "inputType": "yes_no",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-004",
+          "text": "Describe the family or business relationships among officers, directors, trustees, or key employees",
+          "inputType": "text",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "990-GOV-003", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-005",
+          "text": "Did the organization delegate control over management duties customarily performed by or under the direct supervision of officers, directors, trustees, or key employees to a management company or other person?",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-006",
+          "text": "Name of management company or person",
+          "inputType": "text",
+          "sortOrder": 6,
+          "conditions": [
+            { "questionId": "990-GOV-005", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-007",
+          "text": "Did the organization make any significant changes to its governing documents since the prior Form 990 was filed?",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-008",
+          "text": "Did the organization become aware during the year of a significant diversion of the organization's assets?",
+          "helpText": "A significant diversion includes embezzlement, theft, or unauthorized use of exempt funds.",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-009",
+          "text": "Does the organization have a written conflict of interest policy?",
+          "helpText": "A conflict of interest policy requires officers, directors, and key employees to disclose financial interests that could give rise to conflicts.",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-010",
+          "text": "Are officers, directors, or trustees and key employees required to disclose annually interests that could give rise to conflicts?",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "990-GOV-009", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-011",
+          "text": "Does the organization regularly and consistently monitor and enforce compliance with the conflict of interest policy?",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "990-GOV-009", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-012",
+          "text": "Does the organization have a written whistleblower policy?",
+          "helpText": "A whistleblower policy encourages staff and volunteers to report suspected financial impropriety or misuse of the organization's resources without fear of retaliation.",
+          "inputType": "yes_no",
+          "sortOrder": 12,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-013",
+          "text": "Does the organization have a written document retention and destruction policy?",
+          "helpText": "A document retention policy identifies the record retention responsibilities of staff, volunteers, board members, and outsiders for maintaining and documenting the storage and destruction of the organization's documents and records.",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-014",
+          "text": "Did the process for determining compensation of the following persons include a review and approval by independent persons, comparability data, and contemporaneous substantiation of the deliberation and decision: CEO, Executive Director, or top management official?",
+          "helpText": "This relates to the rebuttable presumption of reasonableness for executive compensation under IRC 4958.",
+          "inputType": "yes_no",
+          "sortOrder": 14,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-015",
+          "text": "Did the process for determining compensation include a review for other officers or key employees?",
+          "inputType": "yes_no",
+          "sortOrder": 15,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-016",
+          "text": "Did the organization invest in, contribute assets to, or participate in a joint venture or similar arrangement with a taxable entity during the year?",
+          "inputType": "yes_no",
+          "sortOrder": 16,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-017",
+          "text": "Has the organization taken steps to safeguard the exempt status with respect to its participation in joint ventures?",
+          "inputType": "yes_no",
+          "sortOrder": 17,
+          "conditions": [
+            { "questionId": "990-GOV-016", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-018",
+          "text": "Does the organization have members, stockholders, or other persons who had the power to elect or appoint one or more members of the governing body?",
+          "inputType": "yes_no",
+          "sortOrder": 18,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-019",
+          "text": "Are any governance decisions of the organization reserved to or subject to approval by members, stockholders, or persons other than the governing body?",
+          "inputType": "yes_no",
+          "sortOrder": 19,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-GOV-020",
+          "text": "Did the organization contemporaneously document the meetings held or written actions undertaken during the year by the governing body and each committee with authority to act on behalf of the governing body?",
+          "inputType": "yes_no",
+          "sortOrder": 20,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "revenue",
+      "title": "Revenue",
+      "description": "Part VIII (Form 990) or Part I (Form 990-EZ) — Statement of revenue including contributions, program service revenue, investment income, and other revenue.",
+      "sortOrder": 4,
+      "appliesToEntityTypes": ["nonprofit-990", "nonprofit-990ez"],
+      "questions": [
+        {
+          "questionId": "990-REV-001",
+          "text": "Contributions and grants received (cash and non-cash)",
+          "helpText": "Total contributions, gifts, grants, and similar amounts received. Include government grants, foundation grants, and individual donations.",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-REV-002",
+          "text": "Federated campaigns contributions",
+          "helpText": "Contributions received through federated fundraising campaigns such as United Way.",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-003",
+          "text": "Membership dues contributions",
+          "helpText": "Portion of membership dues that represents a contribution (amount in excess of the value of benefits provided to the member).",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-004",
+          "text": "Fundraising events contributions",
+          "helpText": "Gross contributions from fundraising events (the contribution portion, not the gross receipts).",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-005",
+          "text": "Related or exempt-function government grants",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-006",
+          "text": "All other contributions, gifts, grants, and similar amounts",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-007",
+          "text": "Non-cash contributions included in total contributions",
+          "helpText": "The total value of all non-cash (in-kind) contributions included in the amounts above.",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-008",
+          "text": "Program service revenue (fees for services, contracts, etc.)",
+          "helpText": "Revenue earned from performing the organization's exempt function, including fees for services, government contracts, and tuition.",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-REV-009",
+          "text": "Investment income (interest, dividends, rents, royalties)",
+          "helpText": "Includes interest on savings and investments, dividends, rental income from investment property, and royalties.",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-REV-010",
+          "text": "Net gain or loss from sale of assets other than inventory",
+          "helpText": "Enter the net gain or loss from the sale of investments, property, or other non-inventory assets.",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-011",
+          "text": "Gross receipts from fundraising events",
+          "helpText": "Total gross receipts from special events and activities (before deducting direct expenses).",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-012",
+          "text": "Less: direct expenses from fundraising events",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "conditions": [
+            { "questionId": "990-REV-011", "operator": "gt", "value": 0 }
+          ],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-013",
+          "text": "Gross income from gaming activities",
+          "helpText": "Revenue from bingo, pull tabs, instant bingo, and other gaming activities.",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-014",
+          "text": "Net rental income or loss",
+          "helpText": "Net income from real property and personal property rentals not reported as investment income.",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-015",
+          "text": "Other revenue not included above",
+          "helpText": "Any revenue not captured in the categories above. Include a description.",
+          "inputType": "currency",
+          "sortOrder": 15,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-REV-016",
+          "text": "Description of other revenue",
+          "inputType": "text",
+          "sortOrder": 16,
+          "conditions": [
+            { "questionId": "990-REV-015", "operator": "gt", "value": 0 }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-REV-017",
+          "text": "Total revenue",
+          "helpText": "Sum of all revenue items above. This should match the total reported on Part VIII, Line 12 (Form 990) or Part I, Line 9 (Form 990-EZ).",
+          "inputType": "currency",
+          "sortOrder": 17,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "functional-expenses",
+      "title": "Statement of Functional Expenses",
+      "description": "Part IX of Form 990 — Detailed breakdown of expenses by natural classification, allocated across program services, management and general, and fundraising columns. Required for full Form 990 filers only.",
+      "sortOrder": 5,
+      "appliesToEntityTypes": ["nonprofit-990"],
+      "questions": [
+        {
+          "questionId": "990-FEXP-001",
+          "text": "Grants and other assistance to domestic organizations and domestic governments",
+          "helpText": "Total grants paid to domestic 501(c)(3) organizations, other exempt organizations, and domestic governments.",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-FEXP-002",
+          "text": "Grants and other assistance to domestic individuals",
+          "helpText": "Scholarships, fellowships, research grants, and similar payments to individuals.",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-003",
+          "text": "Grants and other assistance to foreign organizations, foreign governments, and foreign individuals",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-004",
+          "text": "Benefits paid to or for members",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-005",
+          "text": "Compensation of current officers, directors, trustees, and key employees",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-FEXP-006",
+          "text": "Compensation not included above to disqualified persons",
+          "helpText": "Compensation paid to disqualified persons (as defined under Section 4958) other than current officers, directors, trustees, and key employees.",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-007",
+          "text": "Other salaries and wages",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-FEXP-008",
+          "text": "Pension plan accruals and contributions",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-009",
+          "text": "Other employee benefits",
+          "helpText": "Health insurance, life insurance, and other fringe benefits not included in pension contributions.",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-010",
+          "text": "Payroll taxes",
+          "helpText": "Employer's share of FICA, FUTA, and state unemployment taxes.",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-011",
+          "text": "Fees for services — management",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-012",
+          "text": "Fees for services — legal",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-013",
+          "text": "Fees for services — accounting",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-014",
+          "text": "Fees for services — lobbying",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-015",
+          "text": "Fees for services — professional fundraising",
+          "inputType": "currency",
+          "sortOrder": 15,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-016",
+          "text": "Fees for services — investment management",
+          "inputType": "currency",
+          "sortOrder": 16,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-017",
+          "text": "Fees for services — other",
+          "inputType": "currency",
+          "sortOrder": 17,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-018",
+          "text": "Advertising and promotion",
+          "inputType": "currency",
+          "sortOrder": 18,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-019",
+          "text": "Office expenses",
+          "inputType": "currency",
+          "sortOrder": 19,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-020",
+          "text": "Information technology",
+          "inputType": "currency",
+          "sortOrder": 20,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-021",
+          "text": "Royalties",
+          "inputType": "currency",
+          "sortOrder": 21,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-022",
+          "text": "Occupancy (rent, utilities, maintenance)",
+          "inputType": "currency",
+          "sortOrder": 22,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-023",
+          "text": "Travel",
+          "inputType": "currency",
+          "sortOrder": 23,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-024",
+          "text": "Payments of travel or entertainment expenses for any federal, state, or local public officials",
+          "inputType": "currency",
+          "sortOrder": 24,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-025",
+          "text": "Conferences, conventions, and meetings",
+          "inputType": "currency",
+          "sortOrder": 25,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-026",
+          "text": "Interest expense",
+          "inputType": "currency",
+          "sortOrder": 26,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-027",
+          "text": "Payments to affiliates",
+          "inputType": "currency",
+          "sortOrder": 27,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-028",
+          "text": "Depreciation, depletion, and amortization",
+          "inputType": "currency",
+          "sortOrder": 28,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-029",
+          "text": "Insurance",
+          "inputType": "currency",
+          "sortOrder": 29,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-030",
+          "text": "Other expenses (itemize — provide description and amount for each)",
+          "helpText": "List any other expenses not included in the categories above. Add one entry per expense type.",
+          "inputType": "text",
+          "sortOrder": 30,
+          "repeatable": true,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-FEXP-031",
+          "text": "Total functional expenses",
+          "inputType": "currency",
+          "sortOrder": 31,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-FEXP-032",
+          "text": "Program services expenses (column B total)",
+          "helpText": "Total expenses allocated to program services. This is the portion of total expenses directly related to carrying out the organization's exempt purpose.",
+          "inputType": "currency",
+          "sortOrder": 32,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-FEXP-033",
+          "text": "Management and general expenses (column C total)",
+          "helpText": "Total expenses for overall management, general oversight, recordkeeping, budgeting, and other administrative activities.",
+          "inputType": "currency",
+          "sortOrder": 33,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-FEXP-034",
+          "text": "Fundraising expenses (column D total)",
+          "helpText": "Total expenses incurred for soliciting contributions, gifts, grants, and similar amounts.",
+          "inputType": "currency",
+          "sortOrder": 34,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-FEXP-035",
+          "text": "Did the organization report joint costs from a combined educational campaign and fundraising solicitation?",
+          "helpText": "If Yes, the organization must follow ASC 958-720 for allocating joint costs between program, management, and fundraising.",
+          "inputType": "yes_no",
+          "sortOrder": 35,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-FEXP-036",
+          "text": "Total amount of joint costs for the tax year",
+          "inputType": "currency",
+          "sortOrder": 36,
+          "conditions": [
+            { "questionId": "990-FEXP-035", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-FEXP-037",
+          "text": "Amount allocated to program services from joint costs",
+          "inputType": "currency",
+          "sortOrder": 37,
+          "conditions": [
+            { "questionId": "990-FEXP-035", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-FEXP-038",
+          "text": "Amount allocated to management and general from joint costs",
+          "inputType": "currency",
+          "sortOrder": 38,
+          "conditions": [
+            { "questionId": "990-FEXP-035", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-FEXP-039",
+          "text": "Amount allocated to fundraising from joint costs",
+          "inputType": "currency",
+          "sortOrder": 39,
+          "conditions": [
+            { "questionId": "990-FEXP-035", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "expenses-ez",
+      "title": "Expenses (990-EZ)",
+      "description": "Part I of Form 990-EZ — Simplified expense reporting for organizations that qualify to file 990-EZ. Does not require functional allocation across program/management/fundraising columns.",
+      "sortOrder": 6,
+      "appliesToEntityTypes": ["nonprofit-990ez"],
+      "questions": [
+        {
+          "questionId": "990-EXEZ-001",
+          "text": "Grants and similar amounts paid",
+          "helpText": "Total grants, awards, and similar payments made to organizations and individuals.",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-EXEZ-002",
+          "text": "Benefits paid to or for members",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-EXEZ-003",
+          "text": "Salaries, other compensation, and employee benefits",
+          "helpText": "Total compensation paid to officers, directors, trustees, and employees including salary, bonuses, and benefits.",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-EXEZ-004",
+          "text": "Professional fees and other payments to independent contractors",
+          "helpText": "Amounts paid to attorneys, accountants, consultants, and other independent contractors for professional services.",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-EXEZ-005",
+          "text": "Occupancy, rent, utilities, and maintenance",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-EXEZ-006",
+          "text": "Printing, publications, postage, and shipping",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-EXEZ-007",
+          "text": "Other expenses (describe and total)",
+          "helpText": "All other expenses not included in the categories above. Provide a description of the major categories.",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-EXEZ-008",
+          "text": "Description of other expenses",
+          "inputType": "text",
+          "sortOrder": 8,
+          "conditions": [
+            { "questionId": "990-EXEZ-007", "operator": "gt", "value": 0 }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-EXEZ-009",
+          "text": "Total expenses",
+          "helpText": "Sum of all expense line items. This should match Part I, Line 17 of Form 990-EZ.",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-EXEZ-010",
+          "text": "Excess or deficit for the year (revenue minus expenses)",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-EXEZ-011",
+          "text": "Did the organization engage a professional fundraiser during the year?",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-EXEZ-012",
+          "text": "Name of professional fundraiser",
+          "inputType": "text",
+          "sortOrder": 12,
+          "conditions": [
+            { "questionId": "990-EXEZ-011", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-EXEZ-013",
+          "text": "Amount paid to professional fundraiser",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "conditions": [
+            { "questionId": "990-EXEZ-011", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-EXEZ-014",
+          "text": "Amount retained by professional fundraiser",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "conditions": [
+            { "questionId": "990-EXEZ-011", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-EXEZ-015",
+          "text": "Did the organization receive any funds during the year that were held in escrow or custodial accounts?",
+          "inputType": "yes_no",
+          "sortOrder": 15,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "balance-sheet",
+      "title": "Balance Sheet",
+      "description": "Part X (Form 990) or Part II (Form 990-EZ) — Statement of assets, liabilities, and net assets/fund balances at the beginning and end of the tax year.",
+      "sortOrder": 7,
+      "appliesToEntityTypes": ["nonprofit-990", "nonprofit-990ez"],
+      "questions": [
+        {
+          "questionId": "990-BS-001",
+          "text": "Cash — non-interest-bearing (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-BS-002",
+          "text": "Cash — non-interest-bearing (end of year)",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-BS-003",
+          "text": "Savings and temporary cash investments (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-004",
+          "text": "Savings and temporary cash investments (end of year)",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-005",
+          "text": "Pledges and grants receivable, net (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-006",
+          "text": "Pledges and grants receivable, net (end of year)",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-007",
+          "text": "Accounts receivable, net (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-008",
+          "text": "Accounts receivable, net (end of year)",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-009",
+          "text": "Investments — publicly traded securities (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-010",
+          "text": "Investments — publicly traded securities (end of year)",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-011",
+          "text": "Investments — other securities (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-012",
+          "text": "Investments — other securities (end of year)",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-013",
+          "text": "Investments — program-related (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-014",
+          "text": "Investments — program-related (end of year)",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-015",
+          "text": "Land, buildings, and equipment (net of depreciation) (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 15,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-016",
+          "text": "Land, buildings, and equipment (net of depreciation) (end of year)",
+          "inputType": "currency",
+          "sortOrder": 16,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-017",
+          "text": "Other assets (beginning of year)",
+          "helpText": "Include prepaid expenses, intangible assets, and any other assets not listed above.",
+          "inputType": "currency",
+          "sortOrder": 17,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-018",
+          "text": "Other assets (end of year)",
+          "inputType": "currency",
+          "sortOrder": 18,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-019",
+          "text": "Total assets (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 19,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-BS-020",
+          "text": "Total assets (end of year)",
+          "inputType": "currency",
+          "sortOrder": 20,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-BS-021",
+          "text": "Accounts payable and accrued expenses (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 21,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-022",
+          "text": "Accounts payable and accrued expenses (end of year)",
+          "inputType": "currency",
+          "sortOrder": 22,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-023",
+          "text": "Grants payable (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 23,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-024",
+          "text": "Grants payable (end of year)",
+          "inputType": "currency",
+          "sortOrder": 24,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-025",
+          "text": "Deferred revenue (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 25,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-026",
+          "text": "Deferred revenue (end of year)",
+          "inputType": "currency",
+          "sortOrder": 26,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-027",
+          "text": "Tax-exempt bond liabilities (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 27,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-028",
+          "text": "Tax-exempt bond liabilities (end of year)",
+          "inputType": "currency",
+          "sortOrder": 28,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-029",
+          "text": "Other liabilities (beginning of year)",
+          "helpText": "Mortgages, notes payable, and all other liabilities not listed above.",
+          "inputType": "currency",
+          "sortOrder": 29,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-030",
+          "text": "Other liabilities (end of year)",
+          "inputType": "currency",
+          "sortOrder": 30,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-031",
+          "text": "Total liabilities (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 31,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-BS-032",
+          "text": "Total liabilities (end of year)",
+          "inputType": "currency",
+          "sortOrder": 32,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-BS-033",
+          "text": "Net assets or fund balances — unrestricted (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 33,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-034",
+          "text": "Net assets or fund balances — unrestricted (end of year)",
+          "inputType": "currency",
+          "sortOrder": 34,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-035",
+          "text": "Net assets or fund balances — temporarily restricted (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 35,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-036",
+          "text": "Net assets or fund balances — temporarily restricted (end of year)",
+          "inputType": "currency",
+          "sortOrder": 36,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-037",
+          "text": "Net assets or fund balances — permanently restricted (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 37,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-038",
+          "text": "Net assets or fund balances — permanently restricted (end of year)",
+          "inputType": "currency",
+          "sortOrder": 38,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990-BS-039",
+          "text": "Total net assets or fund balances (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 39,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-BS-040",
+          "text": "Total net assets or fund balances (end of year)",
+          "inputType": "currency",
+          "sortOrder": 40,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-BS-041",
+          "text": "Total liabilities and net assets/fund balances (beginning of year)",
+          "inputType": "currency",
+          "sortOrder": 41,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-BS-042",
+          "text": "Total liabilities and net assets/fund balances (end of year)",
+          "inputType": "currency",
+          "sortOrder": 42,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "compensation-np",
+      "title": "Compensation of Officers, Directors, Trustees, Key Employees",
+      "description": "Part VII (Form 990) or Part IV (Form 990-EZ) — Detailed compensation information for officers, directors, trustees, key employees, highest compensated employees, and independent contractors.",
+      "sortOrder": 8,
+      "appliesToEntityTypes": ["nonprofit-990", "nonprofit-990ez"],
+      "questions": [
+        {
+          "questionId": "990-COMP-001",
+          "text": "Officer, director, trustee, or key employee entry",
+          "helpText": "Add one entry for each officer, director, trustee, and key employee. For Form 990, also include the five highest compensated employees earning over $100,000 and the five highest compensated independent contractors earning over $100,000.",
+          "inputType": "text",
+          "sortOrder": 1,
+          "repeatable": true,
+          "validation": { "required": true, "minItems": 1, "maxItems": 50 },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-002",
+          "text": "Full name of individual",
+          "inputType": "text",
+          "sortOrder": 2,
+          "repeatable": true,
+          "validation": { "required": true },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-003",
+          "text": "Title or position",
+          "helpText": "Enter the individual's title (e.g., President, Treasurer, Executive Director, Board Member).",
+          "inputType": "text",
+          "sortOrder": 3,
+          "repeatable": true,
+          "validation": { "required": true },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-004",
+          "text": "Average hours per week devoted to position",
+          "helpText": "Include hours for all related organizations if applicable.",
+          "inputType": "number",
+          "sortOrder": 4,
+          "repeatable": true,
+          "validation": { "required": true, "min": 0, "max": 168 },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-005",
+          "text": "Average hours per week for related organizations",
+          "inputType": "number",
+          "sortOrder": 5,
+          "repeatable": true,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false, "min": 0, "max": 168 },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-006",
+          "text": "Is this person a current officer?",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "repeatable": true,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-007",
+          "text": "Is this person a current director or trustee (individual)?",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "repeatable": true,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-008",
+          "text": "Is this person a current key employee?",
+          "helpText": "A key employee meets all three tests: (1) $150,000+ in compensation, (2) responsibility or influence over a significant segment of operations, and (3) top 20 among all employees by compensation.",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "repeatable": true,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-009",
+          "text": "Is this person a highest compensated employee (non-officer, non-key)?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "repeatable": true,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-010",
+          "text": "Is this person a former officer, director, trustee, or key employee?",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "repeatable": true,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-011",
+          "text": "Reportable compensation from the organization (W-2/1099-MISC)",
+          "helpText": "Total compensation reported on Form W-2, Box 5 or Form 1099-MISC for this individual from the filing organization.",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "repeatable": true,
+          "validation": { "required": true },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-012",
+          "text": "Reportable compensation from related organizations",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "repeatable": true,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": false },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-013",
+          "text": "Estimated amount of other compensation from the organization and related organizations",
+          "helpText": "Includes contributions to employee benefit plans (retirement, health), deferred compensation, and nontaxable fringe benefits.",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "repeatable": true,
+          "validation": { "required": false },
+          "tags": ["compensation-entry"]
+        },
+        {
+          "questionId": "990-COMP-014",
+          "text": "Total number of individuals who received more than $100,000 of reportable compensation from the organization",
+          "inputType": "number",
+          "sortOrder": 14,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true, "min": 0 }
+        },
+        {
+          "questionId": "990-COMP-015",
+          "text": "Did the organization provide any non-fixed payments (bonuses, incentive compensation, severance) to any current or former officer, director, trustee, or key employee?",
+          "inputType": "yes_no",
+          "sortOrder": 15,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "compliance-np",
+      "title": "Compliance Checklist",
+      "description": "Part IV (Form 990) or Part V (Form 990-EZ) — Yes/No checklist of compliance questions covering political activities, lobbying, excess benefit transactions, and other required disclosures.",
+      "sortOrder": 9,
+      "appliesToEntityTypes": ["nonprofit-990", "nonprofit-990ez"],
+      "questions": [
+        {
+          "questionId": "990-COMPL-001",
+          "text": "Did the organization engage in direct or indirect political campaign activities on behalf of or in opposition to candidates for public office?",
+          "helpText": "501(c)(3) organizations are absolutely prohibited from engaging in political campaign activities. Other exempt organizations may have limited ability but must report it.",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-002",
+          "text": "Did the organization engage in lobbying activities or have a Section 501(h) election in effect during the tax year?",
+          "helpText": "Lobbying includes attempting to influence legislation through communication with legislators or the public. Section 501(h) election allows certain charities to use expenditure limits instead of the substantial part test.",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-003",
+          "text": "Total lobbying expenditures for the tax year",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "990-COMPL-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-004",
+          "text": "Did the organization engage in an excess benefit transaction with a disqualified person during the year?",
+          "helpText": "An excess benefit transaction is one in which a disqualified person receives more than reasonable compensation or other economic benefit from the organization. Triggers potential excise taxes under IRC Section 4958.",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-005",
+          "text": "Was the organization aware that a prior excess benefit transaction had not been reported on any prior Form 990 or 990-EZ?",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-006",
+          "text": "Did the organization make any loans to or receive any loans from any current or former officers, directors, trustees, key employees, or highest compensated employees?",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-007",
+          "text": "Total amount of loans outstanding at end of year",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "990-COMPL-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-008",
+          "text": "Did the organization provide a grant or other assistance to any current or former officer, director, trustee, key employee, creator or founder, or substantial contributor, or a 35% controlled entity or family member of any of these persons?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-009",
+          "text": "Did the organization engage in a business transaction with a current or former officer, director, trustee, key employee, creator or founder, or substantial contributor (or family member or 35% controlled entity)?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-010",
+          "text": "Describe the business transaction with the insider",
+          "inputType": "text",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "990-COMPL-009", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-011",
+          "text": "Did the organization make any grants or provide assistance to individuals for scholarships, fellowships, student loans, or other educational assistance?",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-012",
+          "text": "Did the organization operate one or more hospital facilities?",
+          "inputType": "yes_no",
+          "sortOrder": 12,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-013",
+          "text": "Is the organization a school as described in section 170(b)(1)(A)(ii)?",
+          "inputType": "yes_no",
+          "sortOrder": 13,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-014",
+          "text": "Did the organization solicit any contributions that were not tax deductible as charitable contributions?",
+          "helpText": "If Yes, did the organization include with every solicitation an express statement that such contributions or gifts were not tax deductible?",
+          "inputType": "yes_no",
+          "sortOrder": 14,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-015",
+          "text": "Did the organization receive any payment for indoor tanning services during the tax year?",
+          "inputType": "yes_no",
+          "sortOrder": 15,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-016",
+          "text": "Is the organization subject to the section 4960 tax on excess tax-exempt organization executive compensation?",
+          "helpText": "Section 4960 imposes a 21% excise tax on remuneration exceeding $1 million paid to any covered employee by an applicable tax-exempt organization.",
+          "inputType": "yes_no",
+          "sortOrder": 16,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-017",
+          "text": "Did the organization terminate or undergo a substantial contraction during the tax year?",
+          "helpText": "A substantial contraction includes the disposition of 25% or more of the organization's net assets.",
+          "inputType": "yes_no",
+          "sortOrder": 17,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-018",
+          "text": "Did the organization dissolve, terminate, or merge during the tax year?",
+          "inputType": "yes_no",
+          "sortOrder": 18,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-019",
+          "text": "Did the organization receive donated services or use of facilities from a related organization?",
+          "inputType": "yes_no",
+          "sortOrder": 19,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-COMPL-020",
+          "text": "Did the organization maintain collections of works of art, historical objects, or other similar assets?",
+          "inputType": "yes_no",
+          "sortOrder": 20,
+          "appliesToEntityTypes": ["nonprofit-990"],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "pf-assets",
+      "title": "Private Foundation — Balance Sheet (Assets)",
+      "description": "Part II of Form 990-PF — Detailed statement of assets including fair market value column. Required for all private foundations.",
+      "sortOrder": 10,
+      "appliesToEntityTypes": ["nonprofit-990pf"],
+      "questions": [
+        {
+          "questionId": "990PF-AST-001",
+          "text": "Cash — non-interest-bearing (book value)",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-AST-002",
+          "text": "Cash — non-interest-bearing (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-AST-003",
+          "text": "Savings and temporary cash investments (book value)",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-004",
+          "text": "Savings and temporary cash investments (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-005",
+          "text": "Accounts receivable, net (book value)",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-006",
+          "text": "Accounts receivable, net (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-007",
+          "text": "Pledges receivable, net (book value)",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-008",
+          "text": "Pledges receivable, net (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-009",
+          "text": "Investments — U.S. and state government obligations (book value)",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-010",
+          "text": "Investments — U.S. and state government obligations (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-011",
+          "text": "Investments — corporate stock (book value)",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-012",
+          "text": "Investments — corporate stock (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-013",
+          "text": "Investments — corporate bonds (book value)",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-014",
+          "text": "Investments — corporate bonds (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-015",
+          "text": "Investments — land, buildings, and equipment (book value, net of depreciation)",
+          "inputType": "currency",
+          "sortOrder": 15,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-016",
+          "text": "Investments — land, buildings, and equipment (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 16,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-017",
+          "text": "Investments — mortgage loans (book value)",
+          "inputType": "currency",
+          "sortOrder": 17,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-018",
+          "text": "Investments — mortgage loans (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 18,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-019",
+          "text": "Investments — other (book value)",
+          "helpText": "Include partnership interests, hedge funds, private equity, and any other investments not listed above.",
+          "inputType": "currency",
+          "sortOrder": 19,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-020",
+          "text": "Investments — other (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 20,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-021",
+          "text": "Land, buildings, and equipment used for charitable purposes (book value, net of depreciation)",
+          "helpText": "Property used directly in carrying out the foundation's exempt purpose (not held for investment).",
+          "inputType": "currency",
+          "sortOrder": 21,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-022",
+          "text": "Land, buildings, and equipment used for charitable purposes (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 22,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-023",
+          "text": "Other assets (book value)",
+          "helpText": "Include prepaid expenses, intangible assets, and any other assets not classified above.",
+          "inputType": "currency",
+          "sortOrder": 23,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-024",
+          "text": "Other assets (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 24,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-AST-025",
+          "text": "Total assets (book value)",
+          "inputType": "currency",
+          "sortOrder": 25,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-AST-026",
+          "text": "Total assets (fair market value)",
+          "inputType": "currency",
+          "sortOrder": 26,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-AST-027",
+          "text": "Total liabilities (book value)",
+          "helpText": "Total of accounts payable, grants payable, deferred revenue, mortgages, and all other liabilities.",
+          "inputType": "currency",
+          "sortOrder": 27,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-AST-028",
+          "text": "Net assets or fund balances (book value)",
+          "helpText": "Total assets minus total liabilities.",
+          "inputType": "currency",
+          "sortOrder": 28,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "pf-distributions",
+      "title": "Private Foundation — Qualifying Distributions",
+      "description": "Part XII of Form 990-PF — Qualifying distributions, adjusted qualifying distributions, and the calculation of distributable amount and undistributed income. Used to determine whether the foundation meets its annual distribution requirements.",
+      "sortOrder": 11,
+      "appliesToEntityTypes": ["nonprofit-990pf"],
+      "questions": [
+        {
+          "questionId": "990PF-DIST-001",
+          "text": "Amounts paid for charitable purposes (including grants and program-related investments)",
+          "helpText": "Total amounts paid during the tax year to accomplish charitable purposes, including grants to organizations and individuals, and program-related investments.",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-DIST-002",
+          "text": "Amounts paid to acquire charitable-use assets",
+          "helpText": "Amounts paid to acquire assets used directly in carrying out the foundation's exempt purpose (e.g., equipment, buildings for charitable programs).",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-DIST-003",
+          "text": "Amounts set aside for charitable purposes (sinking fund method)",
+          "helpText": "Amounts set aside for specific projects to be paid within 60 months, approved by the IRS under the sinking fund method.",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-DIST-004",
+          "text": "Amounts set aside for charitable purposes (cash distribution test)",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-DIST-005",
+          "text": "Total qualifying distributions",
+          "helpText": "Sum of all amounts paid and set aside for charitable purposes. Must equal or exceed the distributable amount to avoid excise tax on undistributed income.",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-DIST-006",
+          "text": "Foundations that qualify under section 4940(e) for reduced tax rate — was the net investment income tax reduced?",
+          "helpText": "Certain foundations that meet the distribution requirements of section 4940(e) may qualify for a reduced excise tax rate.",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-DIST-007",
+          "text": "Adjusted qualifying distributions",
+          "helpText": "Qualifying distributions minus amounts used to satisfy the prior year's distribution requirement and amounts from corpus used to satisfy the current year's distribution requirement.",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-DIST-008",
+          "text": "Distributable amount for the current tax year",
+          "helpText": "The minimum amount the foundation must distribute. Generally equals the minimum investment return minus the excise tax on net investment income and any adjustment for tax-exempt interest.",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-DIST-009",
+          "text": "Undistributed income from prior years, if any",
+          "helpText": "If the foundation did not distribute its full distributable amount in prior years, enter the cumulative undistributed amount. This must be distributed to avoid excise tax.",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-DIST-010",
+          "text": "Undistributed income for the current tax year",
+          "helpText": "Distributable amount minus qualifying distributions applied to the current year. A positive amount represents undistributed income subject to excise tax if not corrected.",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-DIST-011",
+          "text": "Excess distributions carryover from prior 5 years",
+          "helpText": "If the foundation distributed more than required in any of the prior 5 years, the excess may be carried forward and applied to the current year's distributable amount.",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-DIST-012",
+          "text": "Were any grants or contributions paid to disqualified persons?",
+          "inputType": "yes_no",
+          "sortOrder": 12,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-DIST-013",
+          "text": "Total amount of grants paid during the tax year",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-DIST-014",
+          "text": "Upload grant recipient detail (if available)",
+          "helpText": "Provide a list of all grant recipients including name, address, amount, purpose, and relationship to the foundation.",
+          "inputType": "file_upload",
+          "sortOrder": 14,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-DIST-015",
+          "text": "Did the foundation make any grants to individuals?",
+          "inputType": "yes_no",
+          "sortOrder": 15,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "pf-minimum-investment",
+      "title": "Private Foundation — Minimum Investment Return",
+      "description": "Part X of Form 990-PF — Calculates the minimum investment return, which is 5% of the foundation's average fair market value of non-charitable-use assets. This drives the minimum distribution requirement.",
+      "sortOrder": 12,
+      "appliesToEntityTypes": ["nonprofit-990pf"],
+      "questions": [
+        {
+          "questionId": "990PF-MIR-001",
+          "text": "Fair market value of all assets (average monthly FMV or end-of-year FMV)",
+          "helpText": "Enter the average of the monthly fair market values of all assets during the tax year, or if applicable, the end-of-year fair market value.",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-MIR-002",
+          "text": "Cash deemed held for charitable activities",
+          "helpText": "1.5% of the amount on line 1 (FMV of all assets). This amount is considered held for charitable purposes and is subtracted from the asset base before computing minimum investment return.",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-MIR-003",
+          "text": "Net value of non-charitable-use assets before acquisition indebtedness reduction",
+          "helpText": "FMV of all assets minus cash deemed held for charitable activities, minus charitable-use assets, minus any applicable reductions.",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-MIR-004",
+          "text": "Acquisition indebtedness applicable to non-charitable-use assets",
+          "helpText": "Debt incurred to acquire or improve investment assets. This reduces the asset base used to calculate minimum investment return.",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-MIR-005",
+          "text": "Fair market value of assets used for charitable purposes (exempt-use assets)",
+          "helpText": "FMV of land, buildings, and equipment used directly in carrying out charitable activities. These are subtracted from total assets before computing minimum investment return.",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-MIR-006",
+          "text": "Net value of non-charitable-use assets (after all reductions)",
+          "helpText": "FMV of all assets minus cash deemed held for charitable activities, minus charitable-use assets, minus acquisition indebtedness.",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-MIR-007",
+          "text": "Minimum investment return (5% of net non-charitable-use assets)",
+          "helpText": "Multiply the net value of non-charitable-use assets by 5%. This is the minimum amount the foundation must distribute (before adjustments) to avoid excise tax on undistributed income.",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-MIR-008",
+          "text": "Did the foundation use the average monthly FMV method for valuing assets?",
+          "helpText": "The average monthly FMV method averages the FMV of assets at the beginning of each month (or more frequently). The alternative is end-of-year valuation.",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-MIR-009",
+          "text": "Does the foundation own any assets that are not used for charitable purposes and have no FMV?",
+          "inputType": "yes_no",
+          "sortOrder": 9,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-MIR-010",
+          "text": "Total amount of tax-exempt interest received during the tax year",
+          "helpText": "Tax-exempt interest reduces the distributable amount but is included in FMV of assets.",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "required": false }
+        }
+      ]
+    },
+    {
+      "sectionId": "pf-excise-tax",
+      "title": "Private Foundation — Excise Tax on Net Investment Income",
+      "description": "Part VI of Form 990-PF — Calculates the excise tax on net investment income under Section 4940. The tax rate is 1.39% of net investment income for tax years beginning after December 20, 2019.",
+      "sortOrder": 13,
+      "appliesToEntityTypes": ["nonprofit-990pf"],
+      "questions": [
+        {
+          "questionId": "990PF-TAX-001",
+          "text": "Interest income",
+          "helpText": "Gross interest income from all sources including savings accounts, bonds, notes, and other interest-bearing instruments. Do not include tax-exempt interest here.",
+          "inputType": "currency",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-TAX-002",
+          "text": "Dividends and interest from securities",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-TAX-003",
+          "text": "Gross rents",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-TAX-004",
+          "text": "Net gain or loss from sale of assets not on line 10 (Part IV)",
+          "helpText": "Include net short-term and long-term capital gains from sale of investments and other assets.",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-TAX-005",
+          "text": "Capital gain net income",
+          "helpText": "Net capital gain from the sale of assets. If a net loss, enter zero (capital losses do not offset other investment income for excise tax purposes).",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-TAX-006",
+          "text": "Net short-term capital gain",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-TAX-007",
+          "text": "Income modifications (foreign organizations only)",
+          "helpText": "Applicable only to foreign private foundations. Domestic foundations leave this blank.",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-TAX-008",
+          "text": "Gross investment income",
+          "helpText": "Sum of interest, dividends, rents, royalties, and capital gain net income.",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-TAX-009",
+          "text": "Deductions directly connected with investment income",
+          "helpText": "Include investment management fees, custodial fees, and other expenses directly attributable to the production of investment income.",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-TAX-010",
+          "text": "Net investment income",
+          "helpText": "Gross investment income minus allowable deductions. This is the base on which the Section 4940 excise tax is computed.",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-TAX-011",
+          "text": "Excise tax rate applied",
+          "helpText": "For tax years beginning after December 20, 2019, the flat rate is 1.39%. The prior two-tier rate structure (2% / 1%) no longer applies.",
+          "inputType": "percentage",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-TAX-012",
+          "text": "Excise tax on net investment income (Section 4940)",
+          "helpText": "Net investment income multiplied by the excise tax rate (1.39%).",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-TAX-013",
+          "text": "Estimated tax payments made during the tax year",
+          "helpText": "Total of all quarterly estimated tax payments (Form 990-W) made for the current tax year.",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990PF-TAX-014",
+          "text": "Tax due or overpayment",
+          "helpText": "Excise tax minus estimated tax payments. A positive number means tax due; a negative number means overpayment.",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990PF-TAX-015",
+          "text": "If overpayment, apply to next year's estimated tax or receive refund?",
+          "inputType": "multiple_choice",
+          "sortOrder": 15,
+          "options": [
+            { "value": "apply", "label": "Apply to next year's estimated tax" },
+            { "value": "refund", "label": "Refund" }
+          ],
+          "conditions": [
+            { "questionId": "990PF-TAX-014", "operator": "lt", "value": 0 }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "ubit",
+      "title": "Unrelated Business Income Tax (990-T)",
+      "description": "Form 990-T — Exempt Organization Business Income Tax Return. Required when an exempt organization has gross unrelated business income of $1,000 or more. Reports the income, deductions, and tax on unrelated business activities.",
+      "sortOrder": 14,
+      "appliesToEntityTypes": ["nonprofit-990t"],
+      "conditions": [
+        { "questionId": "990-VAR-008", "operator": "eq", "value": true }
+      ],
+      "questions": [
+        {
+          "questionId": "990T-UBI-001",
+          "text": "Description of unrelated trade or business activity",
+          "helpText": "Describe the trade or business activity that generates unrelated business income. An activity is unrelated if it is a trade or business, regularly carried on, and not substantially related to the organization's exempt purpose.",
+          "inputType": "text",
+          "sortOrder": 1,
+          "repeatable": true,
+          "validation": { "required": true, "minItems": 1, "maxItems": 10 },
+          "tags": ["ubi-activity"]
+        },
+        {
+          "questionId": "990T-UBI-002",
+          "text": "NAICS business activity code",
+          "helpText": "The six-digit North American Industry Classification System code for this unrelated business activity.",
+          "inputType": "text",
+          "sortOrder": 2,
+          "repeatable": true,
+          "validation": { "required": true, "pattern": "^[0-9]{6}$" },
+          "tags": ["ubi-activity"]
+        },
+        {
+          "questionId": "990T-UBI-003",
+          "text": "Gross receipts or sales from this unrelated business activity",
+          "inputType": "currency",
+          "sortOrder": 3,
+          "repeatable": true,
+          "validation": { "required": true },
+          "tags": ["ubi-activity"]
+        },
+        {
+          "questionId": "990T-UBI-004",
+          "text": "Less: returns and allowances",
+          "inputType": "currency",
+          "sortOrder": 4,
+          "repeatable": true,
+          "validation": { "required": false },
+          "tags": ["ubi-activity"]
+        },
+        {
+          "questionId": "990T-UBI-005",
+          "text": "Cost of goods sold",
+          "helpText": "Applicable only if the activity involves selling merchandise or products.",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-006",
+          "text": "Gross profit (gross receipts minus COGS)",
+          "inputType": "currency",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990T-UBI-007",
+          "text": "Capital gain net income",
+          "helpText": "Only include capital gains from assets used in the unrelated trade or business. Investment capital gains of most exempt organizations are excluded from UBI.",
+          "inputType": "currency",
+          "sortOrder": 7,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-008",
+          "text": "Net gain or loss from Form 4797 (sales of business property)",
+          "inputType": "currency",
+          "sortOrder": 8,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-009",
+          "text": "Advertising income",
+          "helpText": "Gross advertising income from periodicals, websites, or other publications of the exempt organization.",
+          "inputType": "currency",
+          "sortOrder": 9,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-010",
+          "text": "Other income (attach schedule)",
+          "inputType": "currency",
+          "sortOrder": 10,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-011",
+          "text": "Total unrelated business income",
+          "helpText": "Sum of gross profit, capital gains, and other income items before deductions.",
+          "inputType": "currency",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990T-UBI-012",
+          "text": "Compensation of officers, directors, and trustees allocable to unrelated business",
+          "inputType": "currency",
+          "sortOrder": 12,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-013",
+          "text": "Salaries and wages allocable to unrelated business",
+          "inputType": "currency",
+          "sortOrder": 13,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-014",
+          "text": "Repairs and maintenance allocable to unrelated business",
+          "inputType": "currency",
+          "sortOrder": 14,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-015",
+          "text": "Rents allocable to unrelated business",
+          "inputType": "currency",
+          "sortOrder": 15,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-016",
+          "text": "Depreciation allocable to unrelated business",
+          "inputType": "currency",
+          "sortOrder": 16,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-017",
+          "text": "Other deductions directly connected with unrelated business income",
+          "helpText": "Include insurance, utilities, supplies, and any other expenses directly allocable to the unrelated business activity.",
+          "inputType": "currency",
+          "sortOrder": 17,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-018",
+          "text": "Total deductions",
+          "inputType": "currency",
+          "sortOrder": 18,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990T-UBI-019",
+          "text": "Unrelated business taxable income before NOL and specific deduction",
+          "helpText": "Total income minus total deductions.",
+          "inputType": "currency",
+          "sortOrder": 19,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990T-UBI-020",
+          "text": "Net operating loss deduction",
+          "helpText": "NOL carryforward from prior years applicable to unrelated business income.",
+          "inputType": "currency",
+          "sortOrder": 20,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-021",
+          "text": "Specific deduction ($1,000)",
+          "helpText": "Exempt organizations are entitled to a specific deduction of $1,000 against unrelated business taxable income. This cannot create or increase a net operating loss.",
+          "inputType": "currency",
+          "sortOrder": 21,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990T-UBI-022",
+          "text": "Unrelated business taxable income (after NOL and specific deduction)",
+          "inputType": "currency",
+          "sortOrder": 22,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990T-UBI-023",
+          "text": "Tax computed on unrelated business taxable income",
+          "helpText": "For most exempt organizations, the corporate tax rate of 21% applies. Trusts use the trust tax rate schedule.",
+          "inputType": "currency",
+          "sortOrder": 23,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990T-UBI-024",
+          "text": "Estimated tax payments and credits applied",
+          "inputType": "currency",
+          "sortOrder": 24,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990T-UBI-025",
+          "text": "Tax due or overpayment",
+          "inputType": "currency",
+          "sortOrder": 25,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990T-UBI-026",
+          "text": "Is the unrelated business income from debt-financed property?",
+          "helpText": "Income from property acquired with borrowed funds may be treated as unrelated business income under IRC Section 514.",
+          "inputType": "yes_no",
+          "sortOrder": 26,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990T-UBI-027",
+          "text": "Does the organization have more than one unrelated trade or business?",
+          "helpText": "If Yes, the organization must compute UBI separately for each unrelated trade or business (SILO rules effective for tax years beginning after December 31, 2017).",
+          "inputType": "yes_no",
+          "sortOrder": 27,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "state-filing",
+      "title": "State Filing Requirements",
+      "description": "State-level registration, annual filing, and charitable solicitation requirements for exempt organizations. Applicable to all 990 variants except the 990-N e-Postcard.",
+      "sortOrder": 15,
+      "appliesToEntityTypes": ["nonprofit-990ez", "nonprofit-990", "nonprofit-990pf", "nonprofit-990t"],
+      "questions": [
+        {
+          "questionId": "990-ST-001",
+          "text": "In which state is the organization registered as a nonprofit or charitable organization?",
+          "helpText": "Select the state where the organization is incorporated or formed. This is typically the state shown on your articles of incorporation.",
+          "inputType": "state_select",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-002",
+          "text": "Is the organization registered to solicit charitable contributions in any states?",
+          "helpText": "Most states require organizations that solicit contributions from residents of that state to register with the state's charity registration office before soliciting.",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-003",
+          "text": "Select all states where the organization is registered for charitable solicitation",
+          "inputType": "state_multi_select",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "990-ST-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-004",
+          "text": "Does the organization solicit contributions in any states where it is NOT currently registered?",
+          "helpText": "If Yes, the organization may need to register in additional states to comply with state charitable solicitation laws.",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "990-ST-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-005",
+          "text": "Select all states where the organization solicits but is NOT registered",
+          "inputType": "state_multi_select",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "990-ST-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-006",
+          "text": "Does the organization have employees in any state other than its home state?",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-007",
+          "text": "Select all states where the organization has employees",
+          "inputType": "state_multi_select",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "990-ST-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-008",
+          "text": "Does the organization own or lease property in any state other than its home state?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-009",
+          "text": "Select all states where the organization owns or leases property",
+          "inputType": "state_multi_select",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "990-ST-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-010",
+          "text": "Is the organization required to file a state-specific annual report or information return?",
+          "helpText": "Many states require nonprofit corporations to file an annual report with the Secretary of State and/or Attorney General, separate from the IRS Form 990.",
+          "inputType": "yes_no",
+          "sortOrder": 10,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-011",
+          "text": "Select all states where an annual report or information return must be filed",
+          "inputType": "state_multi_select",
+          "sortOrder": 11,
+          "conditions": [
+            { "questionId": "990-ST-010", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-012",
+          "text": "Does the organization file Form 990 with any state in lieu of a separate state return?",
+          "helpText": "Some states accept a copy of the federal Form 990 (or 990-EZ/990-PF) as the required state filing, often with a state cover page.",
+          "inputType": "yes_no",
+          "sortOrder": 12,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-013",
+          "text": "Select states where Form 990 is filed as the state return",
+          "inputType": "state_multi_select",
+          "sortOrder": 13,
+          "conditions": [
+            { "questionId": "990-ST-012", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990-ST-014",
+          "text": "Include shared state nexus questions",
+          "helpText": "References the shared state-nexus section for additional state filing obligation analysis.",
+          "inputType": "section_include",
+          "sortOrder": 14,
+          "validation": { "required": false },
+          "tags": ["section-ref:state-nexus"]
+        },
+        {
+          "questionId": "990-ST-015",
+          "text": "Staff: confirm final list of states requiring exempt organization filings",
+          "helpText": "Review all state indicators above and confirm which states require a state-level nonprofit filing (annual report, charitable registration, or state information return).",
+          "inputType": "state_multi_select",
+          "sortOrder": 15,
+          "staffOnly": true,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "990n-info",
+      "title": "990-N e-Postcard Information",
+      "description": "Form 990-N (e-Postcard) — For small tax-exempt organizations with annual gross receipts normally $50,000 or less. Only 8 items are required. Filed electronically only.",
+      "sortOrder": 16,
+      "appliesToEntityTypes": ["nonprofit-990n"],
+      "questions": [
+        {
+          "questionId": "990N-INFO-001",
+          "text": "Organization legal name",
+          "helpText": "Enter the organization's legal name exactly as it appears on the IRS determination letter.",
+          "inputType": "text",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-002",
+          "text": "Any other names the organization uses (DBA)",
+          "helpText": "Enter any trade names, doing-business-as names, or other names the organization is known by.",
+          "inputType": "text",
+          "sortOrder": 2,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990N-INFO-003",
+          "text": "Employer Identification Number (EIN)",
+          "inputType": "ein",
+          "sortOrder": 3,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-004",
+          "text": "Organization mailing address",
+          "helpText": "The mailing address where the IRS and state agencies can reach the organization.",
+          "inputType": "address",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-005",
+          "text": "Organization website URL (if applicable)",
+          "inputType": "text",
+          "sortOrder": 5,
+          "validation": { "required": false }
+        },
+        {
+          "questionId": "990N-INFO-006",
+          "text": "Name of principal officer",
+          "helpText": "The principal officer is typically the president, executive director, or other officer authorized to sign on behalf of the organization.",
+          "inputType": "text",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-007",
+          "text": "Mailing address of principal officer",
+          "inputType": "address",
+          "sortOrder": 7,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-008",
+          "text": "Tax year (annual accounting period)",
+          "helpText": "Select the tax year for which this 990-N is being filed. The tax year is the annual accounting period (e.g., calendar year January-December or fiscal year).",
+          "inputType": "multiple_choice",
+          "sortOrder": 8,
+          "options": [
+            { "value": "calendar-2025", "label": "Calendar year 2025 (Jan 1 - Dec 31)" },
+            { "value": "fiscal", "label": "Fiscal year (specify dates)" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-009",
+          "text": "Fiscal year start date",
+          "inputType": "date",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "990N-INFO-008", "operator": "eq", "value": "fiscal" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-010",
+          "text": "Fiscal year end date",
+          "inputType": "date",
+          "sortOrder": 10,
+          "conditions": [
+            { "questionId": "990N-INFO-008", "operator": "eq", "value": "fiscal" }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-011",
+          "text": "Confirm that the organization's annual gross receipts are normally $50,000 or less",
+          "helpText": "An organization's gross receipts are considered normally $50,000 or less if: (1) the organization has been in existence for 1 year or less and received or donors have pledged $75,000 or less; (2) the organization has been in existence between 1 and 3 years and averaged $60,000 or less; or (3) the organization has been in existence 3+ years and averaged $50,000 or less over the prior 3 years.",
+          "inputType": "yes_no",
+          "sortOrder": 11,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-012",
+          "text": "Is the organization still in operation (has not terminated or gone out of business)?",
+          "helpText": "If the organization has terminated operations or gone out of business, it may need to file a final return on Form 990 or 990-EZ instead of the e-Postcard.",
+          "inputType": "yes_no",
+          "sortOrder": 12,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-013",
+          "text": "If the organization has terminated, what was the termination date?",
+          "inputType": "date",
+          "sortOrder": 13,
+          "conditions": [
+            { "questionId": "990N-INFO-012", "operator": "eq", "value": false }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-014",
+          "text": "Has the organization's mailing address changed since the last filing?",
+          "inputType": "yes_no",
+          "sortOrder": 14,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "990N-INFO-015",
+          "text": "Principal officer email address",
+          "helpText": "Required for electronic filing of the 990-N e-Postcard.",
+          "inputType": "email",
+          "sortOrder": 15,
+          "validation": { "required": true }
+        }
+      ]
+    }
+  ]
+}

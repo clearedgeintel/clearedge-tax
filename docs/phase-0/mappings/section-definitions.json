@@ -1,0 +1,352 @@
+{
+  "sections": [
+    {
+      "sectionId": "filing-status",
+      "title": "Filing Status",
+      "entityTypes": ["individual-1040"],
+      "description": "Determines filing status: Single, MFJ, MFS, HOH, or QSS"
+    },
+    {
+      "sectionId": "personal-info",
+      "title": "Personal Information",
+      "entityTypes": ["individual-1040"],
+      "description": "Taxpayer and spouse identifying information"
+    },
+    {
+      "sectionId": "dependents",
+      "title": "Dependents",
+      "entityTypes": ["individual-1040"],
+      "description": "Qualifying children and qualifying relatives"
+    },
+    {
+      "sectionId": "wages-salary",
+      "title": "Wages & Salary Income",
+      "entityTypes": ["individual-1040"],
+      "description": "W-2 wages, tips, and other compensation"
+    },
+    {
+      "sectionId": "interest-dividends",
+      "title": "Interest & Dividend Income",
+      "entityTypes": ["individual-1040"],
+      "description": "1099-INT, 1099-DIV, tax-exempt interest"
+    },
+    {
+      "sectionId": "capital-gains",
+      "title": "Capital Gains & Losses",
+      "entityTypes": ["individual-1040"],
+      "description": "Sales of stocks, bonds, real estate, and other capital assets"
+    },
+    {
+      "sectionId": "rental-income",
+      "title": "Rental & Royalty Income",
+      "entityTypes": ["individual-1040"],
+      "description": "Schedule E Part I — rental properties and royalties"
+    },
+    {
+      "sectionId": "passthrough-income",
+      "title": "Pass-Through Income (K-1s)",
+      "entityTypes": ["individual-1040"],
+      "description": "K-1 income from S-Corps, partnerships, trusts, and estates"
+    },
+    {
+      "sectionId": "self-employment",
+      "title": "Self-Employment Income",
+      "entityTypes": ["individual-1040"],
+      "description": "Triggers Schedule C inclusion for sole proprietorship income"
+    },
+    {
+      "sectionId": "retirement-income",
+      "title": "Retirement Income",
+      "entityTypes": ["individual-1040"],
+      "description": "Pensions, IRAs, 401(k) distributions, Social Security"
+    },
+    {
+      "sectionId": "other-income",
+      "title": "Other Income",
+      "entityTypes": ["individual-1040"],
+      "description": "Gambling, alimony received, jury duty, prizes, 1099-MISC/NEC"
+    },
+    {
+      "sectionId": "adjustments",
+      "title": "Adjustments to Income",
+      "entityTypes": ["individual-1040"],
+      "description": "Above-the-line deductions: student loan interest, IRA, HSA, SE tax"
+    },
+    {
+      "sectionId": "deductions",
+      "title": "Deductions",
+      "entityTypes": ["individual-1040"],
+      "description": "Standard vs. itemized deduction decision"
+    },
+    {
+      "sectionId": "itemized-deductions",
+      "title": "Itemized Deductions (Schedule A)",
+      "entityTypes": ["individual-1040"],
+      "description": "Medical, SALT, mortgage interest, charitable, casualty/theft"
+    },
+    {
+      "sectionId": "credits",
+      "title": "Tax Credits",
+      "entityTypes": ["individual-1040"],
+      "description": "Child tax credit, EITC, education, child care, energy credits"
+    },
+    {
+      "sectionId": "estimated-payments",
+      "title": "Estimated Tax Payments",
+      "entityTypes": ["individual-1040"],
+      "description": "Quarterly estimated payments and prior-year overpayment applied"
+    },
+    {
+      "sectionId": "health-coverage",
+      "title": "Health Coverage",
+      "entityTypes": ["individual-1040"],
+      "description": "ACA marketplace insurance, Form 1095-A, premium tax credit"
+    },
+    {
+      "sectionId": "foreign-income",
+      "title": "Foreign Income & Accounts",
+      "entityTypes": ["individual-1040"],
+      "description": "Foreign earned income, FBAR thresholds, Form 8938"
+    },
+    {
+      "sectionId": "state-filing",
+      "title": "State Filing",
+      "entityTypes": ["individual-1040", "s-corp-1120s", "partnership-1065", "nonprofit-990", "nonprofit-990ez", "nonprofit-990pf"],
+      "description": "Resident state, multi-state filing, nexus determination"
+    },
+    {
+      "sectionId": "bank-info",
+      "title": "Refund / Payment Information",
+      "entityTypes": ["individual-1040"],
+      "description": "Direct deposit details and balance due payment method"
+    },
+    {
+      "sectionId": "entity-info",
+      "title": "Entity Information",
+      "entityTypes": ["s-corp-1120s", "partnership-1065"],
+      "description": "Business name, EIN, incorporation date, state, NAICS, fiscal year"
+    },
+    {
+      "sectionId": "officer-info",
+      "title": "Officers & Directors",
+      "entityTypes": ["s-corp-1120s"],
+      "description": "Names, titles, SSNs, compensation, and ownership percentages"
+    },
+    {
+      "sectionId": "shareholder-info",
+      "title": "Shareholders",
+      "entityTypes": ["s-corp-1120s"],
+      "description": "Shareholder details, ownership percentages, stock types"
+    },
+    {
+      "sectionId": "partner-info",
+      "title": "Partner Information",
+      "entityTypes": ["partnership-1065"],
+      "description": "Partner details, type, ownership/profit/loss/capital percentages"
+    },
+    {
+      "sectionId": "accounting-method",
+      "title": "Accounting Method & Period",
+      "entityTypes": ["s-corp-1120s", "partnership-1065"],
+      "description": "Cash, accrual, or other; fiscal year or calendar year"
+    },
+    {
+      "sectionId": "gross-receipts",
+      "title": "Gross Receipts / Sales",
+      "entityTypes": ["s-corp-1120s", "partnership-1065"],
+      "description": "Total gross receipts, returns and allowances"
+    },
+    {
+      "sectionId": "cogs",
+      "title": "Cost of Goods Sold",
+      "entityTypes": ["s-corp-1120s", "partnership-1065", "sole-prop-schedule-c"],
+      "description": "Inventory, purchases, labor, materials, methods"
+    },
+    {
+      "sectionId": "deductions-business",
+      "title": "Deductions",
+      "entityTypes": ["s-corp-1120s", "partnership-1065"],
+      "description": "Compensation, rents, taxes, interest, depreciation, and other deductions"
+    },
+    {
+      "sectionId": "depreciation",
+      "title": "Depreciation & Amortization",
+      "entityTypes": ["s-corp-1120s", "partnership-1065", "sole-prop-schedule-c"],
+      "description": "Form 4562 — Section 179, MACRS, amortization"
+    },
+    {
+      "sectionId": "balance-sheet",
+      "title": "Balance Sheet",
+      "entityTypes": ["s-corp-1120s", "partnership-1065", "nonprofit-990", "nonprofit-990ez"],
+      "description": "Schedule L — beginning and end of year assets, liabilities, equity"
+    },
+    {
+      "sectionId": "reconciliation",
+      "title": "Reconciliation",
+      "entityTypes": ["s-corp-1120s", "partnership-1065"],
+      "description": "Schedule M-1 or M-3 — book-to-tax reconciliation"
+    },
+    {
+      "sectionId": "distributions",
+      "title": "Distributions & AAA",
+      "entityTypes": ["s-corp-1120s"],
+      "description": "Schedule M-2 — accumulated adjustments account and distributions"
+    },
+    {
+      "sectionId": "k1-allocation",
+      "title": "K-1 Allocation Details",
+      "entityTypes": ["s-corp-1120s", "partnership-1065"],
+      "description": "How income, deductions, and credits allocate to owners"
+    },
+    {
+      "sectionId": "capital-accounts",
+      "title": "Partners' Capital Accounts",
+      "entityTypes": ["partnership-1065"],
+      "description": "Beginning balances, contributions, withdrawals, ending balances"
+    },
+    {
+      "sectionId": "guaranteed-payments",
+      "title": "Guaranteed Payments",
+      "entityTypes": ["partnership-1065"],
+      "description": "Payments to partners for services or capital"
+    },
+    {
+      "sectionId": "at-risk-passive",
+      "title": "At-Risk & Passive Activity",
+      "entityTypes": ["partnership-1065"],
+      "description": "At-risk limitations and passive activity rules"
+    },
+    {
+      "sectionId": "business-info",
+      "title": "Business Information",
+      "entityTypes": ["sole-prop-schedule-c"],
+      "description": "Business name, EIN/SSN, NAICS code, accounting method"
+    },
+    {
+      "sectionId": "gross-income",
+      "title": "Gross Income / Receipts",
+      "entityTypes": ["sole-prop-schedule-c"],
+      "description": "Gross receipts, returns/allowances, other income"
+    },
+    {
+      "sectionId": "expenses",
+      "title": "Business Expenses",
+      "entityTypes": ["sole-prop-schedule-c"],
+      "description": "Advertising, car, contract labor, insurance, rent, utilities, etc."
+    },
+    {
+      "sectionId": "home-office",
+      "title": "Home Office",
+      "entityTypes": ["sole-prop-schedule-c"],
+      "description": "Form 8829 or simplified method for business use of home"
+    },
+    {
+      "sectionId": "vehicle-use",
+      "title": "Vehicle Use",
+      "entityTypes": ["sole-prop-schedule-c"],
+      "description": "Form 4562 Part V — business use of vehicle"
+    },
+    {
+      "sectionId": "other-expenses",
+      "title": "Other Expenses",
+      "entityTypes": ["sole-prop-schedule-c"],
+      "description": "Expenses not categorized elsewhere"
+    },
+    {
+      "sectionId": "variant-determination",
+      "title": "990 Variant Selection",
+      "entityTypes": ["nonprofit-990n", "nonprofit-990ez", "nonprofit-990", "nonprofit-990pf", "nonprofit-990t"],
+      "description": "Routes organization to correct 990 variant based on type, receipts, and assets"
+    },
+    {
+      "sectionId": "org-info",
+      "title": "Organization Information",
+      "entityTypes": ["nonprofit-990ez", "nonprofit-990", "nonprofit-990pf"],
+      "description": "Organization name, EIN, address, exemption type, formation year"
+    },
+    {
+      "sectionId": "mission-activities",
+      "title": "Mission & Program Activities",
+      "entityTypes": ["nonprofit-990", "nonprofit-990ez"],
+      "description": "Mission statement, program service accomplishments"
+    },
+    {
+      "sectionId": "governance",
+      "title": "Governance, Management & Disclosure",
+      "entityTypes": ["nonprofit-990"],
+      "description": "Board composition, policies, conflicts of interest"
+    },
+    {
+      "sectionId": "revenue",
+      "title": "Revenue",
+      "entityTypes": ["nonprofit-990", "nonprofit-990ez"],
+      "description": "Contributions, program service revenue, investment income"
+    },
+    {
+      "sectionId": "functional-expenses",
+      "title": "Functional Expenses",
+      "entityTypes": ["nonprofit-990"],
+      "description": "Part IX — program, management, and fundraising expenses"
+    },
+    {
+      "sectionId": "expenses-ez",
+      "title": "Expenses",
+      "entityTypes": ["nonprofit-990ez"],
+      "description": "990-EZ expense categories"
+    },
+    {
+      "sectionId": "compensation-np",
+      "title": "Compensation of Officers & Key Employees",
+      "entityTypes": ["nonprofit-990", "nonprofit-990ez"],
+      "description": "Officer and key employee compensation reporting"
+    },
+    {
+      "sectionId": "compliance-np",
+      "title": "Tax Compliance Questions",
+      "entityTypes": ["nonprofit-990", "nonprofit-990ez"],
+      "description": "Checklist of compliance and disclosure questions"
+    },
+    {
+      "sectionId": "pf-assets",
+      "title": "Assets & Investments",
+      "entityTypes": ["nonprofit-990pf"],
+      "description": "990-PF Part II — detailed asset and investment reporting"
+    },
+    {
+      "sectionId": "pf-distributions",
+      "title": "Qualifying Distributions",
+      "entityTypes": ["nonprofit-990pf"],
+      "description": "990-PF Part XII — minimum distribution requirements"
+    },
+    {
+      "sectionId": "pf-minimum-investment",
+      "title": "Minimum Investment Return",
+      "entityTypes": ["nonprofit-990pf"],
+      "description": "990-PF Part X — calculation of minimum investment return"
+    },
+    {
+      "sectionId": "pf-excise-tax",
+      "title": "Excise Tax on Net Investment Income",
+      "entityTypes": ["nonprofit-990pf"],
+      "description": "990-PF Part VI — 1.39% excise tax calculation"
+    },
+    {
+      "sectionId": "ubit",
+      "title": "Unrelated Business Taxable Income",
+      "entityTypes": ["nonprofit-990t"],
+      "description": "990-T — UBIT calculation and reporting"
+    },
+    {
+      "sectionId": "preparer-info",
+      "title": "Paid Preparer Information",
+      "entityTypes": ["individual-1040", "s-corp-1120s", "partnership-1065", "sole-prop-schedule-c", "nonprofit-990", "nonprofit-990ez", "nonprofit-990pf", "nonprofit-990t"],
+      "description": "Preparer name, PTIN, firm name, firm EIN, firm address"
+    },
+    {
+      "sectionId": "authorization",
+      "title": "Authorization",
+      "entityTypes": ["individual-1040", "s-corp-1120s", "partnership-1065", "sole-prop-schedule-c", "nonprofit-990", "nonprofit-990ez", "nonprofit-990pf", "nonprofit-990t"],
+      "description": "Third-party designee and power of attorney"
+    }
+  ]
+}

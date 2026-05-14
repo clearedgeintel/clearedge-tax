@@ -1,0 +1,336 @@
+{
+  "metadata": {
+    "fileId": "shared",
+    "entityTypes": [
+      "individual-1040",
+      "s-corp-1120s",
+      "partnership-1065",
+      "sole-prop-schedule-c",
+      "nonprofit-990n",
+      "nonprofit-990ez",
+      "nonprofit-990",
+      "nonprofit-990pf",
+      "nonprofit-990t"
+    ],
+    "version": "1.0.0",
+    "taxYear": 2025,
+    "description": "Cross-entity questions shared across multiple return types"
+  },
+  "sections": [
+    {
+      "sectionId": "preparer-info",
+      "title": "Paid Preparer Information",
+      "description": "Identifies the paid preparer and their firm. Required on all returns prepared for compensation.",
+      "sortOrder": 900,
+      "staffOnly": true,
+      "questions": [
+        {
+          "questionId": "SHARED-PREP-001",
+          "text": "Preparer's full name",
+          "inputType": "text",
+          "sortOrder": 1,
+          "staffOnly": true,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-PREP-002",
+          "text": "Preparer's PTIN",
+          "helpText": "Preparer Tax Identification Number (e.g., P01234567)",
+          "inputType": "text",
+          "sortOrder": 2,
+          "staffOnly": true,
+          "validation": { "required": true, "pattern": "^P[0-9]{8}$" }
+        },
+        {
+          "questionId": "SHARED-PREP-003",
+          "text": "Firm name",
+          "inputType": "text",
+          "sortOrder": 3,
+          "staffOnly": true,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-PREP-004",
+          "text": "Firm EIN",
+          "inputType": "ein",
+          "sortOrder": 4,
+          "staffOnly": true,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-PREP-005",
+          "text": "Firm address",
+          "inputType": "address",
+          "sortOrder": 5,
+          "staffOnly": true,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-PREP-006",
+          "text": "Firm phone number",
+          "inputType": "phone",
+          "sortOrder": 6,
+          "staffOnly": true,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-PREP-007",
+          "text": "Is the preparer self-employed?",
+          "inputType": "yes_no",
+          "sortOrder": 7,
+          "staffOnly": true,
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "sectionId": "authorization",
+      "title": "Authorization",
+      "description": "Third-party designee authorization and power of attorney.",
+      "sortOrder": 910,
+      "questions": [
+        {
+          "questionId": "SHARED-AUTH-001",
+          "text": "Do you want to designate a third party to discuss this return with the IRS?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-AUTH-002",
+          "text": "Designee's name",
+          "inputType": "text",
+          "sortOrder": 2,
+          "conditions": [
+            { "questionId": "SHARED-AUTH-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-AUTH-003",
+          "text": "Designee's phone number",
+          "inputType": "phone",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "SHARED-AUTH-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-AUTH-004",
+          "text": "Designee's personal identification number (PIN)",
+          "helpText": "Any 5-digit number the designee chooses",
+          "inputType": "text",
+          "sortOrder": 4,
+          "conditions": [
+            { "questionId": "SHARED-AUTH-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true, "pattern": "^[0-9]{5}$" }
+        },
+        {
+          "questionId": "SHARED-AUTH-005",
+          "text": "Is there an existing Power of Attorney (Form 2848) on file with the IRS for this client?",
+          "inputType": "yes_no",
+          "sortOrder": 5,
+          "staffOnly": true,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-AUTH-006",
+          "text": "POA representative name",
+          "inputType": "text",
+          "sortOrder": 6,
+          "staffOnly": true,
+          "conditions": [
+            { "questionId": "SHARED-AUTH-005", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "SHARED-AUTH-007",
+          "text": "POA CAF number",
+          "helpText": "Centralized Authorization File number assigned by IRS",
+          "inputType": "text",
+          "sortOrder": 7,
+          "staffOnly": true,
+          "conditions": [
+            { "questionId": "SHARED-AUTH-005", "operator": "eq", "value": true }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "prior-year-comparison",
+      "title": "Prior Year Filing Information",
+      "description": "Prior year data used for consistency checks and carryforward identification.",
+      "sortOrder": 920,
+      "questions": [
+        {
+          "questionId": "SHARED-PY-001",
+          "text": "Did you file a tax return for the prior year?",
+          "inputType": "yes_no",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-PY-002",
+          "text": "What was your prior year adjusted gross income (AGI)?",
+          "helpText": "Found on line 11 of your prior year Form 1040. Needed for e-file identity verification.",
+          "inputType": "currency",
+          "sortOrder": 2,
+          "appliesToEntityTypes": ["individual-1040"],
+          "conditions": [
+            { "questionId": "SHARED-PY-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "SHARED-PY-003",
+          "text": "Did you have a refund or balance due on your prior year return?",
+          "inputType": "multiple_choice",
+          "sortOrder": 3,
+          "options": [
+            { "value": "refund", "label": "Refund" },
+            { "value": "balance_due", "label": "Balance due" },
+            { "value": "zero", "label": "Neither (zero balance)" }
+          ],
+          "conditions": [
+            { "questionId": "SHARED-PY-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "SHARED-PY-004",
+          "text": "Did you apply any of your prior year overpayment to this year's estimated tax?",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "appliesToEntityTypes": ["individual-1040"],
+          "conditions": [
+            { "questionId": "SHARED-PY-003", "operator": "eq", "value": "refund" }
+          ]
+        },
+        {
+          "questionId": "SHARED-PY-005",
+          "text": "Amount of prior year overpayment applied to this year",
+          "inputType": "currency",
+          "sortOrder": 5,
+          "appliesToEntityTypes": ["individual-1040"],
+          "conditions": [
+            { "questionId": "SHARED-PY-004", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "SHARED-PY-006",
+          "text": "Was the prior year return filed with a different preparer or firm?",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "staffOnly": true,
+          "conditions": [
+            { "questionId": "SHARED-PY-001", "operator": "eq", "value": true }
+          ]
+        },
+        {
+          "questionId": "SHARED-PY-007",
+          "text": "Please upload a copy of your prior year return",
+          "helpText": "This helps us ensure accuracy and identify carryforward items",
+          "inputType": "file_upload",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "SHARED-PY-001", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": false }
+        }
+      ]
+    },
+    {
+      "sectionId": "state-nexus",
+      "title": "State Nexus Determination",
+      "description": "Identifies which states the entity has filing obligations in. Used for business entities.",
+      "sortOrder": 930,
+      "appliesToEntityTypes": ["s-corp-1120s", "partnership-1065"],
+      "questions": [
+        {
+          "questionId": "SHARED-NEXUS-001",
+          "text": "In which state is the entity organized or incorporated?",
+          "inputType": "state_select",
+          "sortOrder": 1,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-NEXUS-002",
+          "text": "Does the entity have physical presence (office, warehouse, employees) in any other states?",
+          "inputType": "yes_no",
+          "sortOrder": 2,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-NEXUS-003",
+          "text": "Select all states where the entity has physical presence",
+          "inputType": "state_multi_select",
+          "sortOrder": 3,
+          "conditions": [
+            { "questionId": "SHARED-NEXUS-002", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-NEXUS-004",
+          "text": "Does the entity have sales or revenue sourced to states other than its home state?",
+          "inputType": "yes_no",
+          "sortOrder": 4,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-NEXUS-005",
+          "text": "Select all states where the entity has sales or revenue",
+          "inputType": "state_multi_select",
+          "sortOrder": 5,
+          "conditions": [
+            { "questionId": "SHARED-NEXUS-004", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-NEXUS-006",
+          "text": "Does the entity have employees working in states other than its home state?",
+          "inputType": "yes_no",
+          "sortOrder": 6,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-NEXUS-007",
+          "text": "Select all states where the entity has employees",
+          "inputType": "state_multi_select",
+          "sortOrder": 7,
+          "conditions": [
+            { "questionId": "SHARED-NEXUS-006", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-NEXUS-008",
+          "text": "Does the entity own or lease property in states other than its home state?",
+          "inputType": "yes_no",
+          "sortOrder": 8,
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-NEXUS-009",
+          "text": "Select all states where the entity owns or leases property",
+          "inputType": "state_multi_select",
+          "sortOrder": 9,
+          "conditions": [
+            { "questionId": "SHARED-NEXUS-008", "operator": "eq", "value": true }
+          ],
+          "validation": { "required": true }
+        },
+        {
+          "questionId": "SHARED-NEXUS-010",
+          "text": "Staff: confirm final list of states with filing obligations",
+          "helpText": "Review the client's answers above and confirm which states require a return. Hard-block unsupported states.",
+          "inputType": "state_multi_select",
+          "sortOrder": 10,
+          "staffOnly": true,
+          "validation": { "required": true }
+        }
+      ]
+    }
+  ]
+}
