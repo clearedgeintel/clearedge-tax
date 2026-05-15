@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
@@ -15,8 +16,17 @@ export default async function PortalLayout({
       <nav className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="text-lg font-bold text-gray-900">
-              ClearEdge Tax
+            <Link href="/dashboard" className="flex items-center">
+              <Image
+                src="/ClearEdge_Tax_Logo.png"
+                alt="ClearEdge Tax"
+                width={36}
+                height={36}
+                priority
+              />
+              <span className="ml-2 text-base font-semibold text-gray-900">
+                ClearEdge Tax
+              </span>
             </Link>
             <div className="flex gap-4 text-sm">
               <Link
@@ -46,7 +56,7 @@ export default async function PortalLayout({
             </div>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-gray-500">{session.user.name}</span>
+            <span className="text-gray-800">{session.user.name}</span>
             <form
               action={async () => {
                 "use server";
@@ -56,7 +66,7 @@ export default async function PortalLayout({
             >
               <button
                 type="submit"
-                className="text-gray-500 hover:text-gray-900"
+                className="text-gray-700 hover:text-gray-900"
               >
                 Sign out
               </button>

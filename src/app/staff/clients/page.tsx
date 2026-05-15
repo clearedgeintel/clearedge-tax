@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import NewClientButton from "./NewClientButton";
 
 export default async function StaffClients() {
   const session = await auth();
@@ -29,12 +30,15 @@ export default async function StaffClients() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
           <p className="mt-1 text-gray-600">
             {clients.length} client{clients.length !== 1 ? "s" : ""} in your firm.
           </p>
+        </div>
+        <div className="w-full sm:w-auto sm:min-w-[28rem]">
+          <NewClientButton />
         </div>
       </div>
 

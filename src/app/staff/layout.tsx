@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
@@ -15,8 +16,17 @@ export default async function StaffLayout({
       {/* Sidebar */}
       <aside className="w-56 shrink-0 border-r border-gray-200 bg-white">
         <div className="flex h-14 items-center border-b border-gray-200 px-4">
-          <Link href="/staff/dashboard" className="text-lg font-bold text-gray-900">
-            ClearEdge Tax
+          <Link href="/staff/dashboard" className="flex items-center">
+            <Image
+              src="/ClearEdge_Tax_Logo.png"
+              alt="ClearEdge Tax"
+              width={40}
+              height={40}
+              priority
+            />
+            <span className="ml-2 text-sm font-semibold text-gray-900">
+              ClearEdge Tax
+            </span>
           </Link>
         </div>
         <nav className="flex flex-col gap-1 p-3 text-sm">
@@ -46,8 +56,8 @@ export default async function StaffLayout({
           </Link>
         </nav>
         <div className="mt-auto border-t border-gray-200 p-3">
-          <div className="text-xs text-gray-500">{session.user.name}</div>
-          <div className="text-xs text-gray-400 capitalize">
+          <div className="text-xs font-medium text-gray-900">{session.user.name}</div>
+          <div className="text-xs text-gray-600 capitalize">
             {session.user.role.toLowerCase()}
           </div>
           <form
