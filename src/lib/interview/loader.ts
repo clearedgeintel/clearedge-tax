@@ -38,18 +38,58 @@ const ENTITY_TYPE_TO_JSON_ID: Record<string, string> = {
 const QUESTIONS_DIR = join(process.cwd(), "docs", "phase-0", "questions");
 
 // ─── File cache (avoid re-reading from disk) ────────────────────────────────
+// Keyed by `<fileId>` or `<fileId>.<taxYear>` so year-specific overrides
+// don't clobber the base cache entry.
 
 const fileCache = new Map<string, QuestionFile>();
 
-function loadQuestionFile(fileId: string): QuestionFile {
-  if (fileCache.has(fileId)) {
-    return fileCache.get(fileId)!;
-  }
+function readFromDisk(fileId: string): QuestionFile {
   const filePath = join(QUESTIONS_DIR, `${fileId}.json`);
   const raw = readFileSync(filePath, "utf-8");
-  const parsed = JSON.parse(raw) as QuestionFile;
-  fileCache.set(fileId, parsed);
-  return parsed;
+  return JSON.parse(raw) as QuestionFile;
+}
+
+/**
+ * Load a question file, preferring a year-specific override when available.
+ *
+ * Resolution order for `loadQuestionFile("individual-1040", 2024)`:
+ *   1. `docs/phase-0/questions/individual-1040.2024.json` (if it exists)
+ *   2. `docs/phase-0/questions/individual-1040.json` (base / current rules)
+ *
+ * Loading without `taxYear` always reads the base file. The cache key
+ * matches the file actually loaded, so a year-specific file and the base
+ * file occupy independent cache slots.
+ */
+export function loadQuestionFile(
+  fileId: string,
+  taxYear?: number
+): QuestionFile {
+  const candidates: string[] =
+    taxYear !== undefined ? [`${fileId}.${taxYear}`, fileId] : [fileId];
+
+  for (const candidate of candidates) {
+    if (fileCache.has(candidate)) {
+      return fileCache.get(candidate)!;
+    }
+    try {
+      const parsed = readFromDisk(candidate);
+      fileCache.set(candidate, parsed);
+      return parsed;
+    } catch (err: unknown) {
+      const e = err as { code?: string };
+      // ENOENT on a year-specific candidate is expected when no override
+      // exists — fall through to the next candidate. Any other error
+      // surfaces immediately.
+      if (e.code !== "ENOENT") throw err;
+    }
+  }
+
+  throw new Error(`Question file not found: ${fileId}`);
+}
+
+/** Test helper / runtime escape hatch: drop the cache. */
+export function clearQuestionFileCache(): void {
+  fileCache.clear();
 }
 
 // ─── Section filtering ─────────────────────────────────────────────────────
@@ -80,6 +120,7 @@ function resolveIncludes(
   section: Section,
   sourceFileId: string,
   entityJsonId: string,
+  taxYear: number | undefined,
   depth = 0
 ): ResolvedSection {
   if (depth > 3) {
@@ -91,7 +132,7 @@ function resolveIncludes(
 
   for (const question of section.questions) {
     if (question.inputType === "section_include" && question.includeSection) {
-      const targetFile = loadQuestionFile(question.includeSection.fileId);
+      const targetFile = loadQuestionFile(question.includeSection.fileId, taxYear);
       const targetSection = targetFile.sections.find(
         (s) => s.sectionId === question.includeSection!.sectionId
       );
@@ -100,6 +141,7 @@ function resolveIncludes(
           targetSection,
           question.includeSection.fileId,
           entityJsonId,
+          taxYear,
           depth + 1
         );
         includedSections.push(resolved);
@@ -142,18 +184,25 @@ function buildQuestionIndex(
 
 /**
  * Load and merge all question files for a given entity type.
- * Returns a resolved interview with all sections, includes resolved,
- * and a question index for O(1) lookups.
+ *
+ * When `taxYear` is provided, the loader prefers year-specific files
+ * (e.g. `individual-1040.2024.json`) and falls back to the base file
+ * if no year-specific override exists. Without `taxYear`, the base
+ * file is always used. The resolved metadata reflects whichever file
+ * was actually loaded, so consumers can see the version they got.
  */
-export function loadInterview(entityType: string): ResolvedInterview {
+export function loadInterview(
+  entityType: string,
+  taxYear?: number
+): ResolvedInterview {
   const fileId = ENTITY_TYPE_TO_FILE_ID[entityType];
   if (!fileId) {
     throw new Error(`Unknown entity type: ${entityType}`);
   }
 
   const entityJsonId = ENTITY_TYPE_TO_JSON_ID[entityType];
-  const primaryFile = loadQuestionFile(fileId);
-  const sharedFile = loadQuestionFile("shared");
+  const primaryFile = loadQuestionFile(fileId, taxYear);
+  const sharedFile = loadQuestionFile("shared", taxYear);
 
   // Filter shared sections to those applicable to this entity type
   const applicableSharedSections = sharedFile.sections.filter((s) =>
@@ -175,7 +224,7 @@ export function loadInterview(entityType: string): ResolvedInterview {
 
   // Resolve section_include references
   const resolvedSections = allSections.map((s) =>
-    resolveIncludes(s, primaryFile.metadata.fileId, entityJsonId)
+    resolveIncludes(s, primaryFile.metadata.fileId, entityJsonId, taxYear)
   );
 
   const questionIndex = buildQuestionIndex(resolvedSections);

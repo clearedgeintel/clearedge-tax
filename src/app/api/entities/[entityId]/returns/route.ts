@@ -67,8 +67,11 @@ export async function POST(
     return jsonError(`A return already exists for tax year ${data.taxYear}`, 409);
   }
 
-  // Create return and auto-compute deadlines in a transaction
-  const deadlineData = computeDeadlines(entity.entityType, data.taxYear);
+  // Create return and auto-compute deadlines in a transaction.
+  // Federal is always included; state deadlines come from
+  // `filingJurisdictions` (state codes like "MN" / "CA" / "TX").
+  const jurisdictions = ["FEDERAL", ...(data.filingJurisdictions || []).filter(j => j !== "FEDERAL")];
+  const deadlineData = computeDeadlines(entity.entityType, data.taxYear, jurisdictions);
 
   const taxReturn = await prisma.$transaction(async (tx) => {
     const created = await tx.taxReturn.create({

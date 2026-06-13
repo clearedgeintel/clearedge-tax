@@ -79,7 +79,7 @@ export async function GET(
     select: { entityType: true },
   });
   if (entity) {
-    const { questionIndex } = loadInterview(entity.entityType);
+    const { questionIndex } = loadInterview(entity.entityType, taxReturn.taxYear);
     const decrypted = responses.map((r) => ({
       ...r,
       value: decryptIfSensitive(r.value, r.questionId, questionIndex),
@@ -115,7 +115,7 @@ export async function PUT(
     where: { id: taxReturn.entityId },
     select: { entityType: true },
   });
-  const interview = entity ? loadInterview(entity.entityType) : null;
+  const interview = entity ? loadInterview(entity.entityType, taxReturn.taxYear) : null;
   const questionIndex = interview?.questionIndex;
 
   const protectedResponses = data.responses.map((r) => {

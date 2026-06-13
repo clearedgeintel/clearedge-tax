@@ -117,7 +117,7 @@ async function main() {
   }
 
   // ── Step 3: save a few interview answers, including an SSN ─────────
-  const interview = loadInterview(john.entityType);
+  const interview = loadInterview(john.entityType, taxReturn.taxYear);
   // Find an SSN question and a question with any form trigger we can satisfy.
   let ssnQuestion: { questionId: string; sectionId: string } | null = null;
   let triggerQuestion:

@@ -91,6 +91,61 @@ describe("computeDeadlines — unknown entity types", () => {
   });
 });
 
+describe("computeDeadlines — state jurisdictions", () => {
+  it("defaults to FEDERAL when no jurisdictions list is provided (backward compat)", () => {
+    const out = computeDeadlines("INDIVIDUAL_1040", 2024);
+    expect(out.every((d) => d.jurisdiction === "FEDERAL")).toBe(true);
+  });
+
+  it("emits federal + MN deadlines for an INDIVIDUAL_1040 when both are requested", () => {
+    const out = computeDeadlines("INDIVIDUAL_1040", 2024, ["FEDERAL", "MN"]);
+    const federalFiling = out.find(
+      (d) => d.jurisdiction === "FEDERAL" && d.deadlineType === "FILING"
+    );
+    const mnFiling = out.find(
+      (d) => d.jurisdiction === "MN" && d.deadlineType === "FILING"
+    );
+    expect(federalFiling?.originalDueDate.toISOString().slice(0, 10)).toBe("2025-04-15");
+    expect(mnFiling?.originalDueDate.toISOString().slice(0, 10)).toBe("2025-04-15");
+  });
+
+  it("TX has no individual income tax — emits no INDIVIDUAL_1040 deadlines for TX", () => {
+    const out = computeDeadlines("INDIVIDUAL_1040", 2024, ["FEDERAL", "TX"]);
+    expect(out.some((d) => d.jurisdiction === "TX")).toBe(false);
+    // Federal still present.
+    expect(out.some((d) => d.jurisdiction === "FEDERAL")).toBe(true);
+  });
+
+  it("TX franchise tax fires for S-corps on May 15", () => {
+    const out = computeDeadlines("S_CORP_1120S", 2024, ["TX"]);
+    const txFiling = out.find(
+      (d) => d.jurisdiction === "TX" && d.deadlineType === "FILING"
+    );
+    expect(txFiling?.originalDueDate.toISOString().slice(0, 10)).toBe("2025-05-15");
+  });
+
+  it("silently skips unknown state codes rather than throwing", () => {
+    const out = computeDeadlines("INDIVIDUAL_1040", 2024, [
+      "FEDERAL",
+      "MN",
+      "ZZ", // not a real state code
+    ]);
+    expect(out.some((d) => d.jurisdiction === "ZZ")).toBe(false);
+    // The valid jurisdictions still produce their deadlines.
+    expect(out.some((d) => d.jurisdiction === "FEDERAL")).toBe(true);
+    expect(out.some((d) => d.jurisdiction === "MN")).toBe(true);
+  });
+
+  it("state FILING gets the same 6-month extension as federal", () => {
+    const out = computeDeadlines("INDIVIDUAL_1040", 2024, ["MN"]);
+    const mnFiling = out.find(
+      (d) => d.jurisdiction === "MN" && d.deadlineType === "FILING"
+    );
+    // 2025-04-15 + 6 months = 2025-10-15 (Wednesday → no weekend adjust).
+    expect(mnFiling?.extensionDueDate?.toISOString().slice(0, 10)).toBe("2025-10-15");
+  });
+});
+
 describe("daysUntilDeadline", () => {
   beforeEach(() => {
     vi.useFakeTimers();

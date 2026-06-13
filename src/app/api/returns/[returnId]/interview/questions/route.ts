@@ -30,7 +30,7 @@ export async function GET(
 
   if (!entity) return jsonError("Entity not found", 404);
 
-  const interview = loadInterview(entity.entityType);
+  const interview = loadInterview(entity.entityType, taxReturn.taxYear);
 
   // Filter by role
   const sections = filterForRole(interview.sections, isStaff(user.role));
