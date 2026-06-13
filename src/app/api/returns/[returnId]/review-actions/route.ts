@@ -78,7 +78,17 @@ export async function POST(
     return jsonError("Only managers can approve, reject, or export returns", 403);
   }
 
-  // Create the review action record
+  // Run transition first. If it can't happen, refuse the whole request —
+  // otherwise we'd leave a stale ReviewAction with no corresponding state
+  // change.
+  const nextStatus = ACTION_TO_STATUS[data.action];
+  if (nextStatus) {
+    const result = await transitionReturn(returnId, nextStatus, user.id, data.notes);
+    if (!result.success) {
+      return jsonError(result.error || "Status transition failed", 400);
+    }
+  }
+
   const reviewAction = await prisma.reviewAction.create({
     data: {
       returnId,
@@ -90,15 +100,6 @@ export async function POST(
       user: { select: { id: true, name: true, role: true } },
     },
   });
-
-  // Trigger the corresponding status transition
-  const nextStatus = ACTION_TO_STATUS[data.action];
-  if (nextStatus) {
-    const result = await transitionReturn(returnId, nextStatus, user.id, data.notes);
-    if (!result.success) {
-      return jsonError(result.error || "Status transition failed", 400);
-    }
-  }
 
   return json({ reviewAction }, 201);
 }
