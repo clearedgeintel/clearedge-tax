@@ -8,6 +8,7 @@ const RETURN_STATUS_TONE: Record<ReturnStatus, "neutral" | "info" | "warning" | 
   PREPARATION_BLOCKED: "warning",
   REVIEW: "brand",
   REVISION: "danger",
+  PARTNER_REVIEW: "accent",
   APPROVED: "success",
   EXPORTED: "accent",
 };
@@ -19,6 +20,7 @@ const RETURN_STATUS_LABEL: Record<ReturnStatus, string> = {
   PREPARATION_BLOCKED: "Prep — blocked",
   REVIEW: "Review",
   REVISION: "Revision",
+  PARTNER_REVIEW: "Partner review",
   APPROVED: "Approved",
   EXPORTED: "Exported",
 };

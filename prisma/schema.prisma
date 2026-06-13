@@ -59,6 +59,7 @@ enum ReturnStatus {
   PREPARATION_BLOCKED
   REVIEW
   REVISION
+  PARTNER_REVIEW
   APPROVED
   EXPORTED
 }
@@ -109,6 +110,7 @@ enum ReviewActionType {
   APPROVED
   REJECTED
   REVISION_COMPLETE
+  PARTNER_APPROVED
   EXPORTED
 }
 
@@ -134,16 +136,19 @@ enum CommunicationStatus {
 // ─── Models ─────────────────────────────────────────────────────────────────
 
 model Firm {
-  id        String   @id @default(cuid())
-  name      String
-  ein       String?
-  address   Json?
-  phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  name                 String
+  ein                  String?
+  address              Json?
+  phone                String?
+  requirePartnerReview Boolean  @default(false)
+  defaultPartnerId     String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
-  users   User[]
-  clients Client[]
+  users          User[]
+  clients        Client[]
+  defaultPartner User?    @relation("FirmDefaultPartner", fields: [defaultPartnerId], references: [id])
 }
 
 model User {
@@ -159,14 +164,16 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  firm             Firm?          @relation(fields: [firmId], references: [id])
-  accounts         Account[]
-  sessions         Session[]
-  clientProfile    Client?
-  assignedReturns  TaxReturn[]    @relation("AssignedPreparer")
-  reviewingReturns TaxReturn[]    @relation("AssignedReviewer")
-  reviewActions    ReviewAction[]
-  auditEvents      AuditEvent[]
+  firm                Firm?          @relation(fields: [firmId], references: [id])
+  accounts            Account[]
+  sessions            Session[]
+  clientProfile       Client?
+  assignedReturns     TaxReturn[]    @relation("AssignedPreparer")
+  reviewingReturns    TaxReturn[]    @relation("AssignedReviewer")
+  partneringReturns   TaxReturn[]    @relation("AssignedPartner")
+  defaultPartnerFirms Firm[]         @relation("FirmDefaultPartner")
+  reviewActions       ReviewAction[]
+  auditEvents         AuditEvent[]
 
   @@index([firmId])
   @@index([role])
@@ -286,6 +293,7 @@ model TaxReturn {
   isBlocked           Boolean      @default(false)
   preparerId          String?
   reviewerId          String?
+  partnerId           String?
   filingJurisdictions String[]
   extensionFiled      Boolean      @default(false)
   extensionDate       DateTime?
@@ -298,6 +306,7 @@ model TaxReturn {
   entity               Entity              @relation(fields: [entityId], references: [id])
   preparer             User?               @relation("AssignedPreparer", fields: [preparerId], references: [id])
   reviewer             User?               @relation("AssignedReviewer", fields: [reviewerId], references: [id])
+  partner              User?               @relation("AssignedPartner", fields: [partnerId], references: [id])
   interviewResponses   InterviewResponse[]
   triggeredForms       TriggeredForm[]
   deadlines            Deadline[]
@@ -312,6 +321,7 @@ model TaxReturn {
   @@index([status])
   @@index([preparerId])
   @@index([reviewerId])
+  @@index([partnerId])
   @@index([taxYear])
   @@index([status, preparerId])
 }

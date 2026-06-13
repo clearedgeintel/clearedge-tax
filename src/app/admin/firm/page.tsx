@@ -41,12 +41,23 @@ export default async function AdminFirm() {
     );
   }
 
-  const firm = await prisma.firm.findUnique({
-    where: { id: firmId },
-    include: {
-      _count: { select: { users: true, clients: true } },
-    },
-  });
+  const [firm, eligiblePartners] = await Promise.all([
+    prisma.firm.findUnique({
+      where: { id: firmId },
+      include: {
+        _count: { select: { users: true, clients: true } },
+      },
+    }),
+    prisma.user.findMany({
+      where: {
+        firmId,
+        isActive: true,
+        role: { in: ["ADMIN", "MANAGER"] },
+      },
+      select: { id: true, name: true, role: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
   if (!firm) {
     return (
@@ -94,7 +105,10 @@ export default async function AdminFirm() {
               ein: firm.ein,
               phone: firm.phone,
               address,
+              requirePartnerReview: firm.requirePartnerReview,
+              defaultPartnerId: firm.defaultPartnerId,
             }}
+            eligiblePartners={eligiblePartners}
           />
         </div>
       </Card>

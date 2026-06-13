@@ -73,6 +73,18 @@ export async function POST(
   const jurisdictions = ["FEDERAL", ...(data.filingJurisdictions || []).filter(j => j !== "FEDERAL")];
   const deadlineData = computeDeadlines(entity.entityType, data.taxYear, jurisdictions);
 
+  // Auto-assign the firm's default partner when the firm requires partner
+  // review and a default is configured. The caller can still override by
+  // PATCHing partnerId on the return after creation.
+  const firm = await prisma.firm.findUnique({
+    where: { id: user.firmId },
+    select: { requirePartnerReview: true, defaultPartnerId: true },
+  });
+  const autoPartnerId =
+    firm?.requirePartnerReview && firm.defaultPartnerId
+      ? firm.defaultPartnerId
+      : null;
+
   const taxReturn = await prisma.$transaction(async (tx) => {
     const created = await tx.taxReturn.create({
       data: {
@@ -81,6 +93,7 @@ export async function POST(
         filingJurisdictions: data.filingJurisdictions || [],
         preparerId: data.preparerId,
         reviewerId: data.reviewerId,
+        partnerId: autoPartnerId,
       },
     });
 

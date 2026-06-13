@@ -16,13 +16,25 @@ interface FirmData {
   ein: string | null;
   phone: string | null;
   address: Address | null;
+  requirePartnerReview: boolean;
+  defaultPartnerId: string | null;
+}
+
+interface EligiblePartner {
+  id: string;
+  name: string;
+  role: string;
 }
 
 interface Props {
   initial: FirmData;
+  eligiblePartners: EligiblePartner[];
 }
 
-export default function FirmSettingsForm({ initial }: Props) {
+export default function FirmSettingsForm({
+  initial,
+  eligiblePartners,
+}: Props) {
   const router = useRouter();
   const [form, setForm] = useState({
     name: initial.name,
@@ -32,6 +44,8 @@ export default function FirmSettingsForm({ initial }: Props) {
     city: initial.address?.city || "",
     state: initial.address?.state || "",
     zip: initial.address?.zip || "",
+    requirePartnerReview: initial.requirePartnerReview,
+    defaultPartnerId: initial.defaultPartnerId || "",
   });
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<
@@ -53,6 +67,8 @@ export default function FirmSettingsForm({ initial }: Props) {
         state: form.state || undefined,
         zip: form.zip || undefined,
       },
+      requirePartnerReview: form.requirePartnerReview,
+      defaultPartnerId: form.defaultPartnerId || null,
     };
 
     const res = await fetch("/api/firm", {
@@ -163,6 +179,57 @@ export default function FirmSettingsForm({ initial }: Props) {
             </Field>
           </div>
         </div>
+      </div>
+
+      <div className="border-t border-border-subtle pt-4">
+        <h3 className="text-sm font-semibold text-ink mb-1">Review workflow</h3>
+        <p className="text-xs text-ink-muted mb-3">
+          When enabled, manager approvals advance returns to a separate
+          partner-review step instead of going straight to <em>approved</em>.
+          The assigned partner gives the final sign-off.
+        </p>
+
+        <label className="flex items-start gap-3 mb-4">
+          <input
+            type="checkbox"
+            checked={form.requirePartnerReview}
+            onChange={(e) =>
+              setForm({ ...form, requirePartnerReview: e.target.checked })
+            }
+            className="mt-0.5 h-4 w-4 rounded border-border-strong"
+          />
+          <span>
+            <span className="block text-sm font-medium text-ink">
+              Require partner review
+            </span>
+            <span className="block text-xs text-ink-muted">
+              Applied to newly created returns. Existing returns are
+              unaffected.
+            </span>
+          </span>
+        </label>
+
+        <Field label="Default partner">
+          <select
+            value={form.defaultPartnerId}
+            onChange={(e) =>
+              setForm({ ...form, defaultPartnerId: e.target.value })
+            }
+            disabled={!form.requirePartnerReview}
+            className="w-full rounded-md border border-border-strong px-3 py-2 text-sm text-ink disabled:opacity-50"
+          >
+            <option value="">No default</option>
+            {eligiblePartners.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name} ({p.role.charAt(0) + p.role.slice(1).toLowerCase()})
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-[11px] text-ink-subtle">
+            Auto-assigned to new returns when partner review is required.
+            Per-return overrides will be available on the return detail page.
+          </p>
+        </Field>
       </div>
 
       <div className="flex justify-end pt-2 border-t border-border-subtle">

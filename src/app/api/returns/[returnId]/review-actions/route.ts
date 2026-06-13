@@ -9,7 +9,7 @@ import {
   getReturnScoped,
 } from "@/lib/api/helpers";
 import { transitionReturn } from "@/lib/sequencing/status-machine";
-import { isManager } from "@/lib/utils/permissions";
+import { isAdmin, isManager } from "@/lib/utils/permissions";
 import type { ReturnStatus, ReviewActionType } from "@/generated/prisma/enums";
 
 const CreateReviewActionSchema = z.object({
@@ -18,17 +18,22 @@ const CreateReviewActionSchema = z.object({
     "APPROVED",
     "REJECTED",
     "REVISION_COMPLETE",
+    "PARTNER_APPROVED",
     "EXPORTED",
   ]),
   notes: z.string().max(5000).optional(),
 });
 
-// Maps review actions to the corresponding status transitions
+// Maps review actions to the corresponding status transitions.
+// APPROVED is intercepted by the status machine to PARTNER_REVIEW when a
+// partner is assigned — the manager just signals "first-level approved" and
+// the machine routes accordingly.
 const ACTION_TO_STATUS: Record<string, ReturnStatus> = {
   SUBMITTED_FOR_REVIEW: "REVIEW",
   APPROVED: "APPROVED",
   REJECTED: "REVISION",
   REVISION_COMPLETE: "REVIEW",
+  PARTNER_APPROVED: "APPROVED",
   EXPORTED: "EXPORTED",
 };
 
@@ -76,6 +81,24 @@ export async function POST(
     !isManager(user.role)
   ) {
     return jsonError("Only managers can approve, reject, or export returns", 403);
+  }
+
+  // PARTNER_APPROVED requires the user to be the assigned partner on the
+  // return, OR to be a firm admin (admin can stand in for the partner).
+  if (data.action === "PARTNER_APPROVED") {
+    const isAssignedPartner = taxReturn.partnerId === user.id;
+    if (!isAssignedPartner && !isAdmin(user.role)) {
+      return jsonError(
+        "Only the assigned partner or a firm admin can give partner approval",
+        403
+      );
+    }
+    if (taxReturn.status !== "PARTNER_REVIEW") {
+      return jsonError(
+        "Partner approval is only available while the return is in PARTNER_REVIEW",
+        400
+      );
+    }
   }
 
   // Run transition first. If it can't happen, refuse the whole request —

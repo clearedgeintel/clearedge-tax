@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { isStaff, isManager } from "@/lib/utils/permissions";
+import { isStaff, isManager, isAdmin } from "@/lib/utils/permissions";
 import { ENTITY_TYPE_LABELS } from "@/types/entities";
 import { daysUntilDeadline, deadlineSeverity } from "@/lib/deadlines/calculator";
 import { format } from "date-fns";
@@ -52,6 +52,7 @@ export default async function ReturnDetailPage({ params }: Props) {
       },
       preparer: { select: { id: true, name: true } },
       reviewer: { select: { id: true, name: true } },
+      partner: { select: { id: true, name: true } },
       deadlines: { orderBy: { dueDate: "asc" } },
       documents: { orderBy: { createdAt: "desc" } },
       reviewActions: {
@@ -93,7 +94,11 @@ export default async function ReturnDetailPage({ params }: Props) {
     include: { user: { select: { name: true } } },
   });
 
-  const canReview = isManager(session.user.role);
+  const canManagerReview = isManager(session.user.role);
+  const isAssignedPartner =
+    !!taxReturn.partnerId && taxReturn.partnerId === session.user.id;
+  const canPartnerApprove = isAssignedPartner || isAdmin(session.user.role);
+  const hasPartner = !!taxReturn.partnerId;
 
   return (
     <>
@@ -150,13 +155,16 @@ export default async function ReturnDetailPage({ params }: Props) {
 
           {(taxReturn.status === "REVIEW" ||
             taxReturn.status === "REVISION" ||
-            taxReturn.status === "APPROVED") &&
-            canReview && (
-              <ReviewPanel
-                returnId={returnId}
-                currentStatus={taxReturn.status}
-              />
-            )}
+            taxReturn.status === "APPROVED" ||
+            taxReturn.status === "PARTNER_REVIEW") && (
+            <ReviewPanel
+              returnId={returnId}
+              currentStatus={taxReturn.status}
+              hasPartner={hasPartner}
+              canPartnerApprove={canPartnerApprove}
+              canManagerReview={canManagerReview}
+            />
+          )}
 
           {(taxReturn.k1sReceivedByReturn.length > 0 ||
             taxReturn.k1sIssuedByReturn.length > 0) && (
@@ -329,6 +337,12 @@ export default async function ReturnDetailPage({ params }: Props) {
               <DetailRow
                 label="Reviewer"
                 value={taxReturn.reviewer?.name || "Unassigned"}
+              />
+              <DetailRow
+                label="Partner"
+                value={taxReturn.partner?.name || (
+                  <span className="text-ink-subtle">No partner review</span>
+                )}
               />
               <DetailRow
                 label="Interview progress"

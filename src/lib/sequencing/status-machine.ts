@@ -8,8 +8,9 @@ const VALID_TRANSITIONS: Record<ReturnStatus, ReturnStatus[]> = {
   INTAKE_BLOCKED: ["INTAKE"],
   PREPARATION: ["PREPARATION_BLOCKED", "REVIEW"],
   PREPARATION_BLOCKED: ["PREPARATION"],
-  REVIEW: ["APPROVED", "REVISION"],
+  REVIEW: ["APPROVED", "PARTNER_REVIEW", "REVISION"],
   REVISION: ["REVIEW"],
+  PARTNER_REVIEW: ["APPROVED", "REVISION"],
   APPROVED: ["EXPORTED", "REVISION"],
   EXPORTED: [],
 };
@@ -62,11 +63,24 @@ export async function transitionReturn(
 
   const currentStatus = taxReturn.status;
 
+  // Auto-route: REVIEW → APPROVED is intercepted to PARTNER_REVIEW when a
+  // partner is assigned to the return. The first-level reviewer (manager)
+  // calls "APPROVED"; the actual sign-off has to come from the partner via
+  // a second APPROVED action while the return is in PARTNER_REVIEW.
+  let effectiveNext = nextStatus;
+  if (
+    currentStatus === "REVIEW" &&
+    nextStatus === "APPROVED" &&
+    taxReturn.partnerId
+  ) {
+    effectiveNext = "PARTNER_REVIEW";
+  }
+
   // Validate transition
-  if (!canTransition(currentStatus, nextStatus)) {
+  if (!canTransition(currentStatus, effectiveNext)) {
     return {
       success: false,
-      error: `Cannot transition from ${currentStatus} to ${nextStatus}`,
+      error: `Cannot transition from ${currentStatus} to ${effectiveNext}`,
     };
   }
 
@@ -97,16 +111,16 @@ export async function transitionReturn(
 
   // Build update data
   const updateData: Record<string, unknown> = {
-    status: nextStatus,
+    status: effectiveNext,
     statusNote: note || null,
   };
 
   // Set timestamps based on transition
-  if (nextStatus === "REVIEW") {
+  if (effectiveNext === "REVIEW") {
     updateData.submittedAt = new Date();
-  } else if (nextStatus === "APPROVED") {
+  } else if (effectiveNext === "APPROVED") {
     updateData.approvedAt = new Date();
-  } else if (nextStatus === "EXPORTED") {
+  } else if (effectiveNext === "EXPORTED") {
     updateData.exportedAt = new Date();
   }
 
@@ -121,15 +135,15 @@ export async function transitionReturn(
     data: updateData,
   });
 
-  await logStatusChange(returnId, actorId, currentStatus, nextStatus, note);
+  await logStatusChange(returnId, actorId, currentStatus, effectiveNext, note);
 
   // Notify the client about status changes they care about. Best-effort:
   // notifyStatusChange swallows errors so a comms blip can't roll back
   // the transition or its audit log entry.
-  await notifyStatusChange({ returnId, newStatus: nextStatus, note });
+  await notifyStatusChange({ returnId, newStatus: effectiveNext, note });
 
   // If a business return was just APPROVED, resolve K-1 links and unblock downstream
-  if (nextStatus === "APPROVED") {
+  if (effectiveNext === "APPROVED") {
     await resolveK1Links(returnId, actorId);
   }
 

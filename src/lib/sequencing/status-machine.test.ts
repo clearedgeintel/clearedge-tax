@@ -64,6 +64,17 @@ describe("canTransition", () => {
     expect(canTransition("APPROVED", "EXPORTED")).toBe(true);
   });
 
+  it("permits the partner-review branch", () => {
+    expect(canTransition("REVIEW", "PARTNER_REVIEW")).toBe(true);
+    expect(canTransition("PARTNER_REVIEW", "APPROVED")).toBe(true);
+    expect(canTransition("PARTNER_REVIEW", "REVISION")).toBe(true);
+  });
+
+  it("rejects skipping the partner step", () => {
+    expect(canTransition("REVIEW", "EXPORTED")).toBe(false);
+    expect(canTransition("PARTNER_REVIEW", "EXPORTED")).toBe(false);
+  });
+
   it("permits revisions and re-blocking", () => {
     expect(canTransition("REVIEW", "REVISION")).toBe(true);
     expect(canTransition("REVISION", "REVIEW")).toBe(true);
@@ -252,6 +263,93 @@ describe("transitionReturn", () => {
       "INTAKE_BLOCKED",
       "INTAKE",
       "All K-1 dependencies resolved"
+    );
+  });
+
+  it("auto-routes REVIEW → APPROVED to PARTNER_REVIEW when a partner is assigned", async () => {
+    mockedPrisma.taxReturn.findUnique.mockResolvedValue(
+      buildReturn({ status: "REVIEW", partnerId: "partner-1" })
+    );
+    mockedPrisma.taxReturn.update.mockResolvedValue({
+      id: "return-1",
+      status: "PARTNER_REVIEW",
+    });
+
+    const result = await transitionReturn("return-1", "APPROVED", "manager-1");
+    expect(result.success).toBe(true);
+
+    expect(mockedPrisma.taxReturn.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: "PARTNER_REVIEW" }),
+      })
+    );
+    expect(mockedLogStatusChange).toHaveBeenCalledWith(
+      "return-1",
+      "manager-1",
+      "REVIEW",
+      "PARTNER_REVIEW",
+      undefined
+    );
+  });
+
+  it("REVIEW → APPROVED still goes directly to APPROVED when no partner assigned", async () => {
+    mockedPrisma.taxReturn.findUnique.mockResolvedValue(
+      buildReturn({ status: "REVIEW", partnerId: null })
+    );
+    mockedPrisma.taxReturn.update.mockResolvedValue({
+      id: "return-1",
+      status: "APPROVED",
+    });
+
+    const result = await transitionReturn("return-1", "APPROVED", "manager-1");
+    expect(result.success).toBe(true);
+
+    expect(mockedPrisma.taxReturn.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: "APPROVED" }),
+      })
+    );
+  });
+
+  it("PARTNER_REVIEW → APPROVED stamps approvedAt and resolves K-1 links", async () => {
+    mockedPrisma.taxReturn.findUnique.mockResolvedValue(
+      buildReturn({ status: "PARTNER_REVIEW", partnerId: "partner-1" })
+    );
+    mockedPrisma.taxReturn.update.mockResolvedValue({
+      id: "return-1",
+      status: "APPROVED",
+    });
+    mockedPrisma.k1Link.findMany.mockResolvedValue([]);
+
+    const result = await transitionReturn("return-1", "APPROVED", "partner-1");
+    expect(result.success).toBe(true);
+
+    const updateCall = mockedPrisma.taxReturn.update.mock.calls[0][0];
+    expect(updateCall.data).toHaveProperty("approvedAt");
+    expect(updateCall.data.approvedAt).toBeInstanceOf(Date);
+    expect(mockedPrisma.k1Link.findMany).toHaveBeenCalled();
+  });
+
+  it("PARTNER_REVIEW → REVISION sends the return back to revision", async () => {
+    mockedPrisma.taxReturn.findUnique.mockResolvedValue(
+      buildReturn({ status: "PARTNER_REVIEW", partnerId: "partner-1" })
+    );
+    mockedPrisma.taxReturn.update.mockResolvedValue({
+      id: "return-1",
+      status: "REVISION",
+    });
+
+    const result = await transitionReturn(
+      "return-1",
+      "REVISION",
+      "partner-1",
+      "Needs clarification on Schedule E"
+    );
+    expect(result.success).toBe(true);
+    expect(mockedPrisma.taxReturn.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: "REVISION" }),
+      })
     );
   });
 });

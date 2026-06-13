@@ -19,6 +19,7 @@ const TransitionSchema = z.object({
     "PREPARATION_BLOCKED",
     "REVIEW",
     "REVISION",
+    "PARTNER_REVIEW",
     "APPROVED",
     "EXPORTED",
   ]),

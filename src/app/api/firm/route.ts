@@ -15,6 +15,8 @@ const UpdateFirmSchema = z.object({
   ein: z.string().max(11).optional(),
   address: AddressSchema,
   phone: z.string().max(20).optional(),
+  requirePartnerReview: z.boolean().optional(),
+  defaultPartnerId: z.string().nullable().optional(),
 });
 
 export async function GET(_req: NextRequest) {

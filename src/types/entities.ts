@@ -49,6 +49,7 @@ export const RETURN_STATUS_LABELS: Record<ReturnStatus, string> = {
   PREPARATION_BLOCKED: "Preparation (Blocked)",
   REVIEW: "In Review",
   REVISION: "Revision Needed",
+  PARTNER_REVIEW: "Partner Review",
   APPROVED: "Approved",
   EXPORTED: "Exported",
 };
