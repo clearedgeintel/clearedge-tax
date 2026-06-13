@@ -86,11 +86,19 @@ function adjustForWeekend(date: Date): Date {
 }
 
 /**
- * Computes the canonical date for a given month/day in the context of a tax year.
- * Q4 estimated payments (January) belong to the following calendar year.
+ * `taxYear` here is the income year (IRS convention, matching prisma/seed.ts).
+ * - FILING / EXTENSION_FILING for income year T are always due in calendar year T+1.
+ * - Estimated payments use the month: Jan/Feb/Mar belongs to T+1 (Q4-style),
+ *   anything later belongs to T (in-year quarterly payments).
  */
-function computeDate(taxYear: number, month: number, day: number): Date {
-  const calendarYear = month <= 3 ? taxYear + 1 : taxYear;
+function computeDate(
+  taxYear: number,
+  month: number,
+  day: number,
+  type: DeadlineType
+): Date {
+  const isFiling = type === "FILING" || type === "EXTENSION_FILING";
+  const calendarYear = isFiling || month <= 3 ? taxYear + 1 : taxYear;
   return new Date(calendarYear, month - 1, day);
 }
 
@@ -110,7 +118,7 @@ export function computeDeadlines(
   if (!configs) return [];
 
   return configs.map((config) => {
-    const originalDate = computeDate(taxYear, config.month, config.day);
+    const originalDate = computeDate(taxYear, config.month, config.day, config.type);
     const adjustedDate = adjustForWeekend(originalDate);
 
     let extensionDueDate: Date | null = null;

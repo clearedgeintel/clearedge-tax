@@ -20,43 +20,49 @@ describe("computeDeadlines — INDIVIDUAL_1040", () => {
     expect(filing.extensionDueDate).not.toBeNull();
   });
 
-  it("April 15 in a non-weekend year passes through unchanged", () => {
-    // April 15, 2024 = Monday.
+  it("FILING for income year T is due April 15 of T+1", () => {
+    // taxYear 2024 → due April 15, 2025 (Tuesday → no weekend adjust).
     const filing = findFiling(computeDeadlines("INDIVIDUAL_1040", 2024))!;
-    expect(filing.originalDueDate.toISOString().slice(0, 10)).toBe("2024-04-15");
-    expect(filing.dueDate.toISOString().slice(0, 10)).toBe("2024-04-15");
+    expect(filing.originalDueDate.toISOString().slice(0, 10)).toBe("2025-04-15");
+    expect(filing.dueDate.toISOString().slice(0, 10)).toBe("2025-04-15");
   });
 
   it("April 15 falling on a Saturday rolls forward to the following Monday", () => {
-    // April 15, 2017 = Saturday → Monday April 17, 2017.
-    const filing = findFiling(computeDeadlines("INDIVIDUAL_1040", 2017))!;
+    // taxYear 2016 → April 15, 2017 = Saturday → Monday April 17, 2017.
+    const filing = findFiling(computeDeadlines("INDIVIDUAL_1040", 2016))!;
     expect(filing.originalDueDate.toISOString().slice(0, 10)).toBe("2017-04-15");
     expect(filing.dueDate.toISOString().slice(0, 10)).toBe("2017-04-17");
   });
 
-  it("Q4 estimated payment falls in the following calendar year (January 15)", () => {
+  it("Q1 estimated stays in the income year (April 15 of T)", () => {
+    // Quarterly payments belong to the income year itself, not T+1.
+    const out = computeDeadlines("INDIVIDUAL_1040", 2024);
+    const q1 = out.find((d) => d.deadlineType === "ESTIMATED_Q1")!;
+    expect(q1.originalDueDate.toISOString().slice(0, 10)).toBe("2024-04-15");
+  });
+
+  it("Q4 estimated falls in January of T+1", () => {
     const q4 = findQ4(computeDeadlines("INDIVIDUAL_1040", 2024))!;
     expect(q4.originalDueDate.toISOString().slice(0, 10)).toBe("2025-01-15");
   });
 
   it("extension is exactly 6 months after the original FILING deadline", () => {
     const filing = findFiling(computeDeadlines("INDIVIDUAL_1040", 2024))!;
-    // 2024-04-15 + 6 months = 2024-10-15 (Tuesday → no adjustment).
-    expect(filing.extensionDueDate!.toISOString().slice(0, 10)).toBe("2024-10-15");
+    // 2025-04-15 + 6 months = 2025-10-15 (Wednesday → no adjustment).
+    expect(filing.extensionDueDate!.toISOString().slice(0, 10)).toBe("2025-10-15");
   });
 });
 
 describe("computeDeadlines — S_CORP_1120S", () => {
-  it("uses a March 15 federal filing deadline", () => {
-    // March 15, 2024 = Friday → no weekend adjust.
+  it("FILING for income year T is due March 15 of T+1", () => {
+    // taxYear 2023 → March 15, 2024 (Friday → no weekend adjust).
     const filing = findFiling(computeDeadlines("S_CORP_1120S", 2023))!;
     expect(filing.originalDueDate.toISOString().slice(0, 10)).toBe("2024-03-15");
     expect(filing.dueDate.toISOString().slice(0, 10)).toBe("2024-03-15");
   });
 
   it("rolls March 15 forward when it falls on a Sunday", () => {
-    // March 15, 2020 = Sunday → Monday March 16, 2020.
-    // Note: with month=3, computeDate sets calendarYear = taxYear + 1.
+    // taxYear 2019 → March 15, 2020 = Sunday → Monday March 16, 2020.
     const filing = findFiling(computeDeadlines("S_CORP_1120S", 2019))!;
     expect(filing.originalDueDate.toISOString().slice(0, 10)).toBe("2020-03-15");
     expect(filing.dueDate.toISOString().slice(0, 10)).toBe("2020-03-16");
@@ -71,10 +77,11 @@ describe("computeDeadlines — nonprofits", () => {
     expect(out[0].extensionDueDate).toBeNull();
   });
 
-  it("NONPROFIT_990 FILING has a 6-month extension", () => {
+  it("NONPROFIT_990 FILING (income year T) is due May 15 of T+1, extends 6 months", () => {
     const filing = findFiling(computeDeadlines("NONPROFIT_990", 2024))!;
-    expect(filing.originalDueDate.toISOString().slice(0, 10)).toBe("2024-05-15");
-    expect(filing.extensionDueDate!.toISOString().slice(0, 10)).toBe("2024-11-15");
+    expect(filing.originalDueDate.toISOString().slice(0, 10)).toBe("2025-05-15");
+    // May 15 + 6 months = Nov 15, 2025 = Saturday → adjusted Monday Nov 17.
+    expect(filing.extensionDueDate!.toISOString().slice(0, 10)).toBe("2025-11-17");
   });
 });
 
