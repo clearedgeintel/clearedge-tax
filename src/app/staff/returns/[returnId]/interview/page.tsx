@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { isStaff } from "@/lib/utils/permissions";
+import { PageHeader, Badge, Button, ReturnStatusPill } from "@/components/ui";
 import InterviewClient from "@/components/interview/InterviewClient";
 
 interface Props {
@@ -24,7 +25,7 @@ export default async function StaffInterviewPage({ params }: Props) {
     include: {
       entity: {
         select: { entityType: true, filingStatus: true, legalName: true },
-        },
+      },
       preparer: { select: { name: true } },
     },
   });
@@ -32,31 +33,38 @@ export default async function StaffInterviewPage({ params }: Props) {
   if (!taxReturn) redirect("/staff/returns");
 
   return (
-    <div>
-      <div className="border-b border-gray-200 bg-white px-8 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">
-              Interview — {taxReturn.entity.legalName}
-            </h1>
-            <p className="text-sm text-gray-500">
-              Tax Year {taxReturn.taxYear} &middot; Status: {taxReturn.status}
-              {taxReturn.preparer && (
-                <span> &middot; Preparer: {taxReturn.preparer.name}</span>
-              )}
-            </p>
+    <>
+      <PageHeader
+        eyebrow={`Tax year ${taxReturn.taxYear}`}
+        title={`Interview — ${taxReturn.entity.legalName}`}
+        description={
+          taxReturn.preparer
+            ? `Preparer: ${taxReturn.preparer.name}`
+            : "No preparer assigned"
+        }
+        meta={
+          <div className="flex flex-wrap items-center gap-2">
+            <ReturnStatusPill status={taxReturn.status} />
+            <Badge tone="brand">Staff view</Badge>
           </div>
-          <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded">
-            Staff View
-          </span>
-        </div>
-      </div>
+        }
+        actions={
+          <Button
+            href={`/staff/returns/${returnId}`}
+            variant="secondary"
+            size="sm"
+          >
+            Back to return
+          </Button>
+        }
+      />
+
       <InterviewClient
         returnId={returnId}
         entityType={taxReturn.entity.entityType}
         filingStatus={taxReturn.entity.filingStatus ?? undefined}
         isStaff={true}
       />
-    </div>
+    </>
   );
 }

@@ -6,9 +6,43 @@ import { RETURN_STATUS_LABELS, ENTITY_TYPE_LABELS } from "@/types/entities";
 import { daysUntilDeadline, deadlineSeverity } from "@/lib/deadlines/calculator";
 import { format } from "date-fns";
 import type { ReturnStatus } from "@/generated/prisma/enums";
+import {
+  PageHeader,
+  Card,
+  Badge,
+  EmptyState,
+  ReturnStatusPill,
+} from "@/components/ui";
+import { FileText, AlertTriangle } from "lucide-react";
+
+const SEVERITY_TONE: Record<
+  ReturnType<typeof deadlineSeverity>,
+  "danger" | "warning" | "success" | "neutral"
+> = {
+  overdue: "danger",
+  critical: "danger",
+  warning: "warning",
+  normal: "success",
+};
+
+const ORDERED_STATUSES: ReturnStatus[] = [
+  "INTAKE",
+  "INTAKE_BLOCKED",
+  "PREPARATION",
+  "PREPARATION_BLOCKED",
+  "REVIEW",
+  "REVISION",
+  "APPROVED",
+  "EXPORTED",
+];
 
 interface Props {
-  searchParams: Promise<{ status?: string; isBlocked?: string }>;
+  searchParams: Promise<{
+    status?: string;
+    isBlocked?: string;
+    entityId?: string;
+    clientId?: string;
+  }>;
 }
 
 export default async function StaffReturns({ searchParams }: Props) {
@@ -18,13 +52,15 @@ export default async function StaffReturns({ searchParams }: Props) {
   const firmId = session.user.firmId!;
   const params = await searchParams;
   const statusFilter = params.status as ReturnStatus | undefined;
-  const blockedFilter = params.isBlocked;
+  const blockedFilter = params.isBlocked === "true";
 
   const returns = await prisma.taxReturn.findMany({
     where: {
       entity: { client: { firmId } },
       ...(statusFilter ? { status: statusFilter } : {}),
-      ...(blockedFilter === "true" ? { isBlocked: true } : {}),
+      ...(blockedFilter ? { isBlocked: true } : {}),
+      ...(params.entityId ? { entityId: params.entityId } : {}),
+      ...(params.clientId ? { entity: { clientId: params.clientId } } : {}),
     },
     orderBy: { updatedAt: "desc" },
     include: {
@@ -46,135 +82,176 @@ export default async function StaffReturns({ searchParams }: Props) {
     },
   });
 
-  const statusColors: Record<string, string> = {
-    INTAKE: "bg-blue-100 text-blue-700",
-    INTAKE_BLOCKED: "bg-red-100 text-red-700",
-    PREPARATION: "bg-yellow-100 text-yellow-700",
-    PREPARATION_BLOCKED: "bg-red-100 text-red-700",
-    REVIEW: "bg-purple-100 text-purple-700",
-    REVISION: "bg-orange-100 text-orange-700",
-    APPROVED: "bg-green-100 text-green-700",
-    EXPORTED: "bg-gray-100 text-gray-700",
-  };
+  const noActiveFilter = !statusFilter && !blockedFilter;
 
   return (
-    <div>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">All Returns</h1>
-          <p className="mt-2 text-gray-600">
-            {returns.length} return{returns.length !== 1 ? "s" : ""}
-            {statusFilter ? ` in ${RETURN_STATUS_LABELS[statusFilter]}` : ""}
-            {blockedFilter === "true" ? " (blocked)" : ""}
-          </p>
-        </div>
-      </div>
+    <>
+      <PageHeader
+        eyebrow="Staff"
+        title="All returns"
+        description={`${returns.length} return${returns.length === 1 ? "" : "s"}${
+          statusFilter ? ` in ${RETURN_STATUS_LABELS[statusFilter]}` : ""
+        }${blockedFilter ? " · blocked" : ""}.`}
+      />
 
-      {/* Status filter pills */}
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Link
+      <div className="mb-4 flex flex-wrap gap-2">
+        <FilterPill
           href="/staff/returns"
-          className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-            !statusFilter && !blockedFilter
-              ? "bg-gray-900 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
-        >
-          All
-        </Link>
-        {(Object.keys(RETURN_STATUS_LABELS) as ReturnStatus[]).map((status) => (
-          <Link
+          active={noActiveFilter}
+          label="All"
+        />
+        <FilterPill
+          href="/staff/returns?isBlocked=true"
+          active={blockedFilter}
+          label="Blocked"
+          tone="warning"
+        />
+        {ORDERED_STATUSES.map((status) => (
+          <FilterPill
             key={status}
             href={`/staff/returns?status=${status}`}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              statusFilter === status
-                ? "bg-gray-900 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {RETURN_STATUS_LABELS[status]}
-          </Link>
+            active={statusFilter === status}
+            label={RETURN_STATUS_LABELS[status]}
+          />
         ))}
       </div>
 
       {returns.length === 0 ? (
-        <div className="mt-6 rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-500">
-          No returns found.
-        </div>
+        <EmptyState
+          icon={<FileText className="h-5 w-5" />}
+          title="No returns match"
+          description="Try a different filter or clear the current one."
+        />
       ) : (
-        <div className="mt-6 rounded-lg border border-gray-200 bg-white overflow-hidden">
+        <Card flush>
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-surface-muted border-b border-border-subtle text-xs uppercase tracking-wide text-ink-subtle">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Entity</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Client</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Year</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Preparer</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Deadline</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Progress</th>
+                <th className="text-left px-5 py-3 font-medium">Entity</th>
+                <th className="text-left px-5 py-3 font-medium">Client</th>
+                <th className="text-left px-5 py-3 font-medium">Year</th>
+                <th className="text-left px-5 py-3 font-medium">Status</th>
+                <th className="text-left px-5 py-3 font-medium">Preparer</th>
+                <th className="text-left px-5 py-3 font-medium">Deadline</th>
+                <th className="text-left px-5 py-3 font-medium">Progress</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border-subtle">
               {returns.map((ret) => {
                 const filingDeadline = ret.deadlines[0];
-                const days = filingDeadline ? daysUntilDeadline(filingDeadline.dueDate) : null;
-                const severity = days !== null ? deadlineSeverity(days) : "normal";
-                const severityColors: Record<string, string> = {
-                  overdue: "text-red-700 bg-red-50",
-                  critical: "text-red-600 bg-red-50",
-                  warning: "text-amber-600 bg-amber-50",
-                  normal: "text-green-600 bg-green-50",
-                };
+                const days = filingDeadline
+                  ? daysUntilDeadline(filingDeadline.dueDate)
+                  : null;
+                const severity =
+                  days !== null ? deadlineSeverity(days) : "normal";
 
                 return (
-                  <tr key={ret.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">
+                  <tr key={ret.id} className="hover:bg-surface-muted/60">
+                    <td className="px-5 py-3">
                       <Link
-                        href={`/staff/returns/${ret.id}/interview`}
-                        className="text-blue-600 hover:underline font-medium"
+                        href={`/staff/returns/${ret.id}`}
+                        className="font-medium text-ink hover:text-brand-700"
                       >
                         {ret.entity.legalName}
                       </Link>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-ink-subtle">
                         {ENTITY_TYPE_LABELS[ret.entity.entityType]}
                       </p>
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{ret.entity.client.displayName}</td>
-                    <td className="px-4 py-3 text-gray-600">{ret.taxYear}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${statusColors[ret.status] || ""}`}>
-                        {RETURN_STATUS_LABELS[ret.status]}
-                      </span>
-                      {ret.isBlocked && ret.blockedReason && (
-                        <p className="text-xs text-red-500 mt-0.5">{ret.blockedReason}</p>
+                    <td className="px-5 py-3 text-sm text-ink-muted">
+                      {ret.entity.client.displayName}
+                    </td>
+                    <td className="px-5 py-3 text-sm text-ink-muted tabular-nums">
+                      {ret.taxYear}
+                    </td>
+                    <td className="px-5 py-3 whitespace-nowrap">
+                      <div className="flex flex-col gap-1">
+                        <ReturnStatusPill status={ret.status} />
+                        {ret.isBlocked && ret.blockedReason && (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-warning">
+                            <AlertTriangle className="h-3 w-3" />
+                            {ret.blockedReason}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-5 py-3 text-xs text-ink-muted">
+                      {ret.preparer?.name || (
+                        <span className="text-ink-subtle">Unassigned</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 text-xs">
-                      {ret.preparer?.name || "--"}
-                    </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3 whitespace-nowrap">
                       {filingDeadline ? (
-                        <div>
-                          <span className="text-gray-600 text-xs">{format(filingDeadline.dueDate, "MMM d")}</span>
-                          <span className={`ml-1.5 inline-flex px-1.5 py-0.5 rounded text-xs font-medium ${severityColors[severity]}`}>
-                            {days! < 0 ? `${Math.abs(days!)}d late` : `${days}d`}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-ink">
+                            {format(filingDeadline.dueDate, "MMM d, yyyy")}
                           </span>
+                          <Badge tone={SEVERITY_TONE[severity]}>
+                            {days! < 0
+                              ? `${Math.abs(days!)}d overdue`
+                              : days === 0
+                                ? "Today"
+                                : `${days}d`}
+                          </Badge>
                         </div>
                       ) : (
-                        <span className="text-gray-400 text-xs">--</span>
+                        <span className="text-xs text-ink-subtle">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-500">
-                      {ret._count.interviewResponses} answers &middot; {ret._count.documents} docs
+                    <td className="px-5 py-3 text-xs text-ink-muted">
+                      {ret._count.interviewResponses} answers ·{" "}
+                      {ret._count.documents} docs
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-        </div>
+        </Card>
       )}
-    </div>
+    </>
+  );
+}
+
+function FilterPill({
+  href,
+  active,
+  label,
+  tone,
+}: {
+  href: string;
+  active: boolean;
+  label: string;
+  tone?: "warning";
+}) {
+  const base =
+    "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors";
+  if (active) {
+    if (tone === "warning") {
+      return (
+        <Link
+          href={href}
+          className={`${base} bg-warning text-white shadow-sm`}
+        >
+          {label}
+        </Link>
+      );
+    }
+    return (
+      <Link
+        href={href}
+        className={`${base} bg-brand-700 text-white shadow-sm`}
+      >
+        {label}
+      </Link>
+    );
+  }
+  return (
+    <Link
+      href={href}
+      className={`${base} bg-surface-muted text-ink-muted hover:bg-brand-50 hover:text-brand-700`}
+    >
+      {label}
+    </Link>
   );
 }

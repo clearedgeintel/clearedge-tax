@@ -5,16 +5,59 @@ import { prisma } from "@/lib/db";
 import { RETURN_STATUS_LABELS } from "@/types/entities";
 import { daysUntilDeadline } from "@/lib/deadlines/calculator";
 import { format } from "date-fns";
+import {
+  PageHeader,
+  Card,
+  Badge,
+  EmptyState,
+} from "@/components/ui";
+import {
+  Bell,
+  CalendarClock,
+  CheckCircle2,
+  FileText,
+  Upload,
+  ArrowRight,
+} from "lucide-react";
+
+type Urgency = "high" | "medium" | "low";
+type ItemType = "document" | "deadline" | "status" | "interview";
 
 interface ActionItem {
   id: string;
-  type: "document" | "deadline" | "status" | "interview";
+  type: ItemType;
   title: string;
   description: string;
-  urgency: "high" | "medium" | "low";
+  urgency: Urgency;
   href: string;
   date?: Date;
 }
+
+const URGENCY_TONE: Record<Urgency, "danger" | "warning" | "info"> = {
+  high: "danger",
+  medium: "warning",
+  low: "info",
+};
+
+const URGENCY_BORDER: Record<Urgency, string> = {
+  high: "border-l-danger",
+  medium: "border-l-warning",
+  low: "border-l-info",
+};
+
+const TYPE_ICON: Record<ItemType, React.ReactNode> = {
+  document: <Upload className="h-4 w-4" />,
+  deadline: <CalendarClock className="h-4 w-4" />,
+  status: <CheckCircle2 className="h-4 w-4" />,
+  interview: <FileText className="h-4 w-4" />,
+};
+
+const TYPE_LABEL: Record<ItemType, string> = {
+  document: "Upload needed",
+  deadline: "Deadline",
+  status: "Status update",
+  interview: "Action needed",
+};
 
 export default async function ClientNotifications() {
   const session = await auth();
@@ -26,20 +69,26 @@ export default async function ClientNotifications() {
 
   if (!client) {
     return (
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
-        <p className="mt-2 text-gray-600">Your account is being set up.</p>
-      </div>
+      <>
+        <PageHeader
+          title="Notifications"
+          description="Your account is being set up."
+        />
+        <EmptyState
+          icon={<Bell className="h-5 w-5" />}
+          title="No notifications yet"
+        />
+      </>
     );
   }
 
-  // Gather action items
   const actionItems: ActionItem[] = [];
 
-  // 1. Requested documents
   const requestedDocs = await prisma.document.findMany({
     where: { clientId: client.id, status: "REQUESTED" },
-    include: { taxReturn: { select: { entity: { select: { legalName: true } } } } },
+    include: {
+      taxReturn: { select: { entity: { select: { legalName: true } } } },
+    },
   });
   for (const doc of requestedDocs) {
     actionItems.push({
@@ -55,24 +104,25 @@ export default async function ClientNotifications() {
     });
   }
 
-  // 2. Rejected documents (need re-upload)
   const rejectedDocs = await prisma.document.findMany({
     where: { clientId: client.id, status: "REJECTED" },
-    include: { taxReturn: { select: { entity: { select: { legalName: true } } } } },
+    include: {
+      taxReturn: { select: { entity: { select: { legalName: true } } } },
+    },
   });
   for (const doc of rejectedDocs) {
     actionItems.push({
       id: `doc-rej-${doc.id}`,
       type: "document",
       title: `Re-upload: ${doc.label}`,
-      description: "This document was rejected. Please upload a corrected version.",
+      description:
+        "This document was rejected. Please upload a corrected version.",
       urgency: "high",
       href: "/documents",
       date: doc.updatedAt,
     });
   }
 
-  // 3. Returns in INTAKE (need interview completion)
   const intakeReturns = await prisma.taxReturn.findMany({
     where: {
       entity: { clientId: client.id },
@@ -88,13 +138,12 @@ export default async function ClientNotifications() {
       id: `interview-${ret.id}`,
       type: "interview",
       title: `Complete interview: ${ret.entity.legalName}`,
-      description: `${ret._count.interviewResponses} questions answered so far`,
+      description: `${ret._count.interviewResponses} question${ret._count.interviewResponses === 1 ? "" : "s"} answered so far`,
       urgency: "medium",
       href: `/returns/${ret.id}/interview`,
     });
   }
 
-  // 4. Upcoming deadlines (7 days or less)
   const urgentDeadlines = await prisma.deadline.findMany({
     where: {
       taxReturn: { entity: { clientId: client.id } },
@@ -112,7 +161,10 @@ export default async function ClientNotifications() {
     actionItems.push({
       id: `deadline-${dl.id}`,
       type: "deadline",
-      title: `Deadline in ${days} day${days !== 1 ? "s" : ""}`,
+      title:
+        days === 0
+          ? "Deadline today"
+          : `Deadline in ${days} day${days === 1 ? "" : "s"}`,
       description: `${dl.deadlineType.replace(/_/g, " ")} for ${dl.taxReturn.entity.legalName}`,
       urgency: days <= 3 ? "high" : "medium",
       href: "/returns",
@@ -120,7 +172,6 @@ export default async function ClientNotifications() {
     });
   }
 
-  // 5. Status changes (recently approved or revision needed)
   const statusReturns = await prisma.taxReturn.findMany({
     where: {
       entity: { clientId: client.id },
@@ -134,78 +185,90 @@ export default async function ClientNotifications() {
       id: `status-${ret.id}`,
       type: "status",
       title: `${ret.entity.legalName}: ${RETURN_STATUS_LABELS[ret.status]}`,
-      description: ret.status === "APPROVED"
-        ? "Your return has been approved and is ready for export."
-        : ret.status === "EXPORTED"
-        ? "Your return has been exported for filing."
-        : "Your preparer has requested revisions.",
+      description:
+        ret.status === "APPROVED"
+          ? "Your return has been approved and is ready for export."
+          : ret.status === "EXPORTED"
+            ? "Your return has been exported for filing."
+            : "Your preparer has requested revisions.",
       urgency: "low",
       href: "/returns",
       date: ret.updatedAt,
     });
   }
 
-  // Sort: high urgency first, then by date
+  const urgencyOrder: Record<Urgency, number> = { high: 0, medium: 1, low: 2 };
   actionItems.sort((a, b) => {
-    const urgencyOrder = { high: 0, medium: 1, low: 2 };
     if (urgencyOrder[a.urgency] !== urgencyOrder[b.urgency]) {
       return urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
     }
     return (b.date?.getTime() || 0) - (a.date?.getTime() || 0);
   });
 
-  const urgencyStyles = {
-    high: "border-l-red-500 bg-red-50",
-    medium: "border-l-amber-500 bg-amber-50",
-    low: "border-l-blue-500 bg-blue-50",
-  };
-
-  const typeIcons: Record<string, string> = {
-    document: "Upload needed",
-    deadline: "Deadline",
-    status: "Status update",
-    interview: "Action needed",
-  };
+  const highCount = actionItems.filter((i) => i.urgency === "high").length;
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
-      <p className="mt-2 text-gray-600">
-        {actionItems.length > 0
-          ? `You have ${actionItems.length} item${actionItems.length !== 1 ? "s" : ""} requiring attention.`
-          : "You're all caught up."}
-      </p>
+    <>
+      <PageHeader
+        title="Notifications"
+        description={
+          actionItems.length > 0
+            ? `You have ${actionItems.length} item${actionItems.length === 1 ? "" : "s"} that need your attention.`
+            : "You're all caught up."
+        }
+        meta={
+          highCount > 0 && (
+            <Badge tone="danger">
+              {highCount} urgent
+            </Badge>
+          )
+        }
+      />
 
       {actionItems.length === 0 ? (
-        <div className="mt-6 rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-500">
-          No pending actions. Check back later.
-        </div>
+        <EmptyState
+          icon={<CheckCircle2 className="h-5 w-5" />}
+          title="Inbox zero"
+          description="Nothing requires your attention right now. We'll let you know when something does."
+        />
       ) : (
-        <div className="mt-6 space-y-3">
+        <div className="space-y-3">
           {actionItems.map((item) => (
             <Link
               key={item.id}
               href={item.href}
-              className={`block p-4 rounded-lg border-l-4 border border-gray-200 hover:shadow-sm transition-shadow ${urgencyStyles[item.urgency]}`}
+              className={`block rounded-lg border border-border-subtle border-l-4 ${URGENCY_BORDER[item.urgency]} bg-surface px-5 py-4 hover:shadow-sm transition-shadow`}
             >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-medium text-gray-900">{item.title}</h3>
-                  <p className="mt-0.5 text-sm text-gray-600">{item.description}</p>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-ink-subtle">
+                      {TYPE_ICON[item.type]}
+                    </span>
+                    <h3 className="text-sm font-semibold text-ink truncate">
+                      {item.title}
+                    </h3>
+                  </div>
+                  <p className="mt-1 text-sm text-ink-muted">
+                    {item.description}
+                  </p>
+                  {item.date && (
+                    <p className="mt-1 text-xs text-ink-subtle">
+                      {format(item.date, "MMM d, yyyy")}
+                    </p>
+                  )}
                 </div>
-                <span className="text-xs text-gray-400 flex-shrink-0 ml-4">
-                  {typeIcons[item.type]}
-                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Badge tone={URGENCY_TONE[item.urgency]}>
+                    {TYPE_LABEL[item.type]}
+                  </Badge>
+                  <ArrowRight className="h-4 w-4 text-ink-subtle" />
+                </div>
               </div>
-              {item.date && (
-                <p className="mt-1 text-xs text-gray-400">
-                  {format(item.date, "MMM d, yyyy")}
-                </p>
-              )}
             </Link>
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }

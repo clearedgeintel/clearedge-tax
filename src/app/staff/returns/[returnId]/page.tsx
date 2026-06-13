@@ -1,12 +1,32 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { isStaff, isManager } from "@/lib/utils/permissions";
-import { RETURN_STATUS_LABELS, ENTITY_TYPE_LABELS } from "@/types/entities";
+import { ENTITY_TYPE_LABELS } from "@/types/entities";
 import { daysUntilDeadline, deadlineSeverity } from "@/lib/deadlines/calculator";
 import { format } from "date-fns";
+import {
+  PageHeader,
+  Card,
+  CardHeader,
+  Button,
+  Badge,
+  EmptyState,
+  ReturnStatusPill,
+  DocumentStatusPill,
+} from "@/components/ui";
+import { AlertTriangle, ArrowDownLeft, ArrowUpRight, FileText } from "lucide-react";
 import ReviewPanel from "./ReviewPanel";
+
+const SEVERITY_TEXT: Record<
+  ReturnType<typeof deadlineSeverity>,
+  string
+> = {
+  overdue: "text-danger",
+  critical: "text-danger",
+  warning: "text-warning",
+  normal: "text-success",
+};
 
 interface Props {
   params: Promise<{ returnId: string }>;
@@ -19,7 +39,10 @@ export default async function ReturnDetailPage({ params }: Props) {
   const { returnId } = await params;
 
   const taxReturn = await prisma.taxReturn.findFirst({
-    where: { id: returnId, entity: { client: { firmId: session.user.firmId! } } },
+    where: {
+      id: returnId,
+      entity: { client: { firmId: session.user.firmId! } },
+    },
     include: {
       entity: {
         include: {
@@ -37,14 +60,22 @@ export default async function ReturnDetailPage({ params }: Props) {
       k1sReceivedByReturn: {
         include: {
           sourceReturn: {
-            select: { id: true, status: true, entity: { select: { legalName: true } } },
+            select: {
+              id: true,
+              status: true,
+              entity: { select: { legalName: true } },
+            },
           },
         },
       },
       k1sIssuedByReturn: {
         include: {
           targetReturn: {
-            select: { id: true, status: true, entity: { select: { legalName: true } } },
+            select: {
+              id: true,
+              status: true,
+              entity: { select: { legalName: true } },
+            },
           },
         },
       },
@@ -54,7 +85,6 @@ export default async function ReturnDetailPage({ params }: Props) {
 
   if (!taxReturn) redirect("/staff/returns");
 
-  // Audit trail for this return
   const auditEvents = await prisma.auditEvent.findMany({
     where: { returnId },
     orderBy: { createdAt: "desc" },
@@ -62,250 +92,302 @@ export default async function ReturnDetailPage({ params }: Props) {
     include: { user: { select: { name: true } } },
   });
 
-  const statusColors: Record<string, string> = {
-    INTAKE: "bg-blue-100 text-blue-700",
-    INTAKE_BLOCKED: "bg-red-100 text-red-700",
-    PREPARATION: "bg-yellow-100 text-yellow-700",
-    PREPARATION_BLOCKED: "bg-red-100 text-red-700",
-    REVIEW: "bg-purple-100 text-purple-700",
-    REVISION: "bg-orange-100 text-orange-700",
-    APPROVED: "bg-green-100 text-green-700",
-    EXPORTED: "bg-gray-100 text-gray-700",
-  };
-
-  const docStatusStyles: Record<string, string> = {
-    REQUESTED: "bg-orange-100 text-orange-700",
-    UPLOADED: "bg-blue-100 text-blue-700",
-    ACCEPTED: "bg-green-100 text-green-700",
-    REJECTED: "bg-red-100 text-red-700",
-  };
-
   const canReview = isManager(session.user.role);
 
   return (
-    <div>
-      {/* Header */}
-      <div className="border-b border-gray-200 bg-white px-8 py-5">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold text-gray-900">
-                {taxReturn.entity.legalName}
-              </h1>
-              <span className={`px-2.5 py-1 rounded text-xs font-medium ${statusColors[taxReturn.status]}`}>
-                {RETURN_STATUS_LABELS[taxReturn.status]}
-              </span>
-            </div>
-            <p className="mt-1 text-sm text-gray-500">
-              {ENTITY_TYPE_LABELS[taxReturn.entity.entityType]} &middot; Tax Year {taxReturn.taxYear} &middot; Client: {taxReturn.entity.client.displayName}
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Link
-              href={`/staff/returns/${returnId}/interview`}
-              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
-            >
-              Open Interview
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-8 grid grid-cols-3 gap-8">
-        {/* Main column */}
-        <div className="col-span-2 space-y-8">
-          {/* Review Panel */}
-          {(taxReturn.status === "REVIEW" || taxReturn.status === "REVISION" || taxReturn.status === "APPROVED") && canReview && (
-            <ReviewPanel
-              returnId={returnId}
-              currentStatus={taxReturn.status}
-            />
-          )}
-
-          {/* Blocked alert */}
-          {taxReturn.isBlocked && taxReturn.blockedReason && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <h3 className="text-sm font-semibold text-red-800">Blocked</h3>
-              <p className="mt-1 text-sm text-red-700">{taxReturn.blockedReason}</p>
-            </div>
-          )}
-
-          {/* K-1 Dependencies */}
-          {(taxReturn.k1sReceivedByReturn.length > 0 || taxReturn.k1sIssuedByReturn.length > 0) && (
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">K-1 Links</h2>
-              <div className="mt-3 space-y-2">
-                {taxReturn.k1sReceivedByReturn.map((k1) => (
-                  <div key={k1.id} className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200 text-sm">
-                    <span>Receiving K-1 from <strong>{k1.sourceReturn.entity.legalName}</strong></span>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-0.5 rounded text-xs ${statusColors[k1.sourceReturn.status]}`}>
-                        {RETURN_STATUS_LABELS[k1.sourceReturn.status]}
-                      </span>
-                      <span className={`px-2 py-0.5 rounded text-xs ${k1.isResolved ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}>
-                        {k1.isResolved ? "Resolved" : "Pending"}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-                {taxReturn.k1sIssuedByReturn.map((k1) => (
-                  <div key={k1.id} className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200 text-sm">
-                    <span>Issuing K-1 to <strong>{k1.targetReturn.entity.legalName}</strong></span>
-                    <span className={`px-2 py-0.5 rounded text-xs ${k1.isResolved ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}>
-                      {k1.isResolved ? "Resolved" : "Pending"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Documents */}
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Documents ({taxReturn.documents.length})
-            </h2>
-            {taxReturn.documents.length === 0 ? (
-              <p className="mt-3 text-sm text-gray-500">No documents.</p>
-            ) : (
-              <div className="mt-3 rounded-lg border border-gray-200 bg-white overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="text-left px-4 py-2 font-medium text-gray-600">Label</th>
-                      <th className="text-left px-4 py-2 font-medium text-gray-600">Category</th>
-                      <th className="text-left px-4 py-2 font-medium text-gray-600">Status</th>
-                      <th className="text-left px-4 py-2 font-medium text-gray-600">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {taxReturn.documents.map((doc) => (
-                      <tr key={doc.id}>
-                        <td className="px-4 py-2 text-gray-900">{doc.label}</td>
-                        <td className="px-4 py-2 text-gray-500 text-xs">{doc.category.replace(/_/g, " ")}</td>
-                        <td className="px-4 py-2">
-                          <span className={`px-2 py-0.5 rounded text-xs font-medium ${docStatusStyles[doc.status]}`}>
-                            {doc.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-2 text-gray-500 text-xs">{format(doc.createdAt, "MMM d")}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+    <>
+      <PageHeader
+        eyebrow={`Tax year ${taxReturn.taxYear}`}
+        title={taxReturn.entity.legalName}
+        description={`${ENTITY_TYPE_LABELS[taxReturn.entity.entityType]} · ${taxReturn.entity.client.displayName}`}
+        meta={
+          <div className="flex flex-wrap items-center gap-2">
+            <ReturnStatusPill status={taxReturn.status} />
+            {taxReturn.isBlocked && (
+              <Badge tone="warning">
+                <AlertTriangle className="h-3 w-3" /> Blocked
+              </Badge>
+            )}
+            {taxReturn.extensionFiled && (
+              <Badge tone="info">Extension filed</Badge>
             )}
           </div>
+        }
+        actions={
+          <Button href={`/staff/returns/${returnId}/interview`} size="sm">
+            Open interview
+          </Button>
+        }
+      />
 
-          {/* Review History */}
-          {taxReturn.reviewActions.length > 0 && (
+      {taxReturn.isBlocked && taxReturn.blockedReason && (
+        <Card className="mb-4 border-warning/30 bg-warning-soft/40">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Review History</h2>
-              <div className="mt-3 space-y-2">
+              <h3 className="text-sm font-semibold text-warning">
+                This return is blocked
+              </h3>
+              <p className="mt-1 text-sm text-ink-muted">
+                {taxReturn.blockedReason}
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          {(taxReturn.status === "REVIEW" ||
+            taxReturn.status === "REVISION" ||
+            taxReturn.status === "APPROVED") &&
+            canReview && (
+              <ReviewPanel
+                returnId={returnId}
+                currentStatus={taxReturn.status}
+              />
+            )}
+
+          {(taxReturn.k1sReceivedByReturn.length > 0 ||
+            taxReturn.k1sIssuedByReturn.length > 0) && (
+            <Card flush>
+              <CardHeader
+                title="K-1 links"
+                description="Cross-entity dependencies that gate or are gated by this return"
+              />
+              <ul className="divide-y divide-border-subtle">
+                {taxReturn.k1sReceivedByReturn.map((k1) => (
+                  <li
+                    key={k1.id}
+                    className="flex items-center justify-between gap-3 px-5 py-3 text-sm"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <ArrowDownLeft className="h-4 w-4 text-info shrink-0" />
+                      <span className="text-ink-muted truncate">
+                        Receiving from{" "}
+                        <span className="font-medium text-ink">
+                          {k1.sourceReturn.entity.legalName}
+                        </span>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <ReturnStatusPill status={k1.sourceReturn.status} />
+                      <Badge tone={k1.isResolved ? "success" : "warning"}>
+                        {k1.isResolved ? "Resolved" : "Pending"}
+                      </Badge>
+                    </div>
+                  </li>
+                ))}
+                {taxReturn.k1sIssuedByReturn.map((k1) => (
+                  <li
+                    key={k1.id}
+                    className="flex items-center justify-between gap-3 px-5 py-3 text-sm"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <ArrowUpRight className="h-4 w-4 text-accent-600 shrink-0" />
+                      <span className="text-ink-muted truncate">
+                        Issuing to{" "}
+                        <span className="font-medium text-ink">
+                          {k1.targetReturn.entity.legalName}
+                        </span>
+                      </span>
+                    </div>
+                    <Badge tone={k1.isResolved ? "success" : "warning"}>
+                      {k1.isResolved ? "Resolved" : "Pending"}
+                    </Badge>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+
+          <Card flush>
+            <CardHeader
+              title="Documents"
+              description={`${taxReturn.documents.length} item${taxReturn.documents.length === 1 ? "" : "s"}`}
+            />
+            {taxReturn.documents.length === 0 ? (
+              <div className="p-5">
+                <EmptyState
+                  icon={<FileText className="h-5 w-5" />}
+                  title="No documents yet"
+                />
+              </div>
+            ) : (
+              <table className="w-full text-sm">
+                <thead className="bg-surface-muted border-b border-border-subtle text-xs uppercase tracking-wide text-ink-subtle">
+                  <tr>
+                    <th className="text-left px-5 py-2.5 font-medium">Label</th>
+                    <th className="text-left px-5 py-2.5 font-medium">
+                      Category
+                    </th>
+                    <th className="text-left px-5 py-2.5 font-medium">Status</th>
+                    <th className="text-left px-5 py-2.5 font-medium">
+                      Updated
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border-subtle">
+                  {taxReturn.documents.map((doc) => (
+                    <tr key={doc.id} className="hover:bg-surface-muted/60">
+                      <td className="px-5 py-2.5 text-sm text-ink">
+                        {doc.label}
+                      </td>
+                      <td className="px-5 py-2.5 text-xs text-ink-muted">
+                        {doc.category.replace(/_/g, " ")}
+                      </td>
+                      <td className="px-5 py-2.5">
+                        <DocumentStatusPill status={doc.status} />
+                      </td>
+                      <td className="px-5 py-2.5 text-xs text-ink-muted">
+                        {format(doc.updatedAt, "MMM d")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </Card>
+
+          {taxReturn.reviewActions.length > 0 && (
+            <Card flush>
+              <CardHeader title="Review history" />
+              <ul className="divide-y divide-border-subtle">
                 {taxReturn.reviewActions.map((action) => (
-                  <div key={action.id} className="p-3 bg-gray-50 rounded border border-gray-200">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-800">
+                  <li key={action.id} className="px-5 py-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-medium text-ink">
                         {action.action.replace(/_/g, " ")}
                       </span>
-                      <span className="text-xs text-gray-400">
-                        {action.user.name} &middot; {format(action.createdAt, "MMM d, h:mm a")}
+                      <span className="text-xs text-ink-subtle">
+                        {action.user.name} · {format(action.createdAt, "MMM d, h:mm a")}
                       </span>
                     </div>
                     {action.notes && (
-                      <p className="mt-1 text-sm text-gray-600">{action.notes}</p>
+                      <p className="mt-1 text-sm text-ink-muted">
+                        {action.notes}
+                      </p>
                     )}
-                  </div>
+                  </li>
                 ))}
-              </div>
-            </div>
+              </ul>
+            </Card>
           )}
 
-          {/* Audit Trail */}
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Audit Trail</h2>
+          <Card flush>
+            <CardHeader
+              title="Audit trail"
+              description="Last 25 events for this return"
+            />
             {auditEvents.length === 0 ? (
-              <p className="mt-3 text-sm text-gray-500">No audit events.</p>
+              <div className="p-5">
+                <EmptyState
+                  icon={<FileText className="h-5 w-5" />}
+                  title="No audit events yet"
+                />
+              </div>
             ) : (
-              <div className="mt-3 rounded-lg border border-gray-200 bg-white divide-y divide-gray-100 max-h-96 overflow-y-auto">
+              <ul className="divide-y divide-border-subtle max-h-96 overflow-y-auto">
                 {auditEvents.map((event) => (
-                  <div key={event.id} className="px-4 py-2.5 flex items-center justify-between text-sm">
-                    <div>
-                      <p className="text-gray-800">{event.description}</p>
-                      <p className="text-xs text-gray-400">
-                        {event.user?.name || "System"} &middot; {format(event.createdAt, "MMM d, h:mm:ss a")}
+                  <li
+                    key={event.id}
+                    className="flex items-center justify-between gap-3 px-5 py-2.5 text-sm"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-ink truncate">{event.description}</p>
+                      <p className="text-xs text-ink-subtle">
+                        {event.user?.name || "System"} ·{" "}
+                        {format(event.createdAt, "MMM d, h:mm a")}
                       </p>
                     </div>
-                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded flex-shrink-0">
-                      {event.eventCategory}
-                    </span>
-                  </div>
+                    <Badge tone="neutral">{event.eventCategory}</Badge>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
-          </div>
+          </Card>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Info card */}
-          <div className="rounded-lg border border-gray-200 bg-white p-5 space-y-4">
-            <h3 className="font-semibold text-gray-900">Details</h3>
-            <div className="space-y-3 text-sm">
-              <div>
-                <span className="text-gray-500">Preparer</span>
-                <p className="font-medium">{taxReturn.preparer?.name || "Unassigned"}</p>
-              </div>
-              <div>
-                <span className="text-gray-500">Reviewer</span>
-                <p className="font-medium">{taxReturn.reviewer?.name || "Unassigned"}</p>
-              </div>
-              <div>
-                <span className="text-gray-500">Interview Progress</span>
-                <p className="font-medium">{taxReturn._count.interviewResponses} responses</p>
-              </div>
-              <div>
-                <span className="text-gray-500">Extension Filed</span>
-                <p className="font-medium">{taxReturn.extensionFiled ? "Yes" : "No"}</p>
-              </div>
+        <aside className="space-y-4">
+          <Card flush>
+            <CardHeader title="Details" />
+            <dl className="divide-y divide-border-subtle">
+              <DetailRow
+                label="Preparer"
+                value={taxReturn.preparer?.name || "Unassigned"}
+              />
+              <DetailRow
+                label="Reviewer"
+                value={taxReturn.reviewer?.name || "Unassigned"}
+              />
+              <DetailRow
+                label="Interview progress"
+                value={`${taxReturn._count.interviewResponses} responses`}
+              />
+              <DetailRow
+                label="Extension"
+                value={taxReturn.extensionFiled ? "Filed" : "Not filed"}
+              />
               {taxReturn.statusNote && (
-                <div>
-                  <span className="text-gray-500">Note</span>
-                  <p className="text-gray-700">{taxReturn.statusNote}</p>
-                </div>
+                <DetailRow label="Status note" value={taxReturn.statusNote} />
               )}
-            </div>
-          </div>
+            </dl>
+          </Card>
 
-          {/* Deadlines */}
-          <div className="rounded-lg border border-gray-200 bg-white p-5">
-            <h3 className="font-semibold text-gray-900 mb-3">Deadlines</h3>
-            <div className="space-y-2">
-              {taxReturn.deadlines.map((dl) => {
-                const days = daysUntilDeadline(dl.dueDate);
-                const severity = deadlineSeverity(days);
-                const sevColors: Record<string, string> = {
-                  overdue: "text-red-600",
-                  critical: "text-red-500",
-                  warning: "text-amber-500",
-                  normal: "text-green-600",
-                };
-                return (
-                  <div key={dl.id} className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">{dl.deadlineType.replace(/_/g, " ")}</span>
-                    <div className="text-right">
-                      <span className="text-gray-800">{format(dl.dueDate, "MMM d")}</span>
-                      <span className={`ml-2 text-xs font-medium ${sevColors[severity]}`}>
-                        {days < 0 ? `${Math.abs(days)}d overdue` : `${days}d`}
+          <Card flush>
+            <CardHeader title="Deadlines" />
+            {taxReturn.deadlines.length === 0 ? (
+              <p className="px-5 py-4 text-sm text-ink-subtle">
+                No deadlines computed.
+              </p>
+            ) : (
+              <ul className="divide-y divide-border-subtle">
+                {taxReturn.deadlines.map((dl) => {
+                  const days = daysUntilDeadline(dl.dueDate);
+                  const severity = deadlineSeverity(days);
+                  return (
+                    <li
+                      key={dl.id}
+                      className="flex items-center justify-between gap-2 px-5 py-3 text-sm"
+                    >
+                      <span className="text-ink-muted">
+                        {dl.deadlineType.replace(/_/g, " ")}
                       </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+                      <div className="text-right">
+                        <div className="text-sm text-ink whitespace-nowrap">
+                          {format(dl.dueDate, "MMM d, yyyy")}
+                        </div>
+                        <div className={`text-xs font-medium ${SEVERITY_TEXT[severity]}`}>
+                          {days < 0
+                            ? `${Math.abs(days)}d overdue`
+                            : days === 0
+                              ? "Today"
+                              : `${days}d left`}
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Card>
+        </aside>
       </div>
+    </>
+  );
+}
+
+function DetailRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-3 px-5 py-2.5">
+      <dt className="text-xs text-ink-subtle">{label}</dt>
+      <dd className="text-sm text-ink text-right">{value}</dd>
     </div>
   );
 }

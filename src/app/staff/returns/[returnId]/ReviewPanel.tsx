@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Card, CardHeader, Button } from "@/components/ui";
+import { CheckCircle2, RefreshCcw, Send, XCircle } from "lucide-react";
 
 interface Props {
   returnId: string;
@@ -26,8 +28,8 @@ export default function ReviewPanel({ returnId, currentStatus }: Props) {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Action failed");
+        const data = await res.json().catch(() => ({}));
+        setError(data?.error || "Action failed");
         return;
       }
 
@@ -41,59 +43,73 @@ export default function ReviewPanel({ returnId, currentStatus }: Props) {
   }
 
   return (
-    <div className="rounded-lg border-2 border-purple-200 bg-purple-50 p-5">
-      <h3 className="text-sm font-semibold text-purple-900">Manager Review</h3>
-
-      <textarea
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        placeholder="Add review notes or feedback..."
-        rows={3}
-        className="mt-3 w-full px-3 py-2 border border-purple-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white"
+    <Card flush className="border-brand-200 bg-brand-50/40">
+      <CardHeader
+        title="Manager review"
+        description="Approve, request revisions, or mark the return as exported."
       />
+      <div className="p-5">
+        <label className="block">
+          <span className="block text-xs font-medium text-ink mb-1">
+            Review notes
+          </span>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Optional — add context for the preparer or for the audit trail."
+            rows={3}
+            className="w-full rounded-md border border-border-strong bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+          />
+        </label>
 
-      {error && (
-        <p className="mt-2 text-sm text-red-600">{error}</p>
-      )}
+        {error && (
+          <p className="mt-2 rounded-md bg-danger-soft px-3 py-2 text-xs text-danger">
+            {error}
+          </p>
+        )}
 
-      <div className="mt-3 flex gap-2">
-        {currentStatus === "REVIEW" && (
-          <>
-            <button
-              onClick={() => submitAction("APPROVED")}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {currentStatus === "REVIEW" && (
+            <>
+              <Button
+                onClick={() => submitAction("APPROVED")}
+                disabled={submitting}
+                variant="primary"
+                leadingIcon={<CheckCircle2 className="h-4 w-4" />}
+              >
+                Approve
+              </Button>
+              <Button
+                onClick={() => submitAction("REJECTED")}
+                disabled={submitting}
+                variant="danger"
+                leadingIcon={<XCircle className="h-4 w-4" />}
+              >
+                Request revision
+              </Button>
+            </>
+          )}
+          {currentStatus === "REVISION" && (
+            <Button
+              onClick={() => submitAction("REVISION_COMPLETE")}
               disabled={submitting}
-              className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 disabled:opacity-50"
+              leadingIcon={<RefreshCcw className="h-4 w-4" />}
             >
-              Approve
-            </button>
-            <button
-              onClick={() => submitAction("REJECTED")}
+              Resubmit for review
+            </Button>
+          )}
+          {currentStatus === "APPROVED" && (
+            <Button
+              onClick={() => submitAction("EXPORTED")}
               disabled={submitting}
-              className="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 disabled:opacity-50"
+              variant="secondary"
+              leadingIcon={<Send className="h-4 w-4" />}
             >
-              Reject &amp; Request Revision
-            </button>
-          </>
-        )}
-        {currentStatus === "REVISION" && (
-          <button
-            onClick={() => submitAction("REVISION_COMPLETE")}
-            disabled={submitting}
-            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50"
-          >
-            Resubmit for Review
-          </button>
-        )}
-        {currentStatus === "APPROVED" && (
-          <button
-            onClick={() => submitAction("EXPORTED")}
-            disabled={submitting}
-            className="px-4 py-2 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-900 disabled:opacity-50"
-          >
-            Mark as Exported
-          </button>
-        )}
+              Mark as exported
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
+    </Card>
   );
 }

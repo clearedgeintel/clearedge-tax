@@ -2,9 +2,27 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { RETURN_STATUS_LABELS, ENTITY_TYPE_LABELS } from "@/types/entities";
+import { ENTITY_TYPE_LABELS } from "@/types/entities";
 import { daysUntilDeadline, deadlineSeverity } from "@/lib/deadlines/calculator";
 import { format } from "date-fns";
+import {
+  PageHeader,
+  Card,
+  Badge,
+  EmptyState,
+  ReturnStatusPill,
+} from "@/components/ui";
+import { Inbox, ArrowRight } from "lucide-react";
+
+const SEVERITY_TONE: Record<
+  ReturnType<typeof deadlineSeverity>,
+  "danger" | "warning" | "success" | "neutral"
+> = {
+  overdue: "danger",
+  critical: "danger",
+  warning: "warning",
+  normal: "success",
+};
 
 export default async function StaffQueue() {
   const session = await auth();
@@ -13,14 +31,12 @@ export default async function StaffQueue() {
   const firmId = session.user.firmId!;
   const userId = session.user.id;
 
-  // Get returns assigned to current user as preparer or reviewer
   const assignedReturns = await prisma.taxReturn.findMany({
     where: {
       entity: { client: { firmId } },
       status: { notIn: ["EXPORTED"] },
       OR: [{ preparerId: userId }, { reviewerId: userId }],
     },
-    orderBy: { updatedAt: "desc" },
     include: {
       entity: {
         select: {
@@ -40,95 +56,124 @@ export default async function StaffQueue() {
     },
   });
 
+  // Sort by deadline urgency (closest first), nulls last.
+  assignedReturns.sort((a, b) => {
+    const ad = a.deadlines[0]?.dueDate?.getTime();
+    const bd = b.deadlines[0]?.dueDate?.getTime();
+    if (ad === undefined && bd === undefined) return 0;
+    if (ad === undefined) return 1;
+    if (bd === undefined) return -1;
+    return ad - bd;
+  });
+
+  const blockedCount = assignedReturns.filter((r) => r.isBlocked).length;
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">Work Queue</h1>
-      <p className="mt-2 text-gray-600">
-        Returns assigned to you, sorted by deadline urgency.
-      </p>
+    <>
+      <PageHeader
+        eyebrow="Staff"
+        title="Work queue"
+        description="Returns assigned to you, sorted by deadline urgency."
+        meta={
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <Badge tone="brand">{assignedReturns.length} assigned</Badge>
+            {blockedCount > 0 && (
+              <Badge tone="warning">{blockedCount} blocked</Badge>
+            )}
+          </div>
+        }
+      />
 
       {assignedReturns.length === 0 ? (
-        <div className="mt-6 rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-500">
-          No returns in your queue.
-        </div>
+        <EmptyState
+          icon={<Inbox className="h-5 w-5" />}
+          title="No returns in your queue"
+          description="When something is assigned to you as preparer or reviewer, it will show up here."
+        />
       ) : (
-        <div className="mt-6 rounded-lg border border-gray-200 bg-white overflow-hidden">
+        <Card flush>
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-surface-muted border-b border-border-subtle text-xs uppercase tracking-wide text-ink-subtle">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Entity</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Client</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Type</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Filing Deadline</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Role</th>
+                <th className="text-left px-5 py-3 font-medium">Entity</th>
+                <th className="text-left px-5 py-3 font-medium">Client</th>
+                <th className="text-left px-5 py-3 font-medium">Type</th>
+                <th className="text-left px-5 py-3 font-medium">Status</th>
+                <th className="text-left px-5 py-3 font-medium">Filing deadline</th>
+                <th className="text-left px-5 py-3 font-medium">Role</th>
+                <th />
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border-subtle">
               {assignedReturns.map((ret) => {
                 const filingDeadline = ret.deadlines[0];
-                const days = filingDeadline ? daysUntilDeadline(filingDeadline.dueDate) : null;
-                const severity = days !== null ? deadlineSeverity(days) : "normal";
-                const severityColors: Record<string, string> = {
-                  overdue: "text-red-700 bg-red-50",
-                  critical: "text-red-600 bg-red-50",
-                  warning: "text-amber-600 bg-amber-50",
-                  normal: "text-green-600 bg-green-50",
-                };
-                const statusColors: Record<string, string> = {
-                  INTAKE: "bg-blue-100 text-blue-700",
-                  INTAKE_BLOCKED: "bg-red-100 text-red-700",
-                  PREPARATION: "bg-yellow-100 text-yellow-700",
-                  PREPARATION_BLOCKED: "bg-red-100 text-red-700",
-                  REVIEW: "bg-purple-100 text-purple-700",
-                  REVISION: "bg-orange-100 text-orange-700",
-                  APPROVED: "bg-green-100 text-green-700",
-                  EXPORTED: "bg-gray-100 text-gray-700",
-                };
-                const myRole = ret.preparerId === userId ? "Preparer" : "Reviewer";
+                const days = filingDeadline
+                  ? daysUntilDeadline(filingDeadline.dueDate)
+                  : null;
+                const severity =
+                  days !== null ? deadlineSeverity(days) : "normal";
+                const myRole =
+                  ret.preparerId === userId ? "Preparer" : "Reviewer";
 
                 return (
-                  <tr key={ret.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">
+                  <tr key={ret.id} className="hover:bg-surface-muted/60">
+                    <td className="px-5 py-3">
                       <Link
-                        href={`/staff/returns/${ret.id}/interview`}
-                        className="text-blue-600 hover:underline font-medium"
+                        href={`/staff/returns/${ret.id}`}
+                        className="font-medium text-ink hover:text-brand-700"
                       >
                         {ret.entity.legalName}
                       </Link>
-                      <p className="text-xs text-gray-400">{ret.taxYear}</p>
+                      <p className="text-xs text-ink-subtle">TY {ret.taxYear}</p>
                     </td>
-                    <td className="px-4 py-3 text-gray-600">
+                    <td className="px-5 py-3 text-sm text-ink-muted">
                       {ret.entity.client.displayName}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">
+                    <td className="px-5 py-3 text-xs text-ink-muted">
                       {ENTITY_TYPE_LABELS[ret.entity.entityType]}
                     </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${statusColors[ret.status] || ""}`}>
-                        {RETURN_STATUS_LABELS[ret.status]}
-                      </span>
+                    <td className="px-5 py-3 whitespace-nowrap">
+                      <ReturnStatusPill status={ret.status} />
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3 whitespace-nowrap">
                       {filingDeadline ? (
-                        <div>
-                          <span className="text-gray-600">{format(filingDeadline.dueDate, "MMM d, yyyy")}</span>
-                          <span className={`ml-2 inline-flex px-2 py-0.5 rounded text-xs font-medium ${severityColors[severity]}`}>
-                            {days! < 0 ? `${Math.abs(days!)}d overdue` : `${days}d`}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-ink">
+                            {format(filingDeadline.dueDate, "MMM d, yyyy")}
                           </span>
+                          <Badge tone={SEVERITY_TONE[severity]}>
+                            {days! < 0
+                              ? `${Math.abs(days!)}d overdue`
+                              : days === 0
+                                ? "Today"
+                                : `${days}d`}
+                          </Badge>
                         </div>
                       ) : (
-                        <span className="text-gray-400">--</span>
+                        <span className="text-xs text-ink-subtle">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-500">{myRole}</td>
+                    <td className="px-5 py-3">
+                      <Badge tone={myRole === "Preparer" ? "info" : "brand"}>
+                        {myRole}
+                      </Badge>
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <Link
+                        href={`/staff/returns/${ret.id}`}
+                        className="inline-flex items-center text-ink-subtle hover:text-brand-700"
+                        aria-label="Open return"
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-        </div>
+        </Card>
       )}
-    </div>
+    </>
   );
 }

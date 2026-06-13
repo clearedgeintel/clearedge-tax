@@ -2,6 +2,15 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { format } from "date-fns";
+import {
+  PageHeader,
+  Card,
+  CardHeader,
+  Badge,
+  EmptyState,
+  DocumentStatusPill,
+} from "@/components/ui";
+import { FolderOpen, AlertCircle } from "lucide-react";
 import UploadButton from "./UploadButton";
 import ViewDocumentLink from "./ViewDocumentLink";
 
@@ -15,10 +24,16 @@ export default async function ClientDocuments() {
 
   if (!client) {
     return (
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Documents</h1>
-        <p className="mt-2 text-gray-600">Your account is being set up.</p>
-      </div>
+      <>
+        <PageHeader
+          title="Documents"
+          description="Your account is being set up."
+        />
+        <EmptyState
+          icon={<FolderOpen className="h-5 w-5" />}
+          title="No engagement yet"
+        />
+      </>
     );
   }
 
@@ -41,119 +56,126 @@ export default async function ClientDocuments() {
     (d) => d.status === "ACCEPTED" || d.status === "REJECTED"
   );
 
-  const statusStyles: Record<string, { bg: string; text: string; label: string }> = {
-    REQUESTED: { bg: "bg-orange-100", text: "text-orange-700", label: "Needed" },
-    UPLOADED: { bg: "bg-blue-100", text: "text-blue-700", label: "Uploaded" },
-    ACCEPTED: { bg: "bg-green-100", text: "text-green-700", label: "Accepted" },
-    REJECTED: { bg: "bg-red-100", text: "text-red-700", label: "Rejected" },
-  };
-
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">Documents</h1>
-      <p className="mt-2 text-gray-600">
-        Upload requested documents and view your submissions.
-      </p>
+    <>
+      <PageHeader
+        title="Documents"
+        description="Upload requested documents and view what you've already shared."
+        meta={
+          requested.length > 0 && (
+            <Badge tone="warning">{requested.length} action needed</Badge>
+          )
+        }
+      />
 
       {documents.length === 0 ? (
-        <div className="mt-6 rounded-lg border border-gray-200 bg-white p-8 text-center text-gray-500">
-          No document requests yet.
-        </div>
+        <EmptyState
+          icon={<FolderOpen className="h-5 w-5" />}
+          title="No document requests yet"
+          description="When your preparer asks for documents, they'll show up here."
+        />
       ) : (
-        <>
-          {/* Requested (action needed) */}
+        <div className="space-y-6">
           {requested.length > 0 && (
-            <div className="mt-6">
-              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                Action Needed
-                <span className="px-2 py-0.5 text-xs bg-orange-100 text-orange-700 rounded-full">
-                  {requested.length}
-                </span>
-              </h2>
-              <div className="mt-3 space-y-2">
+            <Card flush>
+              <CardHeader
+                title={
+                  <span className="flex items-center gap-2">
+                    Action needed
+                    <Badge tone="warning">{requested.length}</Badge>
+                  </span>
+                }
+                description="Your preparer is waiting on these items."
+              />
+              <ul className="divide-y divide-border-subtle">
                 {requested.map((doc) => (
-                  <div
+                  <li
                     key={doc.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-orange-200 bg-orange-50"
+                    className="flex items-start justify-between gap-3 px-5 py-4"
                   >
-                    <div>
-                      <h3 className="font-medium text-gray-900">{doc.label}</h3>
-                      <p className="text-xs text-gray-500">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 text-warning shrink-0" />
+                        <h3 className="text-sm font-semibold text-ink truncate">
+                          {doc.label}
+                        </h3>
+                      </div>
+                      <p className="mt-0.5 text-xs text-ink-muted">
                         {doc.category.replace(/_/g, " ")}
                         {doc.taxReturn && (
-                          <span>
-                            {" "}&middot; {doc.taxReturn.entity.legalName} ({doc.taxReturn.taxYear})
-                          </span>
+                          <>
+                            {" · "}
+                            {doc.taxReturn.entity.legalName} ({doc.taxReturn.taxYear})
+                          </>
                         )}
                       </p>
                       {doc.requestNote && (
-                        <p className="mt-1 text-xs text-gray-600">{doc.requestNote}</p>
+                        <p className="mt-1 text-xs text-ink-muted">
+                          {doc.requestNote}
+                        </p>
                       )}
                     </div>
                     <UploadButton documentId={doc.id} label={doc.label} />
-                  </div>
+                  </li>
                 ))}
-              </div>
-            </div>
+              </ul>
+            </Card>
           )}
 
-          {/* All documents */}
           {(uploaded.length > 0 || reviewed.length > 0) && (
-            <div className="mt-6">
-              <h2 className="text-lg font-semibold text-gray-900">Submitted Documents</h2>
-              <div className="mt-3 rounded-lg border border-gray-200 bg-white overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Document</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Category</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">For</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">Date</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-600">File</th>
+            <Card flush>
+              <CardHeader
+                title="Submitted"
+                description={`${uploaded.length + reviewed.length} item${uploaded.length + reviewed.length === 1 ? "" : "s"} shared with your preparer`}
+              />
+              <table className="w-full text-sm">
+                <thead className="bg-surface-muted border-b border-border-subtle text-xs uppercase tracking-wide text-ink-subtle">
+                  <tr>
+                    <th className="text-left px-5 py-2.5 font-medium">
+                      Document
+                    </th>
+                    <th className="text-left px-5 py-2.5 font-medium">
+                      Category
+                    </th>
+                    <th className="text-left px-5 py-2.5 font-medium">For</th>
+                    <th className="text-left px-5 py-2.5 font-medium">Status</th>
+                    <th className="text-left px-5 py-2.5 font-medium">Date</th>
+                    <th className="text-left px-5 py-2.5 font-medium">File</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border-subtle">
+                  {[...uploaded, ...reviewed].map((doc) => (
+                    <tr key={doc.id} className="hover:bg-surface-muted/60">
+                      <td className="px-5 py-2.5 font-medium text-ink">
+                        {doc.label}
+                      </td>
+                      <td className="px-5 py-2.5 text-xs text-ink-muted">
+                        {doc.category.replace(/_/g, " ")}
+                      </td>
+                      <td className="px-5 py-2.5 text-xs text-ink-muted">
+                        {doc.taxReturn?.entity.legalName || "—"}
+                      </td>
+                      <td className="px-5 py-2.5">
+                        <DocumentStatusPill status={doc.status} />
+                      </td>
+                      <td className="px-5 py-2.5 text-xs text-ink-muted">
+                        {format(doc.uploadedAt || doc.createdAt, "MMM d, yyyy")}
+                      </td>
+                      <td className="px-5 py-2.5 text-xs">
+                        {doc.storageKey ? (
+                          <ViewDocumentLink documentId={doc.id} />
+                        ) : (
+                          <span className="text-ink-subtle">—</span>
+                        )}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {[...uploaded, ...reviewed].map((doc) => {
-                      const style = statusStyles[doc.status];
-                      return (
-                        <tr key={doc.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 font-medium text-gray-900">
-                            {doc.label}
-                          </td>
-                          <td className="px-4 py-3 text-gray-500 text-xs">
-                            {doc.category.replace(/_/g, " ")}
-                          </td>
-                          <td className="px-4 py-3 text-gray-500 text-xs">
-                            {doc.taxReturn?.entity.legalName || "--"}
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${style.bg} ${style.text}`}>
-                              {style.label}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-gray-500 text-xs">
-                            {doc.uploadedAt
-                              ? format(doc.uploadedAt, "MMM d, yyyy")
-                              : format(doc.createdAt, "MMM d, yyyy")}
-                          </td>
-                          <td className="px-4 py-3 text-xs">
-                            {doc.storageKey ? (
-                              <ViewDocumentLink documentId={doc.id} />
-                            ) : (
-                              <span className="text-gray-400">--</span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
           )}
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 }
