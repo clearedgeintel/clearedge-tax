@@ -23,6 +23,7 @@ export default async function PortalLayout({
                 width={36}
                 height={36}
                 priority
+                unoptimized
               />
               <span className="ml-2 text-base font-semibold text-gray-900">
                 ClearEdge Tax

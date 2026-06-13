@@ -23,6 +23,7 @@ export default async function StaffLayout({
               width={40}
               height={40}
               priority
+              unoptimized
             />
             <span className="ml-2 text-sm font-semibold text-gray-900">
               ClearEdge Tax

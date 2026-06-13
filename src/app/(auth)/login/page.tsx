@@ -51,6 +51,7 @@ function LoginForm() {
           width={140}
           height={140}
           priority
+          unoptimized
         />
         <p className="mt-2 text-sm text-gray-700">Sign in to your account</p>
       </div>

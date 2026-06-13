@@ -22,6 +22,7 @@ export default async function AdminLayout({
               width={40}
               height={40}
               priority
+              unoptimized
             />
             <span className="ml-2 text-sm font-semibold text-gray-900">
               Admin
