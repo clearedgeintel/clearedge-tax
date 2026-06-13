@@ -1,6 +1,7 @@
 import type { ReturnStatus } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/db";
 import { logStatusChange } from "@/lib/audit/logger";
+import { notifyStatusChange } from "@/lib/comms/notify";
 
 const VALID_TRANSITIONS: Record<ReturnStatus, ReturnStatus[]> = {
   INTAKE: ["INTAKE_BLOCKED", "PREPARATION"],
@@ -85,6 +86,11 @@ export async function transitionReturn(
         },
       });
       await logStatusChange(returnId, actorId, currentStatus, "INTAKE_BLOCKED", "K-1 dependency");
+      await notifyStatusChange({
+        returnId,
+        newStatus: "INTAKE_BLOCKED",
+        note: "Waiting on K-1 from an upstream return",
+      });
       return { success: true, return: updated };
     }
   }
@@ -116,6 +122,11 @@ export async function transitionReturn(
   });
 
   await logStatusChange(returnId, actorId, currentStatus, nextStatus, note);
+
+  // Notify the client about status changes they care about. Best-effort:
+  // notifyStatusChange swallows errors so a comms blip can't roll back
+  // the transition or its audit log entry.
+  await notifyStatusChange({ returnId, newStatus: nextStatus, note });
 
   // If a business return was just APPROVED, resolve K-1 links and unblock downstream
   if (nextStatus === "APPROVED") {

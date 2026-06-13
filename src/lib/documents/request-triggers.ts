@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import type { DocumentCategory } from "@/generated/prisma/enums";
+import { notifyDocumentsRequested } from "@/lib/comms/notify";
 
 /**
  * Document request rules: maps form triggers to the documents
@@ -118,6 +119,13 @@ export async function generateDocumentRequests(returnId: string): Promise<number
       label: doc.label,
       status: "REQUESTED" as const,
     })),
+  });
+
+  // Fire-and-forget client notification. Best-effort: failures don't roll
+  // back the document creation.
+  await notifyDocumentsRequested({
+    returnId,
+    documentLabels: toCreate.map((d) => d.label),
   });
 
   return toCreate.length;

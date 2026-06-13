@@ -36,7 +36,19 @@ const mockedLogStatusChange = vi.mocked(logStatusChange);
 const buildReturn = (overrides: Record<string, unknown> = {}) => ({
   id: "return-1",
   status: "INTAKE" as const,
+  taxYear: 2025,
   k1sReceivedByReturn: [],
+  // Enough shape for notify.resolveClientContact to traverse without
+  // throwing; the null email then short-circuits before any send.
+  entity: {
+    legalName: "Test Entity",
+    client: {
+      id: "client-1",
+      displayName: "Test Client",
+      email: null,
+      user: null,
+    },
+  },
   ...overrides,
 });
 
