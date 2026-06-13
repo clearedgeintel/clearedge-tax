@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { format } from "date-fns";
+import UploadButton from "./UploadButton";
+import ViewDocumentLink from "./ViewDocumentLink";
 
 export default async function ClientDocuments() {
   const session = await auth();
@@ -88,9 +90,7 @@ export default async function ClientDocuments() {
                         <p className="mt-1 text-xs text-gray-600">{doc.requestNote}</p>
                       )}
                     </div>
-                    <button className="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors">
-                      Upload
-                    </button>
+                    <UploadButton documentId={doc.id} label={doc.label} />
                   </div>
                 ))}
               </div>
@@ -110,6 +110,7 @@ export default async function ClientDocuments() {
                       <th className="text-left px-4 py-3 font-medium text-gray-600">For</th>
                       <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
                       <th className="text-left px-4 py-3 font-medium text-gray-600">Date</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-600">File</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -135,6 +136,13 @@ export default async function ClientDocuments() {
                             {doc.uploadedAt
                               ? format(doc.uploadedAt, "MMM d, yyyy")
                               : format(doc.createdAt, "MMM d, yyyy")}
+                          </td>
+                          <td className="px-4 py-3 text-xs">
+                            {doc.storageKey ? (
+                              <ViewDocumentLink documentId={doc.id} />
+                            ) : (
+                              <span className="text-gray-400">--</span>
+                            )}
                           </td>
                         </tr>
                       );
