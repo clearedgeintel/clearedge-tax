@@ -8,7 +8,9 @@ import {
   jsonError,
   getEntityScoped,
 } from "@/lib/api/helpers";
-import { logAuditEvent } from "@/lib/audit/logger";
+import { logAuditEvent, logPIIAccess } from "@/lib/audit/logger";
+import { decrypt, encrypt, safeMaskTIN } from "@/lib/security/pii";
+import { isStaff } from "@/lib/utils/permissions";
 
 const UpdateEntitySchema = z.object({
   legalName: z.string().min(1).max(300).optional(),
@@ -54,8 +56,28 @@ export async function GET(
       },
     },
   });
+  if (!entityDetail) return jsonError("Not found", 404);
 
-  return json({ entity: entityDetail });
+  // TIN handling: mask by default. Staff can request the full value with
+  // `?fullTin=1`, which logs a PII_FULL_VIEW audit event.
+  const url = new URL(_req.url);
+  const wantsFull = url.searchParams.get("fullTin") === "1";
+  let tinForResponse: string;
+  if (wantsFull && isStaff(user.role) && entityDetail.tin) {
+    try {
+      tinForResponse = decrypt(entityDetail.tin);
+      await logPIIAccess(user.id, "tin", { entityId }, "fullTin=1 requested");
+    } catch {
+      tinForResponse = safeMaskTIN(entityDetail.tin);
+    }
+  } else {
+    tinForResponse = safeMaskTIN(entityDetail.tin);
+  }
+
+  return json({
+    entity: { ...entityDetail, tin: tinForResponse },
+    tinMasked: !wantsFull || !isStaff(user.role),
+  });
 }
 
 export async function PATCH(
@@ -77,6 +99,7 @@ export async function PATCH(
     where: { id: entityId },
     data: {
       ...data,
+      tin: data.tin !== undefined ? encrypt(data.tin) : undefined,
       dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
       dateOfFormation: data.dateOfFormation ? new Date(data.dateOfFormation) : undefined,
       updatedAt: new Date(),
@@ -91,5 +114,5 @@ export async function PATCH(
     metadata: { entityId, changes: Object.keys(data) },
   });
 
-  return json({ entity: updated });
+  return json({ entity: { ...updated, tin: safeMaskTIN(updated.tin) } });
 }

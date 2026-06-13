@@ -15,6 +15,28 @@ import { loadInterview } from "@/lib/interview/loader";
 import { evaluateFormTriggers, getQuestionsWithTriggers } from "@/lib/interview/form-trigger-evaluator";
 import type { AnswerMap } from "@/lib/interview/types";
 import { generateDocumentRequests } from "@/lib/documents/request-triggers";
+import { decrypt, encrypt, isEncrypted } from "@/lib/security/pii";
+import type { Question } from "@/lib/interview/types";
+
+const SENSITIVE_INPUT_TYPES = new Set(["ssn", "ein"]);
+
+function isSensitiveQuestion(q: Question | undefined): boolean {
+  return !!q && SENSITIVE_INPUT_TYPES.has(q.inputType);
+}
+
+function decryptIfSensitive(
+  value: unknown,
+  questionId: string,
+  questionIndex: Map<string, Question>
+): unknown {
+  if (typeof value !== "string" || !isEncrypted(value)) return value;
+  if (!isSensitiveQuestion(questionIndex.get(questionId))) return value;
+  try {
+    return decrypt(value);
+  } catch {
+    return value;
+  }
+}
 
 const BulkSaveSchema = z.object({
   responses: z.array(
@@ -50,6 +72,20 @@ export async function GET(
     orderBy: [{ sectionId: "asc" }, { questionId: "asc" }, { instanceIndex: "asc" }],
   });
 
+  // Decrypt any SSN/EIN answers before returning them to the caller.
+  // The caller is already firm-scoped via getReturnScoped above.
+  const entity = await prisma.entity.findUnique({
+    where: { id: taxReturn.entityId },
+    select: { entityType: true },
+  });
+  if (entity) {
+    const { questionIndex } = loadInterview(entity.entityType);
+    const decrypted = responses.map((r) => ({
+      ...r,
+      value: decryptIfSensitive(r.value, r.questionId, questionIndex),
+    }));
+    return json({ responses: decrypted });
+  }
   return json({ responses });
 }
 
@@ -73,8 +109,29 @@ export async function PUT(
   const { data, error: parseError } = await parseBody(req, BulkSaveSchema);
   if (parseError) return parseError;
 
+  // Load interview once so we can both encrypt sensitive answers before write
+  // and reuse the question index for form-trigger evaluation below.
+  const entity = await prisma.entity.findUnique({
+    where: { id: taxReturn.entityId },
+    select: { entityType: true },
+  });
+  const interview = entity ? loadInterview(entity.entityType) : null;
+  const questionIndex = interview?.questionIndex;
+
+  const protectedResponses = data.responses.map((r) => {
+    const q = questionIndex?.get(r.questionId);
+    if (
+      isSensitiveQuestion(q) &&
+      typeof r.value === "string" &&
+      r.value.length > 0
+    ) {
+      return { ...r, value: encrypt(r.value) };
+    }
+    return r;
+  });
+
   const results = await prisma.$transaction(
-    data.responses.map((r) =>
+    protectedResponses.map((r) =>
       prisma.interviewResponse.upsert({
         where: {
           returnId_questionId_instanceIndex: {
@@ -106,15 +163,9 @@ export async function PUT(
     await logInterviewSave(returnId, user.id, r.questionId, r.sectionId);
   }
 
-  // Evaluate form triggers after save
+  // Evaluate form triggers after save (re-uses interview loaded above)
   try {
-    const entity = await prisma.entity.findUnique({
-      where: { id: taxReturn.entityId },
-      select: { entityType: true },
-    });
-
-    if (entity) {
-      const interview = loadInterview(entity.entityType);
+    if (interview) {
       const allResponses = await prisma.interviewResponse.findMany({
         where: { returnId },
       });

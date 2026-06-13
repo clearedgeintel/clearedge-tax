@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
 import { ENTITY_TYPE_LABELS, RETURN_STATUS_LABELS } from "@/types/entities";
 import { format } from "date-fns";
+import { decrypt } from "@/lib/security/pii";
+import { logPIIAccess } from "@/lib/audit/logger";
 
 export interface ExportPackage {
   metadata: {
@@ -72,7 +74,10 @@ export interface ExportPackage {
  * Generate an export package for a return.
  * The return must be in APPROVED or EXPORTED status.
  */
-export async function generateExportPackage(returnId: string): Promise<ExportPackage> {
+export async function generateExportPackage(
+  returnId: string,
+  options: { actorUserId?: string } = {}
+): Promise<ExportPackage> {
   const taxReturn = await prisma.taxReturn.findUnique({
     where: { id: returnId },
     include: {
@@ -114,6 +119,17 @@ export async function generateExportPackage(returnId: string): Promise<ExportPac
     throw new Error(`Cannot export return in ${taxReturn.status} status`);
   }
 
+  // An export package contains the full decrypted TIN and every interview
+  // response. Log this as a PII access so it shows in the audit log.
+  if (options.actorUserId && taxReturn.entity.tin) {
+    await logPIIAccess(
+      options.actorUserId,
+      "tin",
+      { entityId: taxReturn.entity.id, returnId: taxReturn.id },
+      "export package generated"
+    );
+  }
+
   // Group interview responses by section
   const interviewData: ExportPackage["interviewData"] = {};
   for (const r of taxReturn.interviewResponses) {
@@ -142,7 +158,7 @@ export async function generateExportPackage(returnId: string): Promise<ExportPac
     },
     entityInfo: {
       legalName: taxReturn.entity.legalName,
-      tin: taxReturn.entity.tin,
+      tin: taxReturn.entity.tin ? decrypt(taxReturn.entity.tin) : null,
       tinType: taxReturn.entity.tinType,
       filingStatus: taxReturn.entity.filingStatus,
       address: taxReturn.entity.address,

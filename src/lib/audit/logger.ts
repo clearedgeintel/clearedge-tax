@@ -113,6 +113,31 @@ export async function logDocumentEvent(
   });
 }
 
+export async function logPIIAccess(
+  userId: string,
+  field: string,
+  subject: { entityId?: string; returnId?: string; clientId?: string },
+  reason?: string
+): Promise<void> {
+  const subjectStr =
+    subject.entityId
+      ? `entity ${subject.entityId}`
+      : subject.returnId
+        ? `return ${subject.returnId}`
+        : subject.clientId
+          ? `client ${subject.clientId}`
+          : "unknown";
+  await logAuditEvent({
+    userId,
+    returnId: subject.returnId,
+    eventType: "PII_FULL_VIEW",
+    eventCategory: "PII",
+    description: `Viewed full ${field} for ${subjectStr}${reason ? ` (${reason})` : ""}`,
+    metadata: { field, ...subject, reason },
+    critical: true,
+  });
+}
+
 export async function logAuthEvent(
   userId: string,
   eventType: string,

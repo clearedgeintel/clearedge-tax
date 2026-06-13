@@ -11,6 +11,7 @@ import {
   getSearchParams,
 } from "@/lib/api/helpers";
 import { logAuditEvent } from "@/lib/audit/logger";
+import { encrypt, safeMaskTIN } from "@/lib/security/pii";
 
 const CreateEntitySchema = z.object({
   entityType: z.enum([
@@ -70,7 +71,9 @@ export async function GET(
     orderBy: { legalName: "asc" },
   });
 
-  return json({ entities });
+  // List endpoints never return full TINs — mask every row.
+  const masked = entities.map((e) => ({ ...e, tin: safeMaskTIN(e.tin) }));
+  return json({ entities: masked });
 }
 
 export async function POST(
@@ -92,6 +95,7 @@ export async function POST(
     data: {
       ...data,
       clientId,
+      tin: data.tin ? encrypt(data.tin) : undefined,
       dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
       dateOfFormation: data.dateOfFormation ? new Date(data.dateOfFormation) : undefined,
     },
@@ -105,5 +109,7 @@ export async function POST(
     metadata: { entityId: entity.id, clientId, entityType: entity.entityType },
   });
 
-  return json({ entity }, 201);
+  // Don't echo the freshly-encrypted TIN back as ciphertext; mask in the
+  // response so the client knows the value was accepted without leaking it.
+  return json({ entity: { ...entity, tin: safeMaskTIN(entity.tin) } }, 201);
 }

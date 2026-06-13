@@ -26,7 +26,9 @@ export async function GET(
   }
 
   try {
-    const exportPackage = await generateExportPackage(returnId);
+    const exportPackage = await generateExportPackage(returnId, {
+      actorUserId: user.id,
+    });
 
     await logAuditEvent({
       returnId,
