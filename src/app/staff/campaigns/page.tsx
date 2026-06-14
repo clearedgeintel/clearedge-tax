@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { format } from "date-fns";
 import { prisma } from "@/lib/db";
 import { isStaff } from "@/lib/utils/permissions";
@@ -77,7 +78,12 @@ export default async function StaffCampaigns() {
               <CardHeader
                 title={
                   <span className="flex items-center gap-2">
-                    {c.client.displayName} · Tax year {c.taxYear}
+                    <Link
+                      href={`/staff/campaigns/${c.id}`}
+                      className="hover:text-brand-700"
+                    >
+                      {c.client.displayName} · Tax year {c.taxYear}
+                    </Link>
                     <Badge tone={STATUS_TONE[c.status]}>
                       {STATUS_LABEL[c.status]}
                     </Badge>

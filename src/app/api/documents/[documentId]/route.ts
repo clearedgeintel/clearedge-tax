@@ -11,6 +11,7 @@ import { isStaff } from "@/lib/utils/permissions";
 import { logDocumentEvent } from "@/lib/audit/logger";
 import type { DocumentStatus } from "@/generated/prisma/enums";
 import { extractDocument } from "@/lib/extraction/extract";
+import { maybeCompleteCampaign } from "@/lib/campaigns";
 
 const UpdateDocumentSchema = z.object({
   status: z.enum(["UPLOADED", "ACCEPTED", "REJECTED"]).optional(),
@@ -96,5 +97,69 @@ export async function PATCH(
     });
   }
 
+  // After a campaign document is accepted or rejected, evaluate whether
+  // every item in the campaign is now resolved and flip the campaign to
+  // COMPLETED / IN_PROGRESS accordingly. Best-effort — failures don't roll
+  // back the document update.
+  if (
+    document.campaignId &&
+    (data.status === "ACCEPTED" ||
+      data.status === "REJECTED" ||
+      data.status === "UPLOADED")
+  ) {
+    try {
+      await maybeCompleteCampaign(document.campaignId);
+    } catch (e) {
+      console.error("[campaign] auto-complete failed", e);
+    }
+  }
+
   return json({ document: updated });
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ documentId: string }> }
+) {
+  const { user, error } = await requireAuth();
+  if (error) return error;
+  if (!isStaff(user.role)) return jsonError("Staff only", 403);
+
+  const { documentId } = await params;
+
+  const document = await prisma.document.findFirst({
+    where: { id: documentId, client: { firmId: user.firmId } },
+    include: { campaign: { select: { status: true } } },
+  });
+  if (!document) return jsonError("Not found", 404);
+
+  // Only allow deleting a document that has never been uploaded. Once a
+  // client puts a file behind a row, the row is part of the audit trail.
+  if (document.status !== "REQUESTED") {
+    return jsonError(
+      "Only REQUESTED items can be deleted; uploaded documents are part of the audit trail",
+      400
+    );
+  }
+
+  // If the document belongs to a campaign, only allow deletion while the
+  // campaign is still DRAFT — once a campaign is sent, the item list is
+  // locked.
+  if (document.campaign && document.campaign.status !== "DRAFT") {
+    return jsonError(
+      "This item belongs to a sent campaign; remove it before sending instead",
+      400
+    );
+  }
+
+  await prisma.document.delete({ where: { id: documentId } });
+  await logDocumentEvent(
+    document.returnId || "",
+    user.id,
+    "DOCUMENT_DELETED",
+    documentId,
+    document.label
+  );
+
+  return json({ deleted: true });
 }
