@@ -10,6 +10,7 @@ import {
 } from "@/lib/api/helpers";
 import { computeDeadlines } from "@/lib/deadlines/calculator";
 import { logAuditEvent } from "@/lib/audit/logger";
+import { linkCampaignDocumentsToReturn } from "@/lib/campaigns";
 
 const CreateReturnSchema = z.object({
   taxYear: z.number().int().min(2024),
@@ -130,6 +131,25 @@ export async function POST(
     metadata: { entityId, taxYear: data.taxYear },
     critical: true,
   });
+
+  // If a campaign already collected documents for this (client, taxYear),
+  // pull them onto the new return so they show up alongside any
+  // return-specific requests generated later.
+  const linked = await linkCampaignDocumentsToReturn({
+    returnId: taxReturn.id,
+    clientId: entity.clientId,
+    taxYear: data.taxYear,
+  });
+  if (linked > 0) {
+    await logAuditEvent({
+      returnId: taxReturn.id,
+      userId: user.id,
+      eventType: "CAMPAIGN_DOCS_LINKED",
+      eventCategory: "DOCUMENT",
+      description: `Linked ${linked} pre-collected document(s) from the matching tax-year ${data.taxYear} campaign`,
+      metadata: { linked },
+    });
+  }
 
   return json({ return: returnWithDeadlines }, 201);
 }

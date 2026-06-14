@@ -228,10 +228,11 @@ model Client {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  firm       Firm       @relation(fields: [firmId], references: [id])
-  user       User?      @relation(fields: [userId], references: [id])
+  firm       Firm               @relation(fields: [firmId], references: [id])
+  user       User?              @relation(fields: [userId], references: [id])
   entities   Entity[]
   documents  Document[]
+  campaigns  DocumentCampaign[]
 
   @@index([firmId])
 }
@@ -389,6 +390,8 @@ model Document {
   id          String           @id @default(cuid())
   returnId    String?
   clientId    String
+  campaignId  String?
+  taxYear     Int?
   category    DocumentCategory
   label       String
   status      DocumentStatus   @default(REQUESTED)
@@ -404,12 +407,44 @@ model Document {
 
   taxReturn  TaxReturn?           @relation(fields: [returnId], references: [id])
   client     Client               @relation(fields: [clientId], references: [id])
+  campaign   DocumentCampaign?    @relation(fields: [campaignId], references: [id])
   extraction DocumentExtraction?
 
   @@index([returnId])
   @@index([clientId])
+  @@index([campaignId])
+  @@index([clientId, taxYear])
   @@index([status])
   @@index([returnId, status])
+}
+
+enum DocumentCampaignStatus {
+  DRAFT
+  SENT
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model DocumentCampaign {
+  id          String                 @id @default(cuid())
+  clientId    String
+  taxYear     Int
+  status      DocumentCampaignStatus @default(DRAFT)
+  message     String?                @db.Text
+  deadline    DateTime?
+  sentAt      DateTime?
+  completedAt DateTime?
+  createdBy   String?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  client    Client     @relation(fields: [clientId], references: [id])
+  documents Document[]
+
+  @@unique([clientId, taxYear])
+  @@index([clientId])
+  @@index([status])
 }
 
 enum ExtractionStatus {

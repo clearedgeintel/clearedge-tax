@@ -5,6 +5,7 @@ import {
   Inbox,
   Users,
   FileText,
+  FolderInput,
 } from "lucide-react";
 import { Sidebar, type NavSection } from "@/components/shell/Sidebar";
 import { TopBar } from "@/components/shell/TopBar";
@@ -26,6 +27,11 @@ const SECTIONS: NavSection[] = [
         label: "Clients",
         href: "/staff/clients",
         icon: <Users className="h-4 w-4" />,
+      },
+      {
+        label: "Pre-return campaigns",
+        href: "/staff/campaigns",
+        icon: <FolderInput className="h-4 w-4" />,
       },
       {
         label: "Returns",
