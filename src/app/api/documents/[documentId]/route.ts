@@ -10,6 +10,7 @@ import {
 import { isStaff } from "@/lib/utils/permissions";
 import { logDocumentEvent } from "@/lib/audit/logger";
 import type { DocumentStatus } from "@/generated/prisma/enums";
+import { extractDocument } from "@/lib/extraction/extract";
 
 const UpdateDocumentSchema = z.object({
   status: z.enum(["UPLOADED", "ACCEPTED", "REJECTED"]).optional(),
@@ -83,6 +84,16 @@ export async function PATCH(
       documentId,
       document.label
     );
+  }
+
+  // Kick off AI extraction when the document first becomes UPLOADED. Run as
+  // a fire-and-forget so the response returns immediately — the UI shows
+  // PENDING and refreshes to show the result. A manual retry endpoint
+  // covers the case where the background job dies before completion.
+  if (data.status === "UPLOADED") {
+    void extractDocument(documentId, user.id).catch((e) => {
+      console.error(`[extraction] documentId=${documentId} failed`, e);
+    });
   }
 
   return json({ document: updated });

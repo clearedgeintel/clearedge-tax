@@ -18,6 +18,7 @@ import {
 import { AlertTriangle, ArrowDownLeft, ArrowUpRight, FileText } from "lucide-react";
 import ReviewPanel from "./ReviewPanel";
 import AdvancePanel from "./AdvancePanel";
+import ExtractionCell from "./ExtractionCell";
 
 const SEVERITY_TEXT: Record<
   ReturnType<typeof deadlineSeverity>,
@@ -54,7 +55,20 @@ export default async function ReturnDetailPage({ params }: Props) {
       reviewer: { select: { id: true, name: true } },
       partner: { select: { id: true, name: true } },
       deadlines: { orderBy: { dueDate: "asc" } },
-      documents: { orderBy: { createdAt: "desc" } },
+      documents: {
+        orderBy: { createdAt: "desc" },
+        include: {
+          extraction: {
+            select: {
+              status: true,
+              fields: true,
+              model: true,
+              errorMessage: true,
+              updatedAt: true,
+            },
+          },
+        },
+      },
       reviewActions: {
         orderBy: { createdAt: "desc" },
         include: { user: { select: { name: true, role: true } } },
@@ -241,6 +255,9 @@ export default async function ReturnDetailPage({ params }: Props) {
                     </th>
                     <th className="text-left px-5 py-2.5 font-medium">Status</th>
                     <th className="text-left px-5 py-2.5 font-medium">
+                      Extraction
+                    </th>
+                    <th className="text-left px-5 py-2.5 font-medium">
                       Updated
                     </th>
                   </tr>
@@ -256,6 +273,21 @@ export default async function ReturnDetailPage({ params }: Props) {
                       </td>
                       <td className="px-5 py-2.5">
                         <DocumentStatusPill status={doc.status} />
+                      </td>
+                      <td className="px-5 py-2.5">
+                        <ExtractionCell
+                          documentId={doc.id}
+                          documentLabel={doc.label}
+                          documentStatus={doc.status}
+                          extraction={
+                            doc.extraction
+                              ? {
+                                  ...doc.extraction,
+                                  updatedAt: doc.extraction.updatedAt.toISOString(),
+                                }
+                              : null
+                          }
+                        />
                       </td>
                       <td className="px-5 py-2.5 text-xs text-ink-muted">
                         {format(doc.updatedAt, "MMM d")}

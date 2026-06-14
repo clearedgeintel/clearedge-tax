@@ -70,3 +70,17 @@ export async function deleteObject(storageKey: string): Promise<void> {
     .remove([storageKey]);
   if (error) throw error;
 }
+
+/**
+ * Downloads an object's raw bytes for server-side processing (e.g. sending
+ * to Claude for extraction). Returns the underlying ArrayBuffer wrapped in
+ * a Buffer for convenience.
+ */
+export async function downloadObject(storageKey: string): Promise<Buffer> {
+  const { data, error } = await getClient()
+    .storage.from(DOCUMENTS_BUCKET)
+    .download(storageKey);
+  if (error) throw error;
+  const arrayBuffer = await data.arrayBuffer();
+  return Buffer.from(arrayBuffer);
+}
