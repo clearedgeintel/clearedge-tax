@@ -64,6 +64,65 @@ async function resolveClientContact(
   };
 }
 
+async function resolveClientContactByClientId(
+  clientId: string
+): Promise<ClientContact | null> {
+  const client = await prisma.client.findUnique({
+    where: { id: clientId },
+    select: {
+      id: true,
+      displayName: true,
+      email: true,
+      user: { select: { email: true, name: true } },
+    },
+  });
+  if (!client) return null;
+  return {
+    clientId: client.id,
+    email: client.email || client.user?.email || null,
+    name: client.user?.name || client.displayName,
+  };
+}
+
+/**
+ * Send a campaign-level "we need the following documents" email scoped to a
+ * client (no return required). Use this for pre-return collection workflows
+ * where no TaxReturn exists yet for the client+taxYear. Best-effort: any
+ * failure logs and returns.
+ */
+export async function notifyCampaignDocumentsRequested(opts: {
+  clientId: string;
+  taxYear: number;
+  documentLabels: string[];
+}): Promise<void> {
+  if (opts.documentLabels.length === 0) return;
+  try {
+    const contact = await resolveClientContactByClientId(opts.clientId);
+    if (!contact || !contact.email) return;
+    const rendered = documentRequestEmail({
+      clientName: contact.name,
+      documentLabels: opts.documentLabels,
+      returnLegalName: `tax year ${opts.taxYear}`,
+      portalUrl: `${portalBaseUrl()}/documents`,
+    });
+    await sendEmail({
+      to: contact.email,
+      subject: rendered.subject,
+      text: rendered.text,
+      html: rendered.html,
+      templateId: rendered.templateId,
+      clientId: contact.clientId,
+      metadata: {
+        documentLabels: opts.documentLabels,
+        scope: "campaign",
+        taxYear: opts.taxYear,
+      },
+    });
+  } catch (e) {
+    console.error("[notify] campaign documents requested failed", e);
+  }
+}
+
 /**
  * Send "we need the following documents" — one email per call, batching
  * however many docs the caller passes. Safe to call inside an interview

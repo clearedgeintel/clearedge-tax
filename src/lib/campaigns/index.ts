@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/db";
 import { logAuditEvent } from "@/lib/audit/logger";
-import { notifyDocumentsRequested } from "@/lib/comms/notify";
+import {
+  notifyCampaignDocumentsRequested,
+  notifyDocumentsRequested,
+} from "@/lib/comms/notify";
 import type { CampaignDocItem } from "./templates";
 
 /**
@@ -140,23 +143,28 @@ async function notifyCampaignSent(
   });
   if (!campaign) return;
 
-  // Try to find any return for this client so we can reuse the
-  // notifyDocumentsRequested path (which expects a returnId). If none, fall
-  // back to no email — v1 limitation surfaced in the README; the documents
-  // still appear on the client portal regardless.
+  // Prefer scoping the email to an existing return (so the email reuses
+  // the return's entity name and the existing notifyDocumentsRequested
+  // template); fall back to the client-level campaign helper when no
+  // return exists yet — which is the common case for pre-return
+  // collection. Either path goes through the same email-sender +
+  // Communication-row audit trail.
   const someReturn = await prisma.taxReturn.findFirst({
     where: { entity: { clientId: campaign.clientId }, taxYear: campaign.taxYear },
     select: { id: true },
   });
-
   if (someReturn) {
     await notifyDocumentsRequested({
       returnId: someReturn.id,
       documentLabels: labels,
     });
+    return;
   }
-  // Otherwise the docs are still visible on the client portal — but no
-  // email goes out. A standalone client-level email send is a follow-up.
+  await notifyCampaignDocumentsRequested({
+    clientId: campaign.clientId,
+    taxYear: campaign.taxYear,
+    documentLabels: labels,
+  });
 }
 
 /**
