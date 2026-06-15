@@ -18,6 +18,7 @@ import SendCampaignButton from "../SendCampaignButton";
 import CancelCampaignButton from "./CancelCampaignButton";
 import DeleteItemButton from "./DeleteItemButton";
 import AcceptRejectButtons from "./AcceptRejectButtons";
+import AddItemForm from "./AddItemForm";
 
 const STATUS_TONE: Record<
   string,
@@ -171,7 +172,11 @@ export default async function CampaignDetailPage({ params }: Props) {
             <EmptyState
               icon={<FileText className="h-5 w-5" />}
               title="No items in this campaign"
-              description="Add items via the API; an inline editor is a follow-up."
+              description={
+                campaign.status === "DRAFT"
+                  ? "Add the first item below to get started."
+                  : "This campaign has no document items."
+              }
             />
           </div>
         ) : (
@@ -239,6 +244,7 @@ export default async function CampaignDetailPage({ params }: Props) {
             </tbody>
           </table>
         )}
+        {campaign.status === "DRAFT" && <AddItemForm campaignId={campaign.id} />}
       </Card>
 
       <Card flush className="mt-4">
