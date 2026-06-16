@@ -19,6 +19,7 @@ import { AlertTriangle, ArrowDownLeft, ArrowUpRight, FileText } from "lucide-rea
 import ReviewPanel from "./ReviewPanel";
 import AdvancePanel from "./AdvancePanel";
 import ExtractionCell from "./ExtractionCell";
+import PrefillPanel from "./PrefillPanel";
 
 const SEVERITY_TEXT: Record<
   ReturnType<typeof deadlineSeverity>,
@@ -166,6 +167,14 @@ export default async function ReturnDetailPage({ params }: Props) {
                 currentStatus={taxReturn.status}
               />
             )}
+
+          {(taxReturn.status === "INTAKE" ||
+            taxReturn.status === "PREPARATION") &&
+            taxReturn.documents.some(
+              (d) =>
+                d.extraction?.status === "SUCCESS" ||
+                d.extraction?.status === "REVIEWED"
+            ) && <PrefillPanel returnId={returnId} />}
 
           {(taxReturn.status === "REVIEW" ||
             taxReturn.status === "REVISION" ||
