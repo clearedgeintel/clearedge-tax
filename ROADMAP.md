@@ -1,230 +1,270 @@
 # ClearEdge Tax — Product Roadmap
 
+**Where we are**: the core lifecycle — client intake → conditional interview → document collection (with AI extraction) → multi-level review → JSON export — works end to end on real seed data. Email is wired. PII is encrypted. 130 unit/integration tests pass and a re-runnable smoke script proves the happy path. What remains for v1 ship-readiness is on Phase 2: real vendor-format exports, e-signature, scheduled reminders, broader extraction categories, and a few UX polish items.
+
+---
+
 ## Key Constraints (locked for v1)
 
-- **Export-only filing.** ClearEdge does not file returns. It produces a reviewer-approved return package that is exported to external tax software (Drake, UltraTax, or Lacerte) for final filing.
-- **Current tax year only.** v1 supports the current filing season. Prior-year returns, amendments, and multi-year carryforward tracking are deferred to Phase 3.
-- **No IRS MeF integration.** In-platform e-file and e-sign require an ERO agreement and EFIN. This is a Phase 3 milestone.
-- **Supported entity types at launch.** Individual (1040, including MFJ/MFS/HOH), S-Corp (1120-S), Partnership/LLC (1065), Sole Proprietorship (Schedule C), and Non-profit (990 family).
-- **Multi-state support is scoped.** Supported states must be defined before build begins; unsupported states are hard-blocked at intake.
+- **Export-only filing.** The platform produces a reviewer-approved return package exported to external tax software (Drake, UltraTax, Lacerte) for final filing. In-platform e-file is Phase 4.
+- **Current tax year only.** v1 supports the current filing season. Prior-year returns, amendments, and multi-year carryforward tracking are deferred.
+- **Supported entity types at launch.** Individual (1040, including MFJ/MFS/HOH), S-Corp (1120-S), Partnership/LLC (1065), Sole Proprietorship (Schedule C), and Non-profit (990 family). C-Corp is Phase 3.
+- **AI-assisted, staff-reviewed.** Every AI-extracted field and pre-filled answer is a *proposal* — staff sign-off is required before export. The system never auto-files.
+- **Multi-state support is scoped.** Initial state coverage (MN, CA, NY, WI, TX) ships in Phase 1; broader coverage in Phase 3.
 
 ---
 
 ## Definition of Done for v1
 
-A shippable v1 means a client can be onboarded, guided through an intake interview, have their documents collected, have their return prepared and reviewed by staff, and receive an export-ready return package — all with deadline tracking and an audit trail. Specifically:
+A shippable v1 means a client can be onboarded, guided through an intake interview, have their documents collected (with AI assistance), have their return prepared and reviewed by staff, and receive a vendor-software-ready export package — all with deadline tracking and an audit trail. Specifically:
 
 - [x] Client-entity graph stores individuals, households, pass-through entities, and their links
-- [x] Conditional intake interview runs end-to-end for every supported entity type, surfacing the correct questions and triggering the correct forms
+- [x] Conditional intake interview runs end-to-end for every supported entity type
 - [x] Business returns (1120-S, 1065) close and issue K-1s before linked 1040s can advance
-- [x] Federal and state deadlines (including extensions) are tracked per return; estimated payment reminders fire on schedule
-- [x] Staff dashboard shows workload queue with per-return countdown and bottleneck alerts
+- [x] Federal deadlines (and initial state set) tracked per return; estimated payment schedules per entity type
+- [x] Staff dashboard shows workload queue with per-return countdown
+- [x] Bottleneck alerts: returns blocked by K-1 dependencies surface in dashboard (missing-docs and overdue-review escalation still open)
 - [x] Client portal displays real-time return status
-- [x] Document upload and document-request triggers work for all entity types
-- [x] Preparer → manager review/sign-off workflow gates export
-- [x] Export package generator produces output accepted by Drake, UltraTax, or Lacerte
-- [x] Audit trail logs every access, edit, review, and approval with timestamps
+- [x] Document upload backed by Supabase Storage with signed URLs
+- [x] AI extraction of W-2, 1099-INT, 1099-DIV with proposed pre-fill into the interview
+- [x] Pre-return document-collection campaigns at the client + tax-year level
+- [x] Preparer → manager review/sign-off workflow gates export; optional partner-review tier per firm
+- [x] PII (SSN, EIN, sensitive interview answers) encrypted at rest with audit logging on full reads
+- [x] Audit trail logs every access, edit, review, approval, and export event
+- [x] Internal export package generator produces a complete JSON of return data
+- [ ] **Export package adapter to at least one vendor format (Drake CSV/Lacerte XML/UltraTax)**
+- [ ] **E-signature on engagement letter and Form 8879 (or comparable workflow)**
+
+The two unchecked items are the gating bar for v1 ship.
 
 ---
 
-## Phase 0 — Pre-build (accounting deliverables, no code)
+## Phase 0 — Pre-build artifacts ✅ Done
 
-Phase 0 produces the reference artifacts that every downstream engineering decision depends on. Nothing is coded here — the output is documentation, decision trees, and data schemas that the tax and product teams must sign off on before development begins.
+Phase 0 produces the reference data that every downstream engineering decision depends on. Nothing was coded here — the output is documentation and structured data the tax team signed off on.
 
-### Intake question matrix
-
-- [x] Catalog every intake question across all supported entity types
-- [x] Map every answer branch and its downstream consequences
-- [x] Identify every form trigger (which answers cause which forms/schedules to be included)
-
-### Form dependency map
-
-- [x] Document cascading schedule and conditional logic (e.g., K-1 → Schedule E → Form 8582)
-- [x] Map cross-entity dependencies (business K-1 feeds into individual return)
-- [x] Identify all conditional schedules and when they activate
-
-### Entity relationship schema
-
-- [x] Define how individuals, pass-through entities, and households link
-- [x] Model spousal relationships (MFJ, MFS), dependent chains, and ownership stakes
-- [x] Document pass-through ownership chains (partner → partnership → S-Corp)
-
-### 990 variant decision tree
-
-- [x] Map gross receipts and asset thresholds to the correct 990 variant (990-N, 990-EZ, 990, 990-PF, 990-T)
-- [x] Define the intake questions that drive variant selection
-- [x] Document edge cases (e.g., organization changes size mid-year)
-
-### Multi-state nexus rules
-
-- [ ] Define the list of supported states at v1 launch
-- [ ] Document nexus triggers for each supported state (physical presence, economic nexus, factor-based)
-- [ ] Build hard-block logic for unsupported states at intake
+- [x] Intake question matrix across all supported entity types, with answer branches and form triggers
+- [x] Form dependency map: cascading schedules and cross-entity dependencies (K-1 → Schedule E → Form 8582)
+- [x] Entity relationship schema: individuals, pass-through entities, households, ownership chains
+- [x] 990 variant decision tree (990-N / 990-EZ / 990 / 990-PF / 990-T)
+- [ ] Multi-state nexus rules (only initial five states defined; broader coverage in Phase 3)
 
 ---
 
-## Phase 1 — Foundation (v1 core)
+## Phase 1 — Foundation 🟢 Substantially complete
 
-Phase 1 delivers the minimum viable product. At the end of this phase, the platform handles the full lifecycle — intake through export — for all supported entity types. Staff can manage workload, enforce review gates, and produce export-ready return packages.
+Phase 1 delivers the minimum viable platform: full lifecycle, multi-tenant, role-gated, with the engines and integrations the rest of the roadmap builds on.
 
-### Data model
+### Data + access layer
+- [x] Client-entity graph with relationships (spousal, dependent, ownership)
+- [x] Firm-scoped multi-tenancy on every endpoint
+- [x] Role-based access control (CLIENT / PREPARER / MANAGER / ADMIN)
+- [x] PII encryption at rest (AES-256-GCM, application layer)
+- [x] Audit logger with buffered + critical-immediate writes
+- [ ] Versioned data storage for in-progress returns (snapshot rollbacks)
 
-- [x] Client-entity graph: individuals, households, pass-through entities, dependency links
-- [x] Entity ownership and relationship modeling (spousal, dependent, partner/shareholder)
-- [ ] Versioned data storage for in-progress returns
+### Engines
+- [x] Conditional interview engine (operators, condition groups, repeatable instances)
+- [x] Form trigger evaluator (interview answers → schedules/forms in real time)
+- [x] Question matrix versioning per tax year (loader takes optional taxYear + JSON override)
+- [x] Status state machine with K-1 dependency blocking + auto-unblock
+- [x] Deadline calculator: federal + initial state set (MN, CA, NY, WI, TX), extensions, estimated payments, weekend roll-forward
 
-### API layer
+### API + workflows
+- [x] CRUD: clients, entities, returns, interview responses
+- [x] Document request and status management
+- [x] Review action endpoints driving status transitions
+- [x] Admin: users, firm settings, audit-log viewer
+- [x] Multi-level review (optional partner tier per firm)
+- [x] Pre-return document-collection campaigns (client + tax-year scoped)
 
-- [x] CRUD endpoints for clients, entities, and entity relationships
-- [x] CRUD endpoints for tax returns with auto-computed deadlines
-- [x] Firm-scoped multi-tenant data isolation on all endpoints
-- [x] Role-based access control (CLIENT, PREPARER, MANAGER, ADMIN)
-- [x] Interview response bulk save/retrieve endpoints
-- [x] Document request and status management endpoints
-- [x] Review action endpoints with status transition triggers
-- [x] Admin endpoints for user and firm management
-
-### Intake interview engine
-
-- [x] Conditional question tree driven by Phase 0 intake matrix
-- [x] Form trigger logic: answers activate or deactivate schedules and forms in real time
-- [x] Dual view: client-facing guided interview and staff-facing data entry/override
-- [x] Support for all entity types: 1040, 1120-S, 1065, Schedule C, 990 family
-
-### Return sequencing engine
-
-- [x] Enforce ordering: business returns must close and issue K-1s before linked 1040s can advance
-- [x] K-1 data flows automatically into the recipient's individual return
-- [x] Return status state machine (intake → preparation → review → approved → exported)
-
-### Deadline engine
-
-- [x] Standard federal deadlines per entity type (April 15, March 15, May 15 for 990s, etc.)
-- [ ] State filing deadlines for all supported states
-- [x] Extension tracking (Form 4868 for individuals, Form 7004 for businesses/990s)
-- [x] Estimated tax payment reminders (quarterly schedule)
-- [x] Automated alerts as deadlines approach (configurable warning thresholds)
+### Intake
+- [x] Conditional question tree driven by Phase 0 matrix
+- [x] Dual view: client-facing guided interview and staff-facing data entry
+- [x] All supported entity types
 
 ### Staff dashboard
-
-- [x] Workload queue: all active returns assigned to the logged-in preparer or manager
-- [x] Per-return deadline countdown with color-coded urgency
-- [x] Bottleneck alerts: returns blocked by missing documents, pending K-1s, or overdue reviews
-- [x] Filter and sort by entity type, deadline, status, assigned staff
+- [x] Workload queue + per-return deadline countdown with severity colors
+- [x] K-1-blocked returns surface in dashboard
+- [ ] Missing-document blocking surface (today: shown per return only, not as a dashboard bucket)
+- [ ] Overdue-review escalation (today: surface returns past N days in REVIEW)
 
 ### Client portal
-
-- [x] Real-time status display showing current phase of each return
-- [x] Notification center for action items (documents needed, signature requests, etc.)
-- [x] Secure login and session management
+- [x] Real-time status display with progress bars
+- [x] Notification center driven by document/deadline/status state
+- [x] Document upload with signed-URL flow
+- [x] Secure login + session management
 
 ### Document collection
+- [x] Per-return request triggers driven by entity type + active forms
+- [x] Pre-return collection campaigns at the client+year level
+- [x] AI extraction for W-2, 1099-INT, 1099-DIV (Claude vision + tool-use)
+- [x] Pre-fill interview answers from extracted fields with staff review
 
-- [x] Client-facing upload interface with categorization (W-2, 1099, bank statements, etc.)
-- [x] Document request triggers: system generates requests based on intake answers and form requirements
-- [x] Staff view of received vs. outstanding documents per return
+### Comms layer
+- [x] Resend-backed outbound email with Communication-row audit
+- [x] Document request emails (per-return and per-campaign)
+- [x] Status change emails (APPROVED, REVISION, EXPORTED, BLOCKED)
+- [ ] Deadline-reminder cron (template exists; scheduler does not)
 
-### Export package generator
+### Export
+- [x] Internal JSON export package (every interview answer, document metadata, K-1 links, deadlines, review history)
+- [ ] **Vendor-format adapter (Drake / UltraTax / Lacerte)** — v1 ship gate
 
-- [x] Compile reviewer-approved return data into export format
-- [x] Support output compatible with Drake, UltraTax, and Lacerte
-- [x] Export is locked behind review/sign-off gate — cannot export unapproved returns
-
-### Review and approval workflow
-
-- [x] Preparer submits return for manager review
-- [x] Manager review interface with annotation and rejection capability
-- [x] Sign-off unlocks export; rejection routes back to preparer with notes
-- [ ] Multi-level review support (preparer → reviewer → partner, if configured)
-
-### Audit trail
-
-- [x] Timestamped log of every access, edit, review, approval, and export event
-- [x] Per-return and per-user audit history views
-- [x] Immutable log storage (append-only)
+### Engineering quality
+- [x] Vitest unit-test suite (130 tests across 10 files)
+- [x] Re-runnable E2E smoke script (`scripts/e2e-happy-path.ts`)
+- [ ] CI: run tests + typecheck on every push
 
 ---
 
-## Phase 2 — Communication & Polish
+## Phase 2 — v1 ship-ready polish 🚧 Up next
 
-Phase 2 layers automated client communication on top of the working platform. Staff no longer need to manually chase documents or send reminders — the system handles routine outreach and escalates exceptions.
+The bar to call v1 done. Most items here are well-scoped and would close in days, not weeks.
 
-### Automated communication layer
+### Export adapters (highest leverage)
+- [ ] Drake CSV / CDR adapter for individual returns (1040)
+- [ ] One additional adapter (UltraTax XML or Lacerte) — choose based on existing user base
+- [ ] Adapter test fixtures: round-trip a seeded return through each format
 
-- [ ] Document request emails triggered by missing items
-- [ ] Upload confirmation notifications to clients
-- [ ] Deadline reminder emails (configurable timing per deadline type)
-- [ ] Signature request emails when returns are ready for client approval
-- [ ] Per-entity-type communication templates (990 clients receive different language than 1040 clients)
+### Signatures
+- [ ] DocuSign (or comparable) integration for engagement letters
+- [ ] Form 8879 e-signature collection gated behind manager approval
+- [ ] Signature status surfaced on return detail
 
-### Staff exception queue
+### Scheduling
+- [ ] Deadline-reminder cron (Vercel cron, Railway cron, or external scheduler)
+- [ ] Daily sweep: find deadlines within configurable warning window, send reminders, mark as reminded
+- [ ] Communication-row backed so reminders are deduped
 
-- [ ] Dashboard for failed email sends, bounced messages, and delivery errors
-- [ ] Unresponsive client tracking: flag clients who haven't acted on requests within configurable windows
-- [ ] Overdue escalation workflows: auto-escalate to manager after N days without response
+### Extraction extensions
+- [ ] K-1 extractor (1065 K-1 + 1120-S K-1) — schema is the hard part
+- [ ] 1099-NEC / 1099-MISC extractors
+- [ ] Mortgage interest (Form 1098) extractor
+- [ ] Bank-statement extractor (transaction totals for Schedule C)
+- [ ] "Mark reviewed" UX to flip extraction SUCCESS → REVIEWED
+- [ ] Inline editor on extracted-fields modal (currently view-only)
 
-### Communication controls
+### Pre-fill polish
+- [ ] Multi-instance W-2 pre-fill (currently sums into a single answer)
+- [ ] Auto-notification when a fresh extraction creates available pre-fills
+- [ ] Per-row edit before apply in the PrefillPanel preview
 
-- [ ] Do-not-automate flag per client (staff-set; disables all automated outreach for that client)
-- [ ] Communication log per client: full history of sent messages, opens, and responses
-- [ ] Template editor for staff to customize message content per entity type
+### Review workflow polish
+- [ ] Per-return partner override on the return detail page
+- [ ] Richer audit description for partner-approval events
+- [ ] PARTNER_REVIEW email to the assigned partner
+
+### Dashboard
+- [ ] Missing-document blocking bucket
+- [ ] Overdue-review escalation surface
+
+### Engineering
+- [ ] GitHub Actions running tests + typecheck on PRs
+- [ ] One vendor-format adapter test integrated into E2E walkthrough
 
 ---
 
-## Phase 3 — Expansion
+## Phase 3 — Coverage expansion 📅
 
-Phase 3 broadens the platform's capabilities beyond the v1 tax-year and entity-type boundaries. Each item in this phase is a significant initiative that may be prioritized independently.
+Beyond v1's locked scope. Each item here is its own initiative; they can ship independently.
+
+### Broader entity + jurisdiction coverage
+- [ ] C-Corporation (Form 1120) support
+- [ ] Wider state deadline coverage (next ~15 states)
+- [ ] Multi-state nexus auto-inference from entity data (registered states, revenue apportionment, employee locations)
+- [ ] Hard-block logic for unsupported states at intake
+
+### Prior year + amendments
+- [ ] Prior-year return preparation (1040-X, 1120-X)
+- [ ] Amendment workflow with change-tracking against the original filed return
+- [ ] Carryforward ledger: NOL, passive activity losses, credit carryforwards
+
+### Communication ops
+- [ ] Staff exception queue: failed sends, bounces, delivery errors
+- [ ] Unresponsive-client tracking with configurable thresholds
+- [ ] Overdue-action escalation to manager
+- [ ] Do-not-automate flag per client
+- [ ] Template editor for staff to customize per-entity-type copy
+- [ ] Per-client communication history view
+
+### AI assist beyond pre-fill
+- [ ] Anomaly detection (year-over-year deltas, missing-schedule prompts)
+- [ ] Question-by-question copilot during interview
+- [ ] Bulk operations across many clients (mass campaign, batch deadline check)
+
+### Admin
+- [ ] Admin rule editor for the question matrix (no-code yearly updates)
+- [ ] Version-controlled rule changes with rollback
+- [ ] Audit log for rule modifications
+
+### Data + retention
+- [ ] Data retention policies (per-firm configurable)
+- [ ] Client data export (GDPR/CCPA)
+- [ ] Redaction policies on audit-log views
+
+---
+
+## Phase 4 — Filing & advanced 📅
+
+The deep-integration tier. Each item here is gated by external requirements (ERO, MeF, vendor partnerships) and is meaningful on its own.
+
+### In-platform filing
+- [ ] IRS MeF integration for direct e-filing (requires ERO agreement + EFIN)
+- [ ] State e-file integration for supported states
+- [ ] Filing status tracking + IRS acknowledgment handling
+- [ ] Rejection workflow with re-submission tracking
 
 ### International module
+- [ ] FBAR (FinCEN 114) with its own deadline calendar and thresholds
+- [ ] Form 5471 (foreign corporation reporting)
+- [ ] FATCA / Form 8938 with threshold-based triggering
 
-- [ ] FBAR (FinCEN 114) support with separate filing calendar and thresholds
-- [ ] Form 5471 (Information Return of U.S. Persons With Respect to Certain Foreign Corporations)
-- [ ] FATCA reporting (Form 8938) with threshold-based triggering
-- [ ] Separate international filing deadline tracking
+### Consolidated returns
+- [ ] Consolidated return support for affiliated C-Corp groups
+- [ ] Inter-entity allocation tracking
 
-### Additional entity types
+---
 
-- [ ] C-Corporation support (Form 1120)
-- [ ] Consolidated return support for affiliated C-Corp groups (if demand warrants)
+## Decisions Resolved
 
-### Prior year and amendments
+These were open during early Phase 1 and are now locked.
 
-- [ ] Prior-year return preparation (1040-X, 1120-X)
-- [ ] Amendment workflow with change-tracking against original filed return
-
-### Multi-year carryforward tracking
-
-- [ ] Net Operating Loss (NOL) carryforward ledger
-- [ ] Passive activity loss tracking and release logic
-- [ ] Credit carryforward tracking (general business credit, foreign tax credit, etc.)
-- [ ] Carryforward balances surface automatically during current-year intake
-
-### In-platform e-sign and e-file
-
-- [ ] Electronic signature collection (8879, 8453, etc.)
-- [ ] IRS MeF integration for direct e-filing (requires ERO agreement and EFIN)
-- [ ] State e-file integration for supported states
-- [ ] Filing status tracking and IRS acknowledgment handling
-
-### Admin rule editor
-
-- [ ] No-code interface for updating form trigger logic when tax law changes annually
-- [ ] Intake question matrix maintenance without developer involvement
-- [ ] Version control for rule changes with rollback capability
-- [ ] Audit log for all rule modifications
+1. **Two UIs or one?** — Single application with role-based views. Implemented across staff/portal/admin layouts.
+2. **Document storage backend.** — Supabase Storage with server-issued signed URLs. Clients never touch storage credentials.
+3. **Tax year semantics.** — IRS income-year convention (taxYear = year of income; FILING deadlines fall in taxYear + 1). Calculator and seed are aligned.
+4. **Multi-level review configurability.** — Per-firm toggle (`requirePartnerReview`) with an optional default partner; per-return override available via API.
+5. **AI extraction provider.** — Anthropic Claude Sonnet (vision + tool-use) for structured output. Forced tool-use prevents prose responses.
+6. **PII encryption scope.** — Entity.tin and SSN/EIN interview answers encrypted at rest. Full reads audit-logged.
+7. **Pre-return collection model.** — One DocumentCampaign per (client, tax year); campaign documents auto-link to matching returns at return-creation time.
+8. **Comms provider.** — Resend. No-op stub when API key is missing (logs to Communication table without sending).
 
 ---
 
 ## Open Decisions
 
-These questions must be resolved before or during early Phase 1. Each has meaningful downstream impact on architecture, staffing, and timeline.
+Still to resolve.
 
-1. **Two UIs or one?** Build separate client and staff applications sharing a data layer, or a single application with role-based views? Separate apps offer cleaner UX per audience but double the frontend surface area. A shared app reduces duplication but risks complexity in permission logic and layout.
+1. **Which vendor format(s) first?** Drake CSV is the most common starting point, but the choice should reflect the existing user base (or pilot firm preference). Decision needed before Phase 2 export-adapter work starts.
 
-2. **Who maintains the intake question matrix as tax law changes?** If the internal tax team maintains it manually each year, Phase 0 artifacts need to be structured for easy annual updates. If the admin rule editor (Phase 3) is the long-term answer, the Phase 1 data model must anticipate that interface.
+2. **Who maintains the intake question matrix?** Today the JSON files are edited directly. Phase 3's admin rule editor is the long-term answer, but the interim: does the internal tax team get a CLI tool, a private staging environment, or stay manual?
 
-3. **Non-profit v1 scope.** Support all 990 variants (990-N, 990-EZ, 990, 990-PF, 990-T) at launch, or start with 990 and 990-EZ only? The full family adds complexity to the intake interview and form logic; a narrower scope reduces v1 delivery risk.
+3. **Multi-state nexus: automatic or manual?** Phase 3 item. Automatic from entity data is more powerful but requires significant upfront rule engineering. Manual staff-flagging is simpler but error-prone.
 
-4. **Multi-state nexus: automatic or manual?** Should nexus be inferred automatically from entity data (registered states, revenue apportionment, employee locations), or should staff manually flag applicable states per client? Automatic is more powerful but requires more upfront rule engineering.
+4. **E-signature provider.** DocuSign is the safest pick but expensive; HelloSign / Dropbox Sign and BoldSign are cheaper. The integration shape is similar — decision is commercial.
 
-5. **Supported states at v1 launch.** The specific list of states must be locked before build begins. Each state adds deadline rules, filing requirements, and potential nexus logic. A smaller initial list reduces v1 scope; the platform should be architected so adding states later is incremental, not architectural.
+5. **Deadline-reminder cadence + content.** How many touches per deadline? When? Tone? These are template decisions that affect deliverability and client perception.
+
+6. **Bulk campaigns.** Should the firm be able to launch a campaign across multiple clients with one action ("send Individual basics to every active 1040 client for 2025")? This is a Phase 3 differentiator but worth deciding the data model now.
+
+---
+
+## Engineering practices
+
+How the platform stays healthy as it grows.
+
+- **Tests**: 130 unit/integration tests run via `npm test`. Re-runnable E2E walkthrough at `scripts/e2e-happy-path.ts` exercises the full lifecycle on seed data. Adding new engines should come with tests.
+- **Migrations**: Prisma schema is the source of truth; production migrations applied via Supabase MCP (`apply_migration`) with explicit reviewable SQL.
+- **Secrets**: never committed. `.mcp.json` is gitignored and reads from env. PII encryption keys, Anthropic and Supabase keys live in `.env` (gitignored) and Railway's env settings.
+- **Audit trail**: every state-changing endpoint writes to AuditEvent. PII reads (full-tin views, export packages) are logged critically.
+- **Observability**: standard Next.js logs. A future addition would be structured event logging to a dedicated sink.
