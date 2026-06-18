@@ -32,10 +32,10 @@ A shippable v1 means a client can be onboarded, guided through an intake intervi
 - [x] PII (SSN, EIN, sensitive interview answers) encrypted at rest with audit logging on full reads
 - [x] Audit trail logs every access, edit, review, approval, and export event
 - [x] Internal export package generator produces a complete JSON of return data
-- [ ] **Export package adapter to at least one vendor format (Drake CSV/Lacerte XML/UltraTax)**
+- [x] **Export package adapter to at least one vendor format** — Drake CSV (tall Section/Field/Value format) covers W-2 + 1099-INT + 1099-DIV rollups plus header and full interview answers
 - [ ] **E-signature on engagement letter and Form 8879 (or comparable workflow)**
 
-The two unchecked items are the gating bar for v1 ship.
+The remaining unchecked item is the gating bar for v1 ship.
 
 ---
 
@@ -109,7 +109,8 @@ Phase 1 delivers the minimum viable platform: full lifecycle, multi-tenant, role
 
 ### Export
 - [x] Internal JSON export package (every interview answer, document metadata, K-1 links, deadlines, review history)
-- [ ] **Vendor-format adapter (Drake / UltraTax / Lacerte)** — v1 ship gate
+- [x] **Drake CSV adapter (tall Section/Field/Value)** — covers W-2 + 1099-INT + 1099-DIV totals and per-document detail, header section with decrypted TIN + entity/status metadata, and the full interview answer set. Logs RETURN_EXPORTED_DRAKE_CSV + PII_FULL_VIEW audit events on download.
+- [ ] Second vendor-format adapter (UltraTax XML or Lacerte) — Phase 2 follow-up
 
 ### Engineering quality
 - [x] Vitest unit-test suite (130 tests across 10 files)
@@ -123,9 +124,9 @@ Phase 1 delivers the minimum viable platform: full lifecycle, multi-tenant, role
 The bar to call v1 done. Most items here are well-scoped and would close in days, not weeks.
 
 ### Export adapters (highest leverage)
-- [ ] Drake CSV / CDR adapter for individual returns (1040)
+- [x] Drake CSV adapter for individual returns (1040) — first vendor format shipped
 - [ ] One additional adapter (UltraTax XML or Lacerte) — choose based on existing user base
-- [ ] Adapter test fixtures: round-trip a seeded return through each format
+- [ ] Adapter test fixtures: round-trip a seeded return through each format (Drake CSV has 22 unit tests; round-trip against the E2E walkthrough is open)
 
 ### Signatures
 - [ ] DocuSign (or comparable) integration for engagement letters

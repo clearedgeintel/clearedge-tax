@@ -135,9 +135,22 @@ export default async function ReturnDetailPage({ params }: Props) {
           </div>
         }
         actions={
-          <Button href={`/staff/returns/${returnId}/interview`} size="sm">
-            Open interview
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            {(taxReturn.status === "APPROVED" ||
+              taxReturn.status === "EXPORTED") && (
+              <Button
+                href={`/api/returns/${returnId}/export/drake`}
+                download={`return-${returnId}-ty${taxReturn.taxYear}-drake.csv`}
+                variant="secondary"
+                size="sm"
+              >
+                Download Drake CSV
+              </Button>
+            )}
+            <Button href={`/staff/returns/${returnId}/interview`} size="sm">
+              Open interview
+            </Button>
+          </div>
         }
       />
 

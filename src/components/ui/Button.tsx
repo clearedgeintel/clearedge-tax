@@ -25,6 +25,13 @@ interface LinkProps extends CommonProps {
   disabled?: boolean;
   target?: string;
   rel?: string;
+  /**
+   * When set, renders a plain <a> instead of next/link so the browser
+   * follows the URL as a regular HTTP request — required for endpoints
+   * that respond with Content-Disposition: attachment. The string value
+   * is passed through as the file name hint to the browser.
+   */
+  download?: string | boolean;
 }
 
 const BASE =
@@ -72,12 +79,28 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps | LinkProps>(
     );
 
     if ("href" in rest && typeof rest.href === "string") {
-      const { href, disabled, target, rel } = rest as LinkProps;
+      const { href, disabled, target, rel, download } = rest as LinkProps;
       if (disabled) {
         return (
           <span aria-disabled className={classes} role="button">
             {content}
           </span>
+        );
+      }
+      // download=true (or a filename string) → plain <a> so the browser
+      // treats the URL as a real navigation that respects
+      // Content-Disposition: attachment.
+      if (download !== undefined) {
+        return (
+          <a
+            href={href}
+            className={classes}
+            target={target}
+            rel={rel}
+            download={typeof download === "string" ? download : true}
+          >
+            {content}
+          </a>
         );
       }
       return (
