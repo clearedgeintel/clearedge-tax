@@ -33,9 +33,9 @@ A shippable v1 means a client can be onboarded, guided through an intake intervi
 - [x] Audit trail logs every access, edit, review, approval, and export event
 - [x] Internal export package generator produces a complete JSON of return data
 - [x] **Export package adapter to at least one vendor format** — Drake CSV (tall Section/Field/Value format) covers W-2 + 1099-INT + 1099-DIV rollups plus header and full interview answers
-- [ ] **E-signature on engagement letter and Form 8879 (or comparable workflow)**
+- [x] **E-signature on engagement letter and Form 8879** — BoldSign provider with provider-agnostic abstraction; webhook + polling, audit-logged transitions, cancel/refresh actions on the return detail page
 
-The remaining unchecked item is the gating bar for v1 ship.
+All Definition-of-Done items are now complete. v1 is shippable.
 
 ---
 
@@ -129,9 +129,12 @@ The bar to call v1 done. Most items here are well-scoped and would close in days
 - [ ] Adapter test fixtures: round-trip a seeded return through each format (Drake CSV has 22 unit tests; round-trip against the E2E walkthrough is open)
 
 ### Signatures
-- [ ] DocuSign (or comparable) integration for engagement letters
-- [ ] Form 8879 e-signature collection gated behind manager approval
-- [ ] Signature status surfaced on return detail
+- [x] BoldSign integration for engagement letters and Form 8879 (provider-agnostic — adding DocuSign / HelloSign later is one file each)
+- [x] Webhook + polling for status transitions
+- [x] Signature status surfaced on return detail
+- [ ] Auto-trigger Form 8879 send on manager approval (one-click gate)
+- [ ] Auto-trigger engagement letter send on campaign creation
+- [ ] Signed PDF storage retrieval + download link in the staff UI
 
 ### Scheduling
 - [ ] Deadline-reminder cron (Vercel cron, Railway cron, or external scheduler)

@@ -20,6 +20,7 @@ import ReviewPanel from "./ReviewPanel";
 import AdvancePanel from "./AdvancePanel";
 import ExtractionCell from "./ExtractionCell";
 import PrefillPanel from "./PrefillPanel";
+import SignaturePanel from "./SignaturePanel";
 
 const SEVERITY_TEXT: Record<
   ReturnType<typeof deadlineSeverity>,
@@ -49,13 +50,14 @@ export default async function ReturnDetailPage({ params }: Props) {
     include: {
       entity: {
         include: {
-          client: { select: { id: true, displayName: true } },
+          client: { select: { id: true, displayName: true, email: true, user: { select: { name: true, email: true } } } },
         },
       },
       preparer: { select: { id: true, name: true } },
       reviewer: { select: { id: true, name: true } },
       partner: { select: { id: true, name: true } },
       deadlines: { orderBy: { dueDate: "asc" } },
+      signatureRequests: { orderBy: { createdAt: "desc" } },
       documents: {
         orderBy: { createdAt: "desc" },
         include: {
@@ -254,6 +256,36 @@ export default async function ReturnDetailPage({ params }: Props) {
               </ul>
             </Card>
           )}
+
+          <SignaturePanel
+            returnId={returnId}
+            clientId={taxReturn.entity.client.id}
+            defaultSignerEmail={
+              taxReturn.entity.client.email ||
+              taxReturn.entity.client.user?.email ||
+              ""
+            }
+            defaultSignerName={
+              taxReturn.entity.client.user?.name ||
+              taxReturn.entity.client.displayName
+            }
+            initialRequests={taxReturn.signatureRequests.map((r) => ({
+              id: r.id,
+              documentType: r.documentType,
+              status: r.status,
+              signerEmail: r.signerEmail,
+              signerName: r.signerName,
+              subject: r.subject,
+              sentAt: r.sentAt?.toISOString() || null,
+              viewedAt: r.viewedAt?.toISOString() || null,
+              signedAt: r.signedAt?.toISOString() || null,
+              declinedAt: r.declinedAt?.toISOString() || null,
+              expiresAt: r.expiresAt?.toISOString() || null,
+              errorMessage: r.errorMessage,
+              providerDocumentId: r.providerDocumentId,
+              createdAt: r.createdAt.toISOString(),
+            }))}
+          />
 
           <Card flush>
             <CardHeader

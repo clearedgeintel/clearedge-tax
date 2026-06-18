@@ -228,11 +228,12 @@ model Client {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  firm       Firm               @relation(fields: [firmId], references: [id])
-  user       User?              @relation(fields: [userId], references: [id])
-  entities   Entity[]
-  documents  Document[]
-  campaigns  DocumentCampaign[]
+  firm              Firm               @relation(fields: [firmId], references: [id])
+  user              User?              @relation(fields: [userId], references: [id])
+  entities          Entity[]
+  documents         Document[]
+  campaigns         DocumentCampaign[]
+  signatureRequests SignatureRequest[]
 
   @@index([firmId])
 }
@@ -316,6 +317,7 @@ model TaxReturn {
   auditEvents          AuditEvent[]
   k1sIssuedByReturn    K1Link[]            @relation("SourceReturn")
   k1sReceivedByReturn  K1Link[]            @relation("TargetReturn")
+  signatureRequests    SignatureRequest[]
 
   @@unique([entityId, taxYear])
   @@index([entityId])
@@ -424,6 +426,59 @@ enum DocumentCampaignStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+enum SignatureDocumentType {
+  ENGAGEMENT_LETTER
+  FORM_8879
+  FORM_8453
+  OTHER
+}
+
+enum SignatureStatus {
+  DRAFT
+  SENT
+  VIEWED
+  SIGNED
+  DECLINED
+  EXPIRED
+  CANCELLED
+  FAILED
+}
+
+model SignatureRequest {
+  id                 String                 @id @default(cuid())
+  returnId           String?
+  clientId           String
+  documentType       SignatureDocumentType
+  status             SignatureStatus        @default(DRAFT)
+  provider           String                 @default("boldsign")
+  providerDocumentId String?
+  signerEmail        String
+  signerName         String
+  subject            String?
+  message            String?                @db.Text
+  ccEmails           String[]
+  sourceStorageKey   String?
+  signedPdfStorageKey String?
+  sentAt             DateTime?
+  viewedAt           DateTime?
+  signedAt           DateTime?
+  declinedAt         DateTime?
+  expiresAt          DateTime?
+  metadata           Json?
+  errorMessage       String?                @db.Text
+  createdBy          String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  taxReturn TaxReturn? @relation(fields: [returnId], references: [id])
+  client    Client     @relation(fields: [clientId], references: [id])
+
+  @@index([returnId])
+  @@index([clientId])
+  @@index([status])
+  @@index([providerDocumentId])
 }
 
 model DocumentCampaign {
