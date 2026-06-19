@@ -283,6 +283,7 @@ export default async function ReturnDetailPage({ params }: Props) {
               expiresAt: r.expiresAt?.toISOString() || null,
               errorMessage: r.errorMessage,
               providerDocumentId: r.providerDocumentId,
+              signedPdfStorageKey: r.signedPdfStorageKey,
               createdAt: r.createdAt.toISOString(),
             }))}
           />

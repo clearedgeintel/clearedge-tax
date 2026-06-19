@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { Card, CardHeader, Button, Badge } from "@/components/ui";
-import { FileSignature, RefreshCcw, X } from "lucide-react";
+import { Download, FileSignature, RefreshCcw, X } from "lucide-react";
 
 type SignatureStatus =
   | "DRAFT"
@@ -36,6 +36,7 @@ interface SignatureRequest {
   expiresAt: string | null;
   errorMessage: string | null;
   providerDocumentId: string | null;
+  signedPdfStorageKey: string | null;
   createdAt: string;
 }
 
@@ -235,8 +236,37 @@ function RowActions({
     onChange();
   }
 
+  async function downloadSigned() {
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/signatures/${request.id}/download`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.error || `Failed (${res.status})`);
+      }
+      const { downloadUrl } = (await res.json()) as { downloadUrl: string };
+      window.open(downloadUrl, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="inline-flex items-center gap-2">
+      {request.status === "SIGNED" && request.signedPdfStorageKey && (
+        <button
+          type="button"
+          onClick={downloadSigned}
+          disabled={busy}
+          className="inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:text-brand-800 disabled:opacity-50"
+          title="Download the fully-signed PDF"
+        >
+          <Download className="h-3.5 w-3.5" />
+          {busy ? "…" : "Signed PDF"}
+        </button>
+      )}
       {(request.status === "SENT" || request.status === "VIEWED") && (
         <button
           type="button"

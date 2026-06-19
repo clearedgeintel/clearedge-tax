@@ -84,3 +84,22 @@ export async function downloadObject(storageKey: string): Promise<Buffer> {
   const arrayBuffer = await data.arrayBuffer();
   return Buffer.from(arrayBuffer);
 }
+
+/**
+ * Upload raw bytes to storage. Used for fully-server-side writes (e.g.,
+ * stashing a signed-back PDF returned from BoldSign) where signed-upload-URL
+ * flow would be overkill.
+ */
+export async function uploadObject(
+  storageKey: string,
+  bytes: Buffer,
+  contentType: string
+): Promise<void> {
+  const { error } = await getClient()
+    .storage.from(DOCUMENTS_BUCKET)
+    .upload(storageKey, bytes, {
+      contentType,
+      upsert: true,
+    });
+  if (error) throw error;
+}

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { downloadObject } from "@/lib/storage";
+import { downloadObject, uploadObject } from "@/lib/storage";
 import { logAuditEvent } from "@/lib/audit/logger";
 import type {
   SignatureDocumentType,
@@ -180,18 +180,47 @@ export async function cancelSignatureRequest(
 
 /**
  * Apply a status update from either fetchStatus or a webhook. Stamps
- * the appropriate timestamps for each status transition.
+ * the appropriate timestamps for each status transition. On SIGNED
+ * transitions, downloads the signed PDF from the provider and stashes
+ * it in Supabase Storage so it can be retrieved later without another
+ * provider round-trip.
  */
 export async function applyProviderStatus(
   id: string,
   status: SignatureProviderStatus
 ): Promise<void> {
+  const row = await prisma.signatureRequest.findUnique({ where: { id } });
+  if (!row) return;
+
   const data: Record<string, unknown> = { status: status.status };
   if (status.viewedAt) data.viewedAt = status.viewedAt;
   if (status.signedAt) data.signedAt = status.signedAt;
   if (status.declinedAt) data.declinedAt = status.declinedAt;
   if (status.expiresAt) data.expiresAt = status.expiresAt;
   if (status.message) data.errorMessage = status.message;
+
+  // First-time SIGNED transition → snapshot the signed PDF into storage.
+  // Idempotent: if signedPdfStorageKey is already set, skip the download
+  // (BoldSign sometimes resends Completed events).
+  if (
+    status.status === "SIGNED" &&
+    row.providerDocumentId &&
+    !row.signedPdfStorageKey
+  ) {
+    try {
+      const provider = providerByName(row.provider);
+      const pdf = await provider.downloadSigned(row.providerDocumentId);
+      const filename = `${row.documentType.toLowerCase()}-signed.pdf`;
+      const storageKey = `signatures/${row.clientId}/${row.id}/${filename}`;
+      await uploadObject(storageKey, pdf, "application/pdf");
+      data.signedPdfStorageKey = storageKey;
+    } catch (e) {
+      // Don't block the status flip on a download blip — the signed PDF can
+      // be fetched later via a manual sync.
+      console.error("[signatures] signed-PDF download failed", e);
+    }
+  }
+
   await prisma.signatureRequest.update({ where: { id }, data });
 }
 
