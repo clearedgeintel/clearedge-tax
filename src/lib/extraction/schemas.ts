@@ -249,6 +249,195 @@ const FORM_1099_DIV_JSON_SCHEMA = {
   },
 } as const;
 
+// ─── 1099-NEC ───────────────────────────────────────────────────────────────
+
+export const Form1099NECSchema = z.object({
+  taxYear: z.number().int().nullable(),
+  payer: z.object({
+    name: z.string().nullable(),
+    tin: z.string().nullable(),
+  }),
+  recipient: z.object({
+    name: z.string().nullable(),
+    tin: z.string().nullable(),
+  }),
+  box1_nonemployeeCompensation: z.number().nullable(),
+  box4_federalTaxWithheld: z.number().nullable(),
+});
+export type Form1099NECFields = z.infer<typeof Form1099NECSchema>;
+
+const FORM_1099_NEC_JSON_SCHEMA = {
+  type: "object",
+  required: [
+    "taxYear",
+    "payer",
+    "recipient",
+    "box1_nonemployeeCompensation",
+    "box4_federalTaxWithheld",
+  ],
+  additionalProperties: false,
+  properties: {
+    taxYear: { type: ["integer", "null"] },
+    payer: {
+      type: "object",
+      required: ["name", "tin"],
+      additionalProperties: false,
+      properties: {
+        name: { type: ["string", "null"] },
+        tin: { type: ["string", "null"] },
+      },
+    },
+    recipient: {
+      type: "object",
+      required: ["name", "tin"],
+      additionalProperties: false,
+      properties: {
+        name: { type: ["string", "null"] },
+        tin: { type: ["string", "null"] },
+      },
+    },
+    box1_nonemployeeCompensation: { type: ["number", "null"] },
+    box4_federalTaxWithheld: { type: ["number", "null"] },
+  },
+} as const;
+
+// ─── 1099-MISC ──────────────────────────────────────────────────────────────
+
+export const Form1099MISCSchema = z.object({
+  taxYear: z.number().int().nullable(),
+  payer: z.object({
+    name: z.string().nullable(),
+    tin: z.string().nullable(),
+  }),
+  recipient: z.object({
+    name: z.string().nullable(),
+    tin: z.string().nullable(),
+  }),
+  box1_rents: z.number().nullable(),
+  box2_royalties: z.number().nullable(),
+  box3_otherIncome: z.number().nullable(),
+  box4_federalTaxWithheld: z.number().nullable(),
+  box6_medicalPayments: z.number().nullable(),
+  box7_payerMadeDirectSales: z.boolean().nullable(),
+  box8_substitutePayments: z.number().nullable(),
+  box10_grossProceedsToAttorney: z.number().nullable(),
+});
+export type Form1099MISCFields = z.infer<typeof Form1099MISCSchema>;
+
+const FORM_1099_MISC_JSON_SCHEMA = {
+  type: "object",
+  required: [
+    "taxYear",
+    "payer",
+    "recipient",
+    "box1_rents",
+    "box2_royalties",
+    "box3_otherIncome",
+    "box4_federalTaxWithheld",
+    "box6_medicalPayments",
+    "box7_payerMadeDirectSales",
+    "box8_substitutePayments",
+    "box10_grossProceedsToAttorney",
+  ],
+  additionalProperties: false,
+  properties: {
+    taxYear: { type: ["integer", "null"] },
+    payer: {
+      type: "object",
+      required: ["name", "tin"],
+      additionalProperties: false,
+      properties: {
+        name: { type: ["string", "null"] },
+        tin: { type: ["string", "null"] },
+      },
+    },
+    recipient: {
+      type: "object",
+      required: ["name", "tin"],
+      additionalProperties: false,
+      properties: {
+        name: { type: ["string", "null"] },
+        tin: { type: ["string", "null"] },
+      },
+    },
+    box1_rents: { type: ["number", "null"] },
+    box2_royalties: { type: ["number", "null"] },
+    box3_otherIncome: { type: ["number", "null"] },
+    box4_federalTaxWithheld: { type: ["number", "null"] },
+    box6_medicalPayments: { type: ["number", "null"] },
+    box7_payerMadeDirectSales: { type: ["boolean", "null"] },
+    box8_substitutePayments: { type: ["number", "null"] },
+    box10_grossProceedsToAttorney: { type: ["number", "null"] },
+  },
+} as const;
+
+// ─── 1098 (mortgage interest) ───────────────────────────────────────────────
+
+export const Form1098Schema = z.object({
+  taxYear: z.number().int().nullable(),
+  lender: z.object({
+    name: z.string().nullable(),
+    tin: z.string().nullable(),
+  }),
+  borrower: z.object({
+    name: z.string().nullable(),
+    tin: z.string().nullable(),
+  }),
+  box1_mortgageInterestReceived: z.number().nullable(),
+  box2_outstandingPrincipal: z.number().nullable(),
+  box3_mortgageOriginationDate: z.string().nullable(),
+  box4_refundOfOverpaidInterest: z.number().nullable(),
+  box5_mortgageInsurancePremiums: z.number().nullable(),
+  box6_pointsPaidOnPurchase: z.number().nullable(),
+  box10_realEstateTaxes: z.number().nullable(),
+});
+export type Form1098Fields = z.infer<typeof Form1098Schema>;
+
+const FORM_1098_JSON_SCHEMA = {
+  type: "object",
+  required: [
+    "taxYear",
+    "lender",
+    "borrower",
+    "box1_mortgageInterestReceived",
+    "box2_outstandingPrincipal",
+    "box3_mortgageOriginationDate",
+    "box4_refundOfOverpaidInterest",
+    "box5_mortgageInsurancePremiums",
+    "box6_pointsPaidOnPurchase",
+    "box10_realEstateTaxes",
+  ],
+  additionalProperties: false,
+  properties: {
+    taxYear: { type: ["integer", "null"] },
+    lender: {
+      type: "object",
+      required: ["name", "tin"],
+      additionalProperties: false,
+      properties: {
+        name: { type: ["string", "null"] },
+        tin: { type: ["string", "null"] },
+      },
+    },
+    borrower: {
+      type: "object",
+      required: ["name", "tin"],
+      additionalProperties: false,
+      properties: {
+        name: { type: ["string", "null"] },
+        tin: { type: ["string", "null"] },
+      },
+    },
+    box1_mortgageInterestReceived: { type: ["number", "null"] },
+    box2_outstandingPrincipal: { type: ["number", "null"] },
+    box3_mortgageOriginationDate: { type: ["string", "null"] },
+    box4_refundOfOverpaidInterest: { type: ["number", "null"] },
+    box5_mortgageInsurancePremiums: { type: ["number", "null"] },
+    box6_pointsPaidOnPurchase: { type: ["number", "null"] },
+    box10_realEstateTaxes: { type: ["number", "null"] },
+  },
+} as const;
+
 // ─── Extractor registry ─────────────────────────────────────────────────────
 
 export interface ExtractorDef {
@@ -296,5 +485,33 @@ export const EXTRACTORS: Partial<Record<DocumentCategory, ExtractorDef>> = {
     instructions:
       "Extract every box that has a value. Use null for blank or unreadable boxes. Return raw numbers (no commas, no currency symbols).",
     inputSchema: FORM_1099_DIV_JSON_SCHEMA,
+  },
+  F1099_NEC: {
+    schema: Form1099NECSchema,
+    toolName: "store_1099_nec",
+    toolDescription:
+      "Record the fields extracted from a US IRS Form 1099-NEC nonemployee compensation statement.",
+    instructions:
+      "Extract every box that has a value. Use null for blank or unreadable boxes. Return raw numbers (no commas, no currency symbols).",
+    inputSchema: FORM_1099_NEC_JSON_SCHEMA,
+  },
+  F1099_MISC: {
+    schema: Form1099MISCSchema,
+    toolName: "store_1099_misc",
+    toolDescription:
+      "Record the fields extracted from a US IRS Form 1099-MISC miscellaneous information statement.",
+    instructions:
+      "Extract every box that has a value. Use null for blank or unreadable boxes. Box 7 is a yes/no checkbox — return true if the box is checked, false if unchecked, null if you cannot tell. Other boxes return raw numbers.",
+    inputSchema: FORM_1099_MISC_JSON_SCHEMA,
+  },
+  // 1098 mortgage interest is filed under the MORTGAGE_STATEMENT category.
+  MORTGAGE_STATEMENT: {
+    schema: Form1098Schema,
+    toolName: "store_form_1098",
+    toolDescription:
+      "Record the fields extracted from a US IRS Form 1098 mortgage interest statement.",
+    instructions:
+      "Extract every box that has a value. Use null for blank or unreadable boxes. Box 3 is the origination date — return it in ISO 8601 (YYYY-MM-DD) if you can read it; otherwise null. Other boxes return raw numbers.",
+    inputSchema: FORM_1098_JSON_SCHEMA,
   },
 };

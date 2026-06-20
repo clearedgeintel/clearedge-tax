@@ -108,6 +108,42 @@ const MAPPINGS: PrefillMapping[] = [
     questionId: "1040-ID-010",
     aggregation: "sum",
   },
+
+  // ─── 1099-NEC → self-employment / Schedule C ─────────────────────────
+  {
+    documentCategory: "F1099_NEC",
+    fieldPath: "box1_nonemployeeCompensation",
+    questionId: "1040-SC-001",
+    aggregation: "sum",
+  },
+
+  // ─── 1099-MISC → Other income ────────────────────────────────────────
+  {
+    documentCategory: "F1099_MISC",
+    fieldPath: "box1_rents",
+    questionId: "1040-RENT-006",
+    aggregation: "sum",
+  },
+  {
+    documentCategory: "F1099_MISC",
+    fieldPath: "box3_otherIncome",
+    questionId: "1040-OI-001",
+    aggregation: "sum",
+  },
+
+  // ─── 1098 mortgage → Itemized deductions / Schedule A ────────────────
+  {
+    documentCategory: "MORTGAGE_STATEMENT",
+    fieldPath: "box1_mortgageInterestReceived",
+    questionId: "1040-SA-001",
+    aggregation: "sum",
+  },
+  {
+    documentCategory: "MORTGAGE_STATEMENT",
+    fieldPath: "box10_realEstateTaxes",
+    questionId: "1040-SA-005",
+    aggregation: "sum",
+  },
 ];
 
 export function mappingsForCategory(
