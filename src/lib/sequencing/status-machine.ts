@@ -1,7 +1,10 @@
 import type { ReturnStatus } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/db";
 import { logStatusChange } from "@/lib/audit/logger";
-import { notifyStatusChange } from "@/lib/comms/notify";
+import {
+  notifyPartnerReviewNeeded,
+  notifyStatusChange,
+} from "@/lib/comms/notify";
 
 const VALID_TRANSITIONS: Record<ReturnStatus, ReturnStatus[]> = {
   INTAKE: ["INTAKE_BLOCKED", "PREPARATION"],
@@ -141,6 +144,12 @@ export async function transitionReturn(
   // notifyStatusChange swallows errors so a comms blip can't roll back
   // the transition or its audit log entry.
   await notifyStatusChange({ returnId, newStatus: effectiveNext, note });
+
+  // When a return lands in PARTNER_REVIEW, also email the assigned partner
+  // directly so they don't have to learn about it via a dashboard refresh.
+  if (effectiveNext === "PARTNER_REVIEW") {
+    await notifyPartnerReviewNeeded({ returnId, note });
+  }
 
   // If a business return was just APPROVED, resolve K-1 links and unblock downstream
   if (effectiveNext === "APPROVED") {

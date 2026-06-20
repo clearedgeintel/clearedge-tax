@@ -3,6 +3,7 @@ import type { ReturnStatus } from "@/generated/prisma/enums";
 import { sendEmail } from "./email";
 import {
   documentRequestEmail,
+  partnerReviewEmail,
   statusChangeEmail,
 } from "./templates";
 
@@ -154,6 +155,56 @@ export async function notifyDocumentsRequested(opts: {
     });
   } catch (e) {
     console.error("[notify] documents requested failed", e);
+  }
+}
+
+/**
+ * Notify the assigned partner that a return has landed in PARTNER_REVIEW
+ * and is waiting on their sign-off. Best-effort: failures log and return.
+ */
+export async function notifyPartnerReviewNeeded(opts: {
+  returnId: string;
+  note?: string;
+}): Promise<void> {
+  try {
+    const taxReturn = await prisma.taxReturn.findUnique({
+      where: { id: opts.returnId },
+      select: {
+        taxYear: true,
+        statusNote: true,
+        entity: {
+          select: {
+            legalName: true,
+            client: { select: { id: true } },
+          },
+        },
+        preparer: { select: { name: true } },
+        reviewer: { select: { name: true } },
+        partner: { select: { name: true, email: true } },
+      },
+    });
+    if (!taxReturn?.partner?.email) return;
+    const rendered = partnerReviewEmail({
+      partnerName: taxReturn.partner.name,
+      returnLegalName: taxReturn.entity.legalName,
+      taxYear: taxReturn.taxYear,
+      preparerName: taxReturn.preparer?.name,
+      reviewerName: taxReturn.reviewer?.name,
+      note: opts.note,
+      reviewUrl: `${portalBaseUrl()}/staff/returns/${opts.returnId}`,
+    });
+    await sendEmail({
+      to: taxReturn.partner.email,
+      subject: rendered.subject,
+      text: rendered.text,
+      html: rendered.html,
+      templateId: rendered.templateId,
+      clientId: taxReturn.entity.client.id,
+      returnId: opts.returnId,
+      metadata: { note: opts.note, scope: "partner-review" },
+    });
+  } catch (e) {
+    console.error("[notify] partner review needed failed", e);
   }
 }
 

@@ -21,6 +21,7 @@ import AdvancePanel from "./AdvancePanel";
 import ExtractionCell from "./ExtractionCell";
 import PrefillPanel from "./PrefillPanel";
 import SignaturePanel from "./SignaturePanel";
+import PartnerAssignment from "./PartnerAssignment";
 
 const SEVERITY_TEXT: Record<
   ReturnType<typeof deadlineSeverity>,
@@ -103,6 +104,16 @@ export default async function ReturnDetailPage({ params }: Props) {
   });
 
   if (!taxReturn) redirect("/staff/returns");
+
+  const partnerCandidates = await prisma.user.findMany({
+    where: {
+      firmId: session.user.firmId,
+      isActive: true,
+      role: { in: ["ADMIN", "MANAGER"] },
+    },
+    select: { id: true, name: true, role: true },
+    orderBy: { name: "asc" },
+  });
 
   const auditEvents = await prisma.auditEvent.findMany({
     where: { returnId },
@@ -427,9 +438,14 @@ export default async function ReturnDetailPage({ params }: Props) {
               />
               <DetailRow
                 label="Partner"
-                value={taxReturn.partner?.name || (
-                  <span className="text-ink-subtle">No partner review</span>
-                )}
+                value={
+                  <PartnerAssignment
+                    returnId={returnId}
+                    currentPartnerId={taxReturn.partnerId}
+                    currentPartnerName={taxReturn.partner?.name || null}
+                    candidates={partnerCandidates}
+                  />
+                }
               />
               <DetailRow
                 label="Interview progress"

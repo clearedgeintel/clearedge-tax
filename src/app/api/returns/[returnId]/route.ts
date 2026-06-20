@@ -11,8 +11,9 @@ import {
 import { logAuditEvent } from "@/lib/audit/logger";
 
 const UpdateReturnSchema = z.object({
-  preparerId: z.string().optional(),
-  reviewerId: z.string().optional(),
+  preparerId: z.string().nullable().optional(),
+  reviewerId: z.string().nullable().optional(),
+  partnerId: z.string().nullable().optional(),
   filingJurisdictions: z.array(z.string()).optional(),
   extensionFiled: z.boolean().optional(),
   statusNote: z.string().max(2000).optional(),

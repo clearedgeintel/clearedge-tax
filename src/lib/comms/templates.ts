@@ -150,6 +150,58 @@ export function statusChangeEmail(args: StatusChangeArgs): Rendered {
   };
 }
 
+interface PartnerReviewArgs {
+  partnerName: string;
+  returnLegalName: string;
+  taxYear: number;
+  preparerName?: string;
+  reviewerName?: string;
+  note?: string;
+  reviewUrl: string;
+}
+
+/**
+ * "Your sign-off is needed" — sent to the assigned partner when a return
+ * enters PARTNER_REVIEW.
+ */
+export function partnerReviewEmail(args: PartnerReviewArgs): Rendered {
+  const subject = `Partner sign-off needed: ${args.returnLegalName} (${args.taxYear})`;
+
+  const text =
+    `Hi ${args.partnerName},\n\n` +
+    `${args.returnLegalName} (tax year ${args.taxYear}) is ready for your partner-level sign-off.\n\n` +
+    (args.preparerName ? `Prepared by ${args.preparerName}.\n` : "") +
+    (args.reviewerName ? `First-level review by ${args.reviewerName}.\n` : "") +
+    (args.note ? `\nReviewer note:\n${args.note}\n` : "") +
+    `\nReview here: ${args.reviewUrl}\n\n` +
+    `Thanks,\nClearEdge Tax`;
+
+  const body =
+    `<h2 style="margin:0 0 16px 0;color:#1b4377;font-size:18px">${htmlEscape(subject)}</h2>` +
+    paragraph(`Hi ${args.partnerName},`) +
+    paragraph(
+      `${args.returnLegalName} (tax year ${args.taxYear}) is ready for your partner-level sign-off.`
+    ) +
+    (args.preparerName
+      ? paragraph(`Prepared by ${args.preparerName}.`)
+      : "") +
+    (args.reviewerName
+      ? paragraph(`First-level review by ${args.reviewerName}.`)
+      : "") +
+    (args.note
+      ? `<blockquote style="margin:0 0 16px 0;padding:12px 16px;background:#f1f5f9;border-left:3px solid #1b4377;color:#334155;font-size:14px">${htmlEscape(args.note)}</blockquote>`
+      : "") +
+    `<p style="margin:0 0 24px 0"><a href="${args.reviewUrl}" style="display:inline-block;background:#1b4377;color:#ffffff;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px">Open review</a></p>` +
+    paragraph("Thanks,\nClearEdge Tax");
+
+  return {
+    subject,
+    text,
+    html: wrap(body),
+    templateId: "partner-review-needed@v1",
+  };
+}
+
 interface DeadlineReminderArgs {
   clientName: string;
   returnLegalName: string;
