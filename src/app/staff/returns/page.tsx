@@ -40,6 +40,8 @@ interface Props {
   searchParams: Promise<{
     status?: string;
     isBlocked?: string;
+    missingDocs?: string;
+    overdueReview?: string;
     entityId?: string;
     clientId?: string;
   }>;
@@ -53,12 +55,27 @@ export default async function StaffReturns({ searchParams }: Props) {
   const params = await searchParams;
   const statusFilter = params.status as ReturnStatus | undefined;
   const blockedFilter = params.isBlocked === "true";
+  const missingDocsFilter = params.missingDocs === "true";
+  const overdueReviewFilter = params.overdueReview === "true";
+  const overdueReviewCutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
   const returns = await prisma.taxReturn.findMany({
     where: {
       entity: { client: { firmId } },
       ...(statusFilter ? { status: statusFilter } : {}),
       ...(blockedFilter ? { isBlocked: true } : {}),
+      ...(missingDocsFilter
+        ? {
+            status: { notIn: ["APPROVED", "EXPORTED"] },
+            documents: { some: { status: { in: ["REQUESTED", "REJECTED"] } } },
+          }
+        : {}),
+      ...(overdueReviewFilter
+        ? {
+            status: { in: ["REVIEW", "PARTNER_REVIEW"] },
+            submittedAt: { lt: overdueReviewCutoff },
+          }
+        : {}),
       ...(params.entityId ? { entityId: params.entityId } : {}),
       ...(params.clientId ? { entity: { clientId: params.clientId } } : {}),
     },
@@ -82,7 +99,8 @@ export default async function StaffReturns({ searchParams }: Props) {
     },
   });
 
-  const noActiveFilter = !statusFilter && !blockedFilter;
+  const noActiveFilter =
+    !statusFilter && !blockedFilter && !missingDocsFilter && !overdueReviewFilter;
 
   return (
     <>
@@ -91,7 +109,9 @@ export default async function StaffReturns({ searchParams }: Props) {
         title="All returns"
         description={`${returns.length} return${returns.length === 1 ? "" : "s"}${
           statusFilter ? ` in ${RETURN_STATUS_LABELS[statusFilter]}` : ""
-        }${blockedFilter ? " · blocked" : ""}.`}
+        }${blockedFilter ? " · blocked" : ""}${
+          missingDocsFilter ? " · with missing documents" : ""
+        }${overdueReviewFilter ? " · overdue review" : ""}.`}
       />
 
       <div className="mb-4 flex flex-wrap gap-2">
@@ -103,7 +123,19 @@ export default async function StaffReturns({ searchParams }: Props) {
         <FilterPill
           href="/staff/returns?isBlocked=true"
           active={blockedFilter}
-          label="Blocked"
+          label="K-1 blocked"
+          tone="warning"
+        />
+        <FilterPill
+          href="/staff/returns?missingDocs=true"
+          active={missingDocsFilter}
+          label="Missing docs"
+          tone="warning"
+        />
+        <FilterPill
+          href="/staff/returns?overdueReview=true"
+          active={overdueReviewFilter}
+          label="Overdue review"
           tone="warning"
         />
         {ORDERED_STATUSES.map((status) => (

@@ -31,7 +31,20 @@ export default async function StaffDashboard() {
 
   const firmId = session.user.firmId!;
 
-  const [intakeCount, prepCount, reviewCount, blockedCount] = await Promise.all([
+  const now = new Date();
+  const thirtyDaysOut = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  // "Overdue review" = return has been sitting in REVIEW or PARTNER_REVIEW
+  // for more than 5 business days. Use a 7-calendar-day proxy here.
+  const reviewStaleCutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  const [
+    intakeCount,
+    prepCount,
+    reviewCount,
+    blockedCount,
+    missingDocsCount,
+    overdueReviewCount,
+  ] = await Promise.all([
     prisma.taxReturn.count({
       where: { entity: { client: { firmId } }, status: "INTAKE" },
     }),
@@ -44,10 +57,25 @@ export default async function StaffDashboard() {
     prisma.taxReturn.count({
       where: { entity: { client: { firmId } }, isBlocked: true },
     }),
+    // Returns that have at least one REQUESTED or REJECTED document and are
+    // not yet APPROVED/EXPORTED. Mirrors the blocking-on-docs concern that
+    // the K-1 surface already shows.
+    prisma.taxReturn.count({
+      where: {
+        entity: { client: { firmId } },
+        status: { notIn: ["APPROVED", "EXPORTED"] },
+        documents: { some: { status: { in: ["REQUESTED", "REJECTED"] } } },
+      },
+    }),
+    prisma.taxReturn.count({
+      where: {
+        entity: { client: { firmId } },
+        status: { in: ["REVIEW", "PARTNER_REVIEW"] },
+        submittedAt: { lt: reviewStaleCutoff },
+      },
+    }),
   ]);
 
-  const now = new Date();
-  const thirtyDaysOut = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
   const upcomingDeadlines = await prisma.deadline.findMany({
     where: {
       taxReturn: { entity: { client: { firmId } } },
@@ -109,11 +137,28 @@ export default async function StaffDashboard() {
           href="/staff/returns?status=REVIEW"
         />
         <Stat
-          label="Blocked"
+          label="K-1 blocked"
           value={blockedCount}
           tone={blockedCount > 0 ? "danger" : "neutral"}
           description="Waiting on K-1 or upstream"
           href="/staff/returns?isBlocked=true"
+        />
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Stat
+          label="Missing documents"
+          value={missingDocsCount}
+          tone={missingDocsCount > 0 ? "warning" : "neutral"}
+          description="Returns with outstanding REQUESTED or REJECTED documents"
+          href="/staff/returns?missingDocs=true"
+        />
+        <Stat
+          label="Overdue review"
+          value={overdueReviewCount}
+          tone={overdueReviewCount > 0 ? "danger" : "neutral"}
+          description="In REVIEW or PARTNER_REVIEW for more than 7 days"
+          href="/staff/returns?overdueReview=true"
         />
       </div>
 
