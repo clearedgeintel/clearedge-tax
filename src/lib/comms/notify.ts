@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import type { ReturnStatus } from "@/generated/prisma/enums";
 import { sendEmail } from "./email";
 import {
+  deadlineReminderEmail,
   documentRequestEmail,
   partnerReviewEmail,
   statusChangeEmail,
@@ -205,6 +206,83 @@ export async function notifyPartnerReviewNeeded(opts: {
     });
   } catch (e) {
     console.error("[notify] partner review needed failed", e);
+  }
+}
+
+/**
+ * Send a deadline reminder for a specific deadline + client. Best-effort:
+ * failures log and return. Caller is responsible for deduping (we record
+ * the send on the Deadline.metadata so the cron sweep can skip it next
+ * time).
+ */
+export async function notifyDeadlineReminder(opts: {
+  deadlineId: string;
+}): Promise<{ sent: boolean; reason?: string }> {
+  try {
+    const deadline = await prisma.deadline.findUnique({
+      where: { id: opts.deadlineId },
+      include: {
+        taxReturn: {
+          select: {
+            id: true,
+            taxYear: true,
+            entity: {
+              select: {
+                legalName: true,
+                client: {
+                  select: {
+                    id: true,
+                    displayName: true,
+                    email: true,
+                    user: { select: { name: true, email: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!deadline) return { sent: false, reason: "deadline not found" };
+    const client = deadline.taxReturn.entity.client;
+    const recipientEmail = client.email || client.user?.email || null;
+    if (!recipientEmail) return { sent: false, reason: "no email on file" };
+    const recipientName = client.user?.name || client.displayName;
+
+    const now = Date.now();
+    const days = Math.round(
+      (deadline.dueDate.getTime() - now) / (1000 * 60 * 60 * 24)
+    );
+    const rendered = deadlineReminderEmail({
+      clientName: recipientName,
+      returnLegalName: deadline.taxReturn.entity.legalName,
+      deadlineLabel: deadline.deadlineType.replace(/_/g, " "),
+      dueDate: deadline.dueDate.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }),
+      daysRemaining: days,
+      portalUrl: `${portalBaseUrl()}/returns`,
+    });
+    await sendEmail({
+      to: recipientEmail,
+      subject: rendered.subject,
+      text: rendered.text,
+      html: rendered.html,
+      templateId: rendered.templateId,
+      clientId: client.id,
+      returnId: deadline.taxReturn.id,
+      metadata: {
+        deadlineId: deadline.id,
+        daysRemaining: days,
+        scope: "deadline-reminder",
+      },
+    });
+    return { sent: true };
+  } catch (e) {
+    console.error("[notify] deadline reminder failed", e);
+    return { sent: false, reason: "exception" };
   }
 }
 
