@@ -66,9 +66,19 @@ describe("mappings registry", () => {
 
   it("every mapping has aggregation mode + non-empty fieldPath", () => {
     for (const m of allMappings()) {
-      expect(m.aggregation === "first" || m.aggregation === "sum").toBe(true);
+      expect(
+        m.aggregation === "first" ||
+          m.aggregation === "sum" ||
+          m.aggregation === "per_instance"
+      ).toBe(true);
       expect(m.fieldPath.length).toBeGreaterThan(0);
       expect(m.questionId.length).toBeGreaterThan(0);
     }
+  });
+
+  it("W-2 box mappings are per_instance (the wages section is repeatable)", () => {
+    const w2 = mappingsForCategory("W2");
+    expect(w2.length).toBeGreaterThan(0);
+    expect(w2.every((m) => m.aggregation === "per_instance")).toBe(true);
   });
 });

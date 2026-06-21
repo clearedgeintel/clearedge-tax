@@ -15,7 +15,7 @@ import type { DocumentCategory } from "@/generated/prisma/enums";
  * extend ahead of the question matrix.
  */
 
-export type AggregationMode = "first" | "sum";
+export type AggregationMode = "first" | "sum" | "per_instance";
 
 export interface PrefillMapping {
   documentCategory: DocumentCategory;
@@ -30,49 +30,62 @@ const MAPPINGS: PrefillMapping[] = [
     documentCategory: "W2",
     fieldPath: "boxes.box1_wages",
     questionId: "1040-WS-005",
-    aggregation: "sum",
+    aggregation: "per_instance",
   },
   {
     documentCategory: "W2",
     fieldPath: "boxes.box2_federalTaxWithheld",
     questionId: "1040-WS-006",
-    aggregation: "sum",
+    aggregation: "per_instance",
   },
   {
     documentCategory: "W2",
     fieldPath: "boxes.box3_socialSecurityWages",
     questionId: "1040-WS-007",
-    aggregation: "sum",
+    aggregation: "per_instance",
   },
   {
     documentCategory: "W2",
     fieldPath: "boxes.box4_socialSecurityTaxWithheld",
     questionId: "1040-WS-008",
-    aggregation: "sum",
+    aggregation: "per_instance",
   },
   {
     documentCategory: "W2",
     fieldPath: "boxes.box5_medicareWages",
     questionId: "1040-WS-009",
-    aggregation: "sum",
+    aggregation: "per_instance",
   },
   {
     documentCategory: "W2",
     fieldPath: "boxes.box6_medicareTaxWithheld",
     questionId: "1040-WS-010",
-    aggregation: "sum",
+    aggregation: "per_instance",
   },
   {
     documentCategory: "W2",
     fieldPath: "boxes.box16_stateWages",
     questionId: "1040-WS-011",
-    aggregation: "sum",
+    aggregation: "per_instance",
   },
   {
     documentCategory: "W2",
     fieldPath: "boxes.box17_stateIncomeTax",
     questionId: "1040-WS-012",
-    aggregation: "sum",
+    aggregation: "per_instance",
+  },
+  // Employer name + EIN are also per-W-2.
+  {
+    documentCategory: "W2",
+    fieldPath: "employer.name",
+    questionId: "1040-WS-003",
+    aggregation: "per_instance",
+  },
+  {
+    documentCategory: "W2",
+    fieldPath: "employer.ein",
+    questionId: "1040-WS-004",
+    aggregation: "per_instance",
   },
 
   // ─── 1099-INT → INDIVIDUAL_1040 Interest / Dividends section ─────────

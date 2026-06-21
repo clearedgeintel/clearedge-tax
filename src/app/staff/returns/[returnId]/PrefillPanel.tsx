@@ -8,6 +8,7 @@ import { Sparkles, AlertTriangle } from "lucide-react";
 interface Proposal {
   questionId: string;
   sectionId: string;
+  instanceIndex: number;
   inputType: string;
   questionText: string;
   proposedValue: unknown;
@@ -151,11 +152,19 @@ export default function PrefillPanel({ returnId }: Props) {
                       p.currentValue !== undefined &&
                       p.currentValue !== "";
                     return (
-                      <tr key={p.questionId}>
+                      <tr key={`${p.questionId}@${p.instanceIndex}`}>
                         <td className="px-3 py-2 text-xs text-ink">
-                          <div className="font-medium">{p.questionText}</div>
+                          <div className="font-medium">
+                            {p.questionText}
+                            {p.instanceIndex > 0 && (
+                              <span className="ml-1 text-ink-subtle">
+                                · instance {p.instanceIndex + 1}
+                              </span>
+                            )}
+                          </div>
                           <div className="font-mono text-[10px] text-ink-subtle">
                             {p.questionId}
+                            {p.instanceIndex > 0 && `:${p.instanceIndex}`}
                           </div>
                         </td>
                         <td className="px-3 py-2 text-xs">

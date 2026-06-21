@@ -18,6 +18,8 @@ import {
 export interface PrefillProposal {
   questionId: string;
   sectionId: string;
+  /** 0 for the base instance; >0 for repeatable section instances. */
+  instanceIndex: number;
   inputType: string;
   questionText: string;
   proposedValue: unknown;
@@ -116,10 +118,11 @@ export async function proposeReturnPrefills(
       value: true,
     },
   });
+  // Keyed by `${questionId}@${instanceIndex}` so per-instance proposals
+  // can look up their current value at the right index.
   const responseByKey = new Map<string, unknown>();
   for (const r of existingResponses) {
-    // Only instance 0 for v1; multi-instance pre-fill is a follow-up.
-    if (r.instanceIndex === 0) responseByKey.set(r.questionId, r.value);
+    responseByKey.set(`${r.questionId}@${r.instanceIndex}`, r.value);
   }
 
   const proposals: PrefillProposal[] = [];
@@ -132,25 +135,23 @@ export async function proposeReturnPrefills(
     byCategory.set(e.category, arr);
   }
 
+  function sameValue(
+    inputType: string,
+    current: unknown,
+    proposed: unknown
+  ): boolean {
+    if (inputType === "currency") {
+      return Number(current) === Number(proposed);
+    }
+    return current === proposed;
+  }
+
   for (const m of allMappings()) {
     const rows = byCategory.get(m.documentCategory);
     if (!rows || rows.length === 0) continue;
 
     const question = interview.questionIndex.get(m.questionId);
-    if (!question) continue; // mapping references an unknown question — skip
-
-    const values = rows.map((r) => readFieldPath(r.fields, m.fieldPath));
-    const proposed = aggregate(values, m.aggregation);
-    if (proposed === undefined) continue;
-
-    const current = responseByKey.get(m.questionId);
-
-    // For currency questions, compare numerically; otherwise strict equality.
-    const same =
-      question.inputType === "currency"
-        ? Number(current) === Number(proposed)
-        : current === proposed;
-    if (same) continue;
+    if (!question) continue;
 
     const sectionId =
       findSectionForQuestion(
@@ -159,9 +160,39 @@ export async function proposeReturnPrefills(
         m.questionId
       ) || "";
 
+    if (m.aggregation === "per_instance") {
+      // Emit one proposal per source document at instanceIndex matching
+      // its position. Skips documents that have null at the field path.
+      rows.forEach((r, idx) => {
+        const value = readFieldPath(r.fields, m.fieldPath);
+        if (value === undefined) return;
+        const current = responseByKey.get(`${m.questionId}@${idx}`);
+        if (sameValue(question.inputType, current, value)) return;
+        proposals.push({
+          questionId: m.questionId,
+          sectionId,
+          instanceIndex: idx,
+          inputType: question.inputType,
+          questionText: question.text,
+          proposedValue: value,
+          currentValue: current,
+          sources: [{ documentId: r.documentId, label: r.documentLabel }],
+        });
+      });
+      continue;
+    }
+
+    const values = rows.map((r) => readFieldPath(r.fields, m.fieldPath));
+    const proposed = aggregate(values, m.aggregation);
+    if (proposed === undefined) continue;
+
+    const current = responseByKey.get(`${m.questionId}@0`);
+    if (sameValue(question.inputType, current, proposed)) continue;
+
     proposals.push({
       questionId: m.questionId,
       sectionId,
+      instanceIndex: 0,
       inputType: question.inputType,
       questionText: question.text,
       proposedValue: proposed,
@@ -222,14 +253,14 @@ export async function applyReturnPrefills(
         returnId_questionId_instanceIndex: {
           returnId,
           questionId: p.questionId,
-          instanceIndex: 0,
+          instanceIndex: p.instanceIndex,
         },
       },
       create: {
         returnId,
         questionId: p.questionId,
         sectionId: p.sectionId,
-        instanceIndex: 0,
+        instanceIndex: p.instanceIndex,
         value: valueToStore as never,
         answeredBy: actorId,
       },
